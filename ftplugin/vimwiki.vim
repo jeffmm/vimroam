@@ -447,8 +447,8 @@ if str2nr(vimwiki#vars#get_global('key_mappings').links)
   call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'n', '<Plug>VimwikiGoto')
   call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'d', '<Plug>VimwikiDeleteFile')
   call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'r', '<Plug>VimwikiRenameFile')
-  call vimwiki#u#map_key('n', '<C-Down>', '<Plug>VimwikiDiaryNextDay')
-  call vimwiki#u#map_key('n', '<C-Up>', '<Plug>VimwikiDiaryPrevDay')
+  call vimwiki#u#map_key('n', '-', '<Plug>VimwikiDiaryNextDay')
+  call vimwiki#u#map_key('n', '=', '<Plug>VimwikiDiaryPrevDay')
 endif
 
 " <Plug> lists definitions

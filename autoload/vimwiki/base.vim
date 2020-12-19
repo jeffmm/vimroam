@@ -437,7 +437,7 @@ function! vimwiki#base#generate_links(create, ...) abort
         endif
 
         " Replace Url, Description
-        let entry = s:safesubstitute(link_tpl, '__LinkUrl__', link, '')
+        let entry = s:safesubstitute(link_tpl, '__LinkUrl__', tolower(link), '')
         let entry = s:safesubstitute(entry, '__LinkDescription__', link_caption, '')
 
         " Replace Extension
@@ -2517,7 +2517,7 @@ endfunction
 function! vimwiki#base#apply_template(template, rxUrl, rxDesc, rxStyle, rxExtension) abort
   let lnk = a:template
   if a:rxUrl !=? ''
-    let lnk = s:safesubstitute(lnk, '__LinkUrl__', a:rxUrl, 'g')
+    let lnk = s:safesubstitute(lnk, '__LinkUrl__', tolower(a:rxUrl), 'g')
   endif
   if a:rxDesc !=? ''
     let lnk = s:safesubstitute(lnk, '__LinkDescription__', a:rxDesc, 'g')
@@ -2593,7 +2593,7 @@ function! vimwiki#base#normalize_link_helper(str, rxUrl, rxDesc, template) abort
   endif
   " Substiture placeholders
   let lnk = s:safesubstitute(a:template, '__LinkDescription__', descr, '')
-  let lnk = s:safesubstitute(lnk, '__LinkUrl__', url, '')
+  let lnk = s:safesubstitute(lnk, '__LinkUrl__', tolower(url), '')
   let file_extension = vimwiki#vars#get_wikilocal('ext', vimwiki#vars#get_bufferlocal('wiki_nr'))
   let lnk = s:safesubstitute(lnk, '__FileExtension__', file_extension , '')
   return lnk
@@ -2685,7 +2685,7 @@ function! s:normalize_link_syntax_n() abort
       let sub = vimwiki#base#normalize_link_in_diary(lnk)
     else
       let sub = s:safesubstitute(
-            \ vimwiki#vars#get_global('WikiLinkTemplate1'), '__LinkUrl__', lnk, '')
+            \ vimwiki#vars#get_global('WikiLinkTemplate1'), '__LinkUrl__', tolower(lnk), '')
     endif
     " Replace file extension
     let file_extension = vimwiki#vars#get_wikilocal('ext', vimwiki#vars#get_bufferlocal('wiki_nr'))
@@ -2695,20 +2695,58 @@ function! s:normalize_link_syntax_n() abort
   endif
 endfunction
 
+function! s:convert_to_image_link(url)
+    let text = trim(a:url)
+    if empty(glob(expand(text)))
+        return
+    endif
+    let extension = fnamemodify(text, ":e")
+    let name = fnamemodify(text, ":t:r")
+    if extension !=? "png" && extension[:2] !=? "tif" && extension !=? "bmp" && extension !=? "jpg" && extension !=? "jpeg"
+        return
+    endif
+    let directory = expand("%:p:h") . "/figs/"
+    if empty(glob(directory))
+        silent! execute "!mkdir " . directory
+    endif
+    let name = substitute(name, " ", "_", "g")
+    let output = directory . name . ".jpg"
+    if extension !=? "png" && extension[:2] !=? "tif" && extension !=? "bmp"
+        silent! execute "!convert " . text . " " . output
+    else
+        silent! execute "!cp " . text . " " . output
+    endif
+    " Reduce file size if ImageMagick is installed
+    if executable("mogrify")
+        let width = system("identify -format '%w' " . output)
+        silent! execute '!mogrify -filter Triangle -define filter:support=2 
+                    \ -thumbnail ' . float2nr(round(width/2))
+                    \ . ' -unsharp 0.25x0.25+8.3+0.065
+                    \ -dither None -posterize 136 -quality 82 -define
+                    \ jpeg:fancy-upsampling=off -interlace none 
+                    \ -colorspace sRGB ' . output
+    endif
+    execute ":'<,'>s#" . fnameescape(text) . "#![" . name . "](figs/" . name . ".jpg)#"
+endfunction
+
 
 " TODO mutualize most code with syntax_n
 " Normalize link in visual mode Enter keypress
 function! s:normalize_link_syntax_v() abort
   " Get selection content
   let visual_selection = vimwiki#u#get_selection()
-
+  let extension = fnamemodify(trim(visual_selection), ":e")
+  if extension ==? "png" || extension[:2] ==? "tif" || extension ==? "bmp" || extension ==? "jpg" || extension ==? "jpeg"
+    call s:convert_to_image_link(visual_selection)
+    return
+  endif
   " Embed link in template
   " In case of a diary link, wiki or markdown link
   if vimwiki#base#is_diary_file(expand('%:p'))
     let link = vimwiki#base#normalize_link_in_diary(visual_selection)
   else
     let link_tpl = vimwiki#vars#get_syntaxlocal('Link1')
-    let link = s:safesubstitute(link_tpl, '__LinkUrl__', visual_selection, '')
+    let link = s:safesubstitute(link_tpl, '__LinkUrl__', tolower(visual_selection), '')
   endif
 
   " Transform link:
