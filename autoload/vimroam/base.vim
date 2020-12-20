@@ -1,0 +1,3071 @@
+" vim:tabstop=2:shiftwidth=2:expandtab:textwidth=99
+" VimRoam autoload plugin file
+" Desc: Basic functionality
+" Called by plugin/vimroam.vim and ftplugin/vimroam.vim
+" by global and vimroam local map and commands
+" Home: https://github.com/jeffmm/vimroam/
+
+" Clause: load only once
+if exists('g:loaded_vimroam_auto') || &compatible
+  finish
+endif
+let g:loaded_vimroam_auto = 1
+
+
+let g:vimroam_max_scan_for_caption = 5
+
+
+" Substitute regexp but do not interpret replace
+function! s:safesubstitute(text, search, replace, mode) abort
+  let escaped = escape(a:replace, '\&')
+  return substitute(a:text, a:search, escaped, a:mode)
+endfunction
+
+
+" Get all vimroam known syntaxes
+function! s:vimroam_get_known_syntaxes() abort
+  " Getting all syntaxes that different wikis could have
+  let syntaxes = {}
+  let syntaxes['default'] = 1
+  for wiki_nr in range(vimroam#vars#number_of_wikis())
+    let wiki_syntax = vimroam#vars#get_wikilocal('syntax', wiki_nr)
+    let syntaxes[wiki_syntax] = 1
+  endfor
+  " also consider the syntaxes from g:vimroam_ext2syntax
+  for syn in values(vimroam#vars#get_global('ext2syntax'))
+    let syntaxes[syn] = 1
+  endfor
+  return keys(syntaxes)
+endfunction
+
+
+" Get search regex from glob()
+function! vimroam#base#file_pattern(files) abort
+  " string. Aim to support *all* special characters, forcing the user to choose
+  "   names that are compatible with any external restrictions that they
+  "   encounter (e.g. filesystem, wiki conventions, other syntaxes, ...).
+  "   See: https://github.com/vimroam-backup/vimroam/issues/316
+  " Change / to [/\\] to allow "Windows paths"
+  return '\V\%('.join(a:files, '\|').'\)\m'
+endfunction
+
+
+" TODO move in path
+" FIXME TODO slow and faulty
+function! vimroam#base#subdir(path, filename) abort
+  let path = a:path
+  " ensure that we are not fooled by a symbolic link
+  "FIXME if we are not "fooled", we end up in a completely different wiki?
+  if a:filename !~# '^scp:'
+    let filename = resolve(a:filename)
+  else
+    let filename = a:filename
+  endif
+  let idx = 0
+  "FIXME this can terminate in the middle of a path component!
+  while path[idx] ==? filename[idx]
+    let idx = idx + 1
+  endwhile
+
+  let p = split(strpart(filename, idx), '[/\\]')
+  let res = join(p[:-2], '/')
+  if len(res) > 0
+    let res = res.'/'
+  endif
+  return res
+endfunction
+
+
+" TODO move in path
+function! vimroam#base#current_subdir() abort
+  return vimroam#base#subdir(vimroam#vars#get_wikilocal('path'), expand('%:p'))
+endfunction
+
+
+" TODO move in path
+function! vimroam#base#invsubdir(subdir) abort
+  return substitute(a:subdir, '[^/\.]\+/', '../', 'g')
+endfunction
+
+
+" Returns: the number of the wiki a file belongs to or -1 if it doesn't belong
+" to any registered wiki.
+" The path can be the full path or just the directory of the file
+function! vimroam#base#find_wiki(path) abort
+  let bestmatch = -1
+  let bestlen = 0
+  let path = vimroam#path#path_norm(vimroam#path#chomp_slash(a:path))
+  for idx in range(vimroam#vars#number_of_wikis())
+    let idx_path = expand(vimroam#vars#get_wikilocal('path', idx))
+    let idx_path = vimroam#path#path_norm(vimroam#path#chomp_slash(idx_path))
+    let common_pfx = vimroam#path#path_common_pfx(idx_path, path)
+    if vimroam#path#is_equal(common_pfx, idx_path)
+      if len(common_pfx) > bestlen
+        let bestlen = len(common_pfx)
+        let bestmatch = idx
+      endif
+    endif
+  endfor
+
+  return bestmatch
+endfunction
+
+
+" Check if a link is a well formed wiki link (Helper)
+function! s:is_wiki_link(link_infos) abort
+  return a:link_infos.scheme =~# '\mwiki\d\+' || a:link_infos.scheme ==# 'diary'
+endfunction
+
+
+" Extract infos about the target from a link.
+" THE central function of VimRoam.
+" If the second parameter is present, which should be an absolute file path, it
+" is assumed that the link appears in that file. Without it, the current file
+" is used.
+function! vimroam#base#resolve_link(link_text, ...) abort
+  if a:0
+    let source_wiki = vimroam#base#find_wiki(a:1)
+    let source_file = a:1
+  else
+    let source_wiki = vimroam#vars#get_bufferlocal('wiki_nr')
+    let source_file = vimroam#path#current_wiki_file()
+  endif
+
+  " Get rid of '\' in escaped characters in []() style markdown links
+  " other style links don't allow '\'
+  let link_text = substitute(a:link_text, '\(\\\)\(\W\)\@=', '', 'g')
+
+  let link_infos = {
+        \ 'index': -1,
+        \ 'scheme': '',
+        \ 'filename': '',
+        \ 'anchor': '',
+        \ }
+
+  if link_text ==? ''
+    return link_infos
+  endif
+
+  let scheme = matchstr(link_text, '^\zs'.vimroam#vars#get_global('rxSchemes').'\ze:')
+  if scheme ==? ''
+    " interwiki link scheme is default
+    let link_infos.scheme = 'wiki'.source_wiki
+  else
+    let link_infos.scheme = scheme
+
+    if link_infos.scheme !~# '\mwiki\d\+\|diary\|local\|file'
+      let link_infos.filename = link_text  " unknown scheme, may be a weblink
+      return link_infos
+    endif
+
+    let link_text = matchstr(link_text, '^'.vimroam#vars#get_global('rxSchemes').':\zs.*\ze')
+  endif
+
+  let is_wiki_link = s:is_wiki_link(link_infos)
+
+  " Extract anchor
+  if is_wiki_link
+    let split_lnk = split(link_text, '#', 1)
+    let link_text = split_lnk[0]
+    if len(split_lnk) > 1 && split_lnk[-1] !=? ''
+      let link_infos.anchor = join(split_lnk[1:], '#')
+    endif
+    if link_text ==? ''  " because the link was of the form '#anchor'
+      let expected_ext = vimroam#u#escape(vimroam#vars#get_wikilocal('ext')).'$'
+      if source_file =~# expected_ext
+          " Source file has expected extension. Remove it, it will be added later on
+          let ext_len = strlen(vimroam#vars#get_wikilocal('ext'))
+          let link_text = fnamemodify(source_file, ':p:t')[:-ext_len-1]
+      endif
+
+    endif
+  endif
+
+  " Check if absolute or relative path
+  let is_absolute = 0
+  if is_wiki_link && link_text[0] ==# '/'
+    if link_text !=# '/'
+      if link_text !=# '//' && link_text[0:1] ==# '//'
+        let link_text = resolve(expand(link_text))
+        let link_text = link_text[2:]
+        let is_absolute = 1
+      else
+        let link_text = link_text[1:]
+      endif
+    endif
+    let is_relative = 0
+  elseif !is_wiki_link && vimroam#path#is_absolute(link_text)
+    let is_relative = 0
+  else
+    let is_relative = 1
+    let root_dir = fnamemodify(source_file, ':p:h') . '/'
+  endif
+
+
+  " Extract the other items depending on the scheme
+  if link_infos.scheme =~# '\mwiki\d\+'
+
+    " interwiki link named wiki 'wn.name:link' format
+    let wnmatch = matchlist(link_text, '\m^wn\.\([a-zA-Z0-9\-_ ]\+\):\(.*\)')
+    if len(wnmatch) >= 2 && wnmatch[1] !=? '' && wnmatch[2] !=? ''
+      let wname = wnmatch[1]
+      for idx in range(vimroam#vars#number_of_wikis())
+        if vimroam#vars#get_wikilocal('name', idx) ==# wname
+          " name matches!
+          let link_infos.index = idx
+          let link_text = wnmatch[2]
+          break
+        endif
+      endfor
+      if link_text !=# wnmatch[2]
+        " error: invalid wiki name
+        let link_infos.index = -2
+        let link_infos.filename = ''
+        " use scheme field to return invalid wiki name
+        let link_infos.scheme = wname
+        return link_infos
+      endif
+    else
+      " interwiki link numbered wiki format
+      let link_infos.index = eval(matchstr(link_infos.scheme, '\D\+\zs\d\+\ze'))
+      if link_infos.index < 0 || link_infos.index >= vimroam#vars#number_of_wikis()
+        let link_infos.index = -1
+        let link_infos.filename = ''
+        return link_infos
+      endif
+    endif
+    if is_absolute
+        let root_dir = ''
+    elseif !is_relative || link_infos.index != source_wiki
+      let root_dir = vimroam#vars#get_wikilocal('path', link_infos.index)
+    endif
+
+    let link_infos.filename = root_dir . link_text
+
+    if vimroam#path#is_link_to_dir(link_text)
+      if vimroam#vars#get_global('dir_link') !=? ''
+        let link_infos.filename .= vimroam#vars#get_global('dir_link') .
+              \ vimroam#vars#get_wikilocal('ext', link_infos.index)
+      endif
+    else
+      let ext = fnamemodify(link_text, ':e')
+      if ext ==? ''  " append ext iff one not already present
+        let link_infos.filename .= vimroam#vars#get_wikilocal('ext', link_infos.index)
+      endif
+    endif
+
+  elseif link_infos.scheme ==# 'diary'
+    let link_infos.index = source_wiki
+
+    let link_infos.filename =
+          \ vimroam#vars#get_wikilocal('path', link_infos.index) .
+          \ vimroam#vars#get_wikilocal('diary_rel_path', link_infos.index) .
+          \ link_text .
+          \ vimroam#vars#get_wikilocal('ext', link_infos.index)
+  elseif (link_infos.scheme ==# 'file' || link_infos.scheme ==# 'local') && is_relative
+    let link_infos.filename = simplify(root_dir . link_text)
+  else " absolute file link
+    " collapse repeated leading "/"'s within a link
+    let link_text = substitute(link_text, '\m^/\+', '/', '')
+    " expand ~/
+    let link_text = fnamemodify(link_text, ':p')
+    let link_infos.filename = simplify(link_text)
+  endif
+
+  let link_infos.filename = vimroam#path#normalize(link_infos.filename)
+
+  return link_infos
+endfunction
+
+
+" Open Link with OS handler (like gx)
+function! vimroam#base#system_open_link(url) abort
+  " handlers
+  function! s:win32_handler(url) abort
+    "Disable shellslash for cmd and command.com, but enable for all other shells
+    "See Issue #560
+    if (&shell =~? 'cmd') || (&shell =~? 'command.com')
+
+      if exists('+shellslash')
+        let old_ssl = &shellslash
+        set noshellslash
+        let url = shellescape(a:url, 1)
+        let &shellslash = old_ssl
+      else
+        let url = shellescape(a:url, 1)
+      endif
+      execute 'silent ! start "Title" /B ' . url
+
+    else
+
+      if exists('+shellslash')
+        let old_ssl = &shellslash
+        set shellslash
+        let url = shellescape(a:url, 1)
+        let &shellslash = old_ssl
+      else
+        let url = shellescape(a:url, 1)
+      endif
+      execute 'silent ! start ' . url
+
+    endif
+  endfunction
+  function! s:macunix_handler(url) abort
+    call system('open ' . shellescape(a:url).' &')
+  endfunction
+  function! s:linux_handler(url) abort
+    call system('xdg-open ' . shellescape(a:url).' &')
+  endfunction
+  try
+    if vimroam#u#is_windows()
+      call s:win32_handler(a:url)
+      return
+    elseif vimroam#u#is_macos()
+      call s:macunix_handler(a:url)
+      return
+    else
+      call s:linux_handler(a:url)
+      return
+    endif
+  endtry
+  call vimroam#u#error('Default VimRoam link handler was unable to open the HTML file!')
+endfunction
+
+
+" Open link with Vim (like :e)
+function! vimroam#base#open_link(cmd, link, ...) abort
+  let link_infos = {}
+  if a:0
+    let link_infos = vimroam#base#resolve_link(a:link, a:1)
+  else
+    let link_infos = vimroam#base#resolve_link(a:link)
+  endif
+
+  if link_infos.filename ==? ''
+    if link_infos.index == -1
+      call vimroam#u#error('No registered wiki ''' . link_infos.scheme . '''.')
+    elseif link_infos.index == -2
+      " scheme field stores wiki name for this error case
+      call vimroam#u#error('No wiki found with name "' . link_infos.scheme . '"')
+    else
+      call vimroam#u#error('Unable to resolve link!')
+    endif
+    return
+  endif
+
+  let is_wiki_link = s:is_wiki_link(link_infos)
+
+  let vimroam_prev_link = []
+  " update previous link for wiki pages
+  if is_wiki_link
+    if a:0
+      let vimroam_prev_link = [a:1, []]
+    elseif vimroam#u#ft_is_vw()
+      let vimroam_prev_link = [vimroam#path#current_wiki_file(), getpos('.')]
+    endif
+  endif
+
+  " open/edit
+  if is_wiki_link
+    call vimroam#base#edit_file(a:cmd, link_infos.filename, link_infos.anchor,
+          \ vimroam_prev_link, is_wiki_link)
+  else
+    call vimroam#base#system_open_link(link_infos.filename)
+  endif
+endfunction
+
+
+" Escape global link
+" Called by command completion
+function! vimroam#base#get_globlinks_escaped(...) abort
+  let s_arg_lead = a:0 > 0 ? a:1 : ''
+  " only get links from the current dir
+  " change to the directory of the current file
+  let orig_pwd = getcwd()
+  lcd! %:h
+  " all path are relative to the current file's location
+  let globlinks = glob('**/*'.vimroam#vars#get_wikilocal('ext'), 1)."\n"
+  " remove extensions
+  let globlinks = substitute(globlinks, '\'.vimroam#vars#get_wikilocal('ext').'\ze\n', '', 'g')
+  " restore the original working directory
+  exe 'lcd! '.orig_pwd
+  " convert to a List
+  let lst = split(globlinks, '\n')
+  " Filter files whose path matches the  user's argument leader
+  " " use smart case matching
+  let r_arg = substitute(s_arg_lead, '\u', '[\0\l\0]', 'g')
+  call filter(lst, '-1 != match(v:val, r_arg)')
+  " Apply fnameescape() to each item
+  call map(lst, 'fnameescape(v:val)')
+  " Return list (for customlist completion)
+  return lst
+endfunction
+
+
+" Generate wikilinks in current file
+" Called: by command VimRoamGenerateLinks (Exported)
+" Param: create: <Bool> Create links or not
+" Param: Optional pattern <String>
+function! vimroam#base#generate_links(create, ...) abort
+  " Get pattern if present
+  " Globlal to script to be passed to closure
+  if a:0
+    let s:pattern = a:1
+  else
+    let s:pattern = ''
+  endif
+
+  " Define link generator closure
+  let GeneratorLinks = copy(l:)
+  function! GeneratorLinks.f() abort
+    let lines = []
+
+    let links = vimroam#base#get_wikilinks(vimroam#vars#get_bufferlocal('wiki_nr'), 0, s:pattern)
+    call sort(links)
+
+    let bullet = repeat(' ', vimroam#lst#get_list_margin()) . vimroam#lst#default_symbol().' '
+    let l:diary_file_paths = vimroam#diary#get_diary_files()
+
+    for link in links
+      let link_infos = vimroam#base#resolve_link(link)
+      if !vimroam#base#is_diary_file(link_infos.filename, copy(l:diary_file_paths))
+        let link_tpl = vimroam#vars#get_syntaxlocal('Link1')
+
+        let link_caption = vimroam#base#read_caption(link_infos.filename)
+        if link_caption ==? '' " default to link if caption not found
+          let link_caption = link
+        endif
+
+        " Replace Url, Description
+        let entry = s:safesubstitute(link_tpl, '__LinkUrl__', tolower(link), '')
+        let entry = s:safesubstitute(entry, '__LinkDescription__', link_caption, '')
+
+        " Replace Extension
+        let wiki_nr = vimroam#vars#get_bufferlocal('wiki_nr')
+        let extension = vimroam#vars#get_wikilocal('ext', wiki_nr)
+        let entry = substitute(entry, '__FileExtension__', extension, 'g')
+
+        call add(lines, bullet. entry)
+      endif
+    endfor
+
+    return lines
+  endfunction
+
+  " Update buffer with generator super power
+  let links_rx = '\%(^\s*$\)\|^\s*\%('.vimroam#vars#get_syntaxlocal('rxListBullet').'\)'
+  call vimroam#base#update_listing_in_buffer(
+        \ GeneratorLinks,
+        \ vimroam#vars#get_global('links_header'),
+        \ links_rx,
+        \ line('$')+1,
+        \ vimroam#vars#get_global('links_header_level'),
+        \ a:create)
+endfunction
+
+
+" Jump to other wikifile, specified on command mode
+" Called: by command VimRoamGoto (Exported)
+function! vimroam#base#goto(...) abort
+  let key = a:0 > 0 ? a:1 : input('Enter name: ', '',
+        \ 'customlist,vimroam#base#complete_links_escaped')
+
+  let anchor = a:0 > 1 ? a:2 : ''
+
+  " Save current file pos
+  let vimroam_prev_link = [vimroam#path#current_wiki_file(), getpos('.')]
+
+  call vimroam#base#edit_file(':e',
+        \ vimroam#vars#get_wikilocal('path') . key . vimroam#vars#get_wikilocal('ext'),
+        \ anchor,
+        \ vimroam_prev_link,
+        \ vimroam#u#ft_is_vw())
+endfunction
+
+
+" Jump to previous file (backspace key)
+" Called: by VimRoamBacklinks (Exported)
+function! vimroam#base#backlinks() abort
+  let current_filename = expand('%:p')
+  let locations = []
+  for idx in range(vimroam#vars#number_of_wikis())
+    let syntax = vimroam#vars#get_wikilocal('syntax', idx)
+    let wikifiles = vimroam#base#find_files(idx, 0)
+    for source_file in wikifiles
+      let links = s:get_links(source_file, idx)
+      for [target_file, _, lnum, col] in links
+        if vimroam#u#is_windows()
+          " TODO this is a temporary fix - see issue #478
+          let target_file = substitute(target_file, '/', '\', 'g')
+          let current_filename = substitute(current_filename, '/', '\', 'g')
+        endif
+        " don't include links from the current file to itself
+        if vimroam#path#is_equal(target_file, current_filename) &&
+              \ !vimroam#path#is_equal(target_file, source_file)
+          call add(locations, {'filename':source_file, 'lnum':lnum, 'col':col})
+        endif
+      endfor
+    endfor
+  endfor
+
+  if empty(locations)
+    call vimroam#u#echo('No other file links to this file')
+  else
+    call setloclist(0, locations, 'r')
+    lopen
+  endif
+endfunction
+
+
+" Returns: a list containing all files of the given wiki as absolute file path.
+" If the given wiki number is negative, the diary of the current wiki is used
+" If the second argument is not zero, only directories are found
+" If third argument: pattern to search for
+function! vimroam#base#find_files(wiki_nr, directories_only, ...) abort
+  let wiki_nr = a:wiki_nr
+  if wiki_nr >= 0
+    let root_directory = vimroam#vars#get_wikilocal('path', wiki_nr)
+  else
+    let root_directory = vimroam#vars#get_wikilocal('path') .
+          \ vimroam#vars#get_wikilocal('diary_rel_path')
+    let wiki_nr = vimroam#vars#get_bufferlocal('wiki_nr')
+  endif
+  if a:directories_only
+    let ext = '/'
+  else
+    let ext = vimroam#vars#get_wikilocal('ext', wiki_nr)
+  endif
+  " If pattern is given, use it
+  " if current wiki is temporary -- was added by an arbitrary wiki file then do
+  " not search wiki files in subdirectories. Or it would hang the system if
+  " wiki file was created in $HOME or C:/ dirs.
+  if a:0 && a:1 !=# ''
+    let pattern = a:1
+  elseif vimroam#vars#get_wikilocal('is_temporary_wiki', wiki_nr)
+    let pattern = '*'.ext
+  else
+    let pattern = '**/*'.ext
+  endif
+  let files = split(globpath(root_directory, pattern), '\n')
+
+  " filter excluded files before returning
+  for pattern in vimroam#vars#get_wikilocal('exclude_files')
+    let efiles = split(globpath(root_directory, pattern), '\n')
+    let files = filter(files, 'index(efiles, v:val) == -1')
+  endfor
+
+  return files
+endfunction
+
+
+" Returns: a list containing the links to get from the current file to all wiki
+" files in the given wiki.
+" If the given wiki number is negative, the diary of the current wiki is used.
+" If also_absolute_links is nonzero, also return links of the form /file
+" If pattern is not '', only filepaths matching pattern will be considered
+function! vimroam#base#get_wikilinks(wiki_nr, also_absolute_links, pattern) abort
+  let files = vimroam#base#find_files(a:wiki_nr, 0, a:pattern)
+  if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
+    let cwd = vimroam#path#wikify_path(expand('%:p:h'))
+  elseif a:wiki_nr < 0
+    let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('diary_rel_path')
+  else
+    let cwd = vimroam#vars#get_wikilocal('path', a:wiki_nr)
+  endif
+  let result = []
+  for wikifile in files
+    let wikifile = fnamemodify(wikifile, ':r') " strip extension
+    let wikifile = vimroam#path#relpath(cwd, wikifile)
+    call add(result, wikifile)
+  endfor
+  if a:also_absolute_links
+    for wikifile in files
+      if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
+        let cwd = vimroam#vars#get_wikilocal('path')
+      elseif a:wiki_nr < 0
+        let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('diary_rel_path')
+      endif
+      let wikifile = fnamemodify(wikifile, ':r') " strip extension
+      let wikifile = '/'.vimroam#path#relpath(cwd, wikifile)
+      call add(result, wikifile)
+    endfor
+  endif
+  return result
+endfunction
+
+
+" Returns: a list containing the links to all directories from the current file
+function! vimroam#base#get_wiki_directories(wiki_nr) abort
+  let dirs = vimroam#base#find_files(a:wiki_nr, 1)
+  if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
+    let cwd = vimroam#path#wikify_path(expand('%:p:h'))
+    let root_dir = vimroam#vars#get_wikilocal('path')
+  else
+    let cwd = vimroam#vars#get_wikilocal('path', a:wiki_nr)
+  endif
+  let result = ['./']
+  for wikidir in dirs
+    let wikidir_relative = vimroam#path#relpath(cwd, wikidir)
+    call add(result, wikidir_relative)
+    if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
+      let wikidir_absolute = '/'.vimroam#path#relpath(root_dir, wikidir)
+      call add(result, wikidir_absolute)
+    endif
+  endfor
+  return result
+endfunction
+
+
+" Parse file. Returns list of all anchors
+" Called: vimroam#base#check_links() for all wiki files
+function! vimroam#base#get_anchors(filename, syntax) abort
+  " Clause: if not readable
+  if !filereadable(a:filename)
+    return []
+  endif
+
+  " Get: syntax local variables
+  let rxheader = vimroam#vars#get_syntaxlocal('header_search', a:syntax)
+  let rxbold = vimroam#vars#get_syntaxlocal('bold_search', a:syntax)
+  let rxtag = vimroam#vars#get_syntaxlocal('tag_search', a:syntax)
+
+  " Init:
+  let anchor_level = ['', '', '', '', '', '', '']
+  let anchors = []
+  let current_complete_anchor = ''
+
+  for line in readfile(a:filename)
+    " Collect: headers
+    let h_match = matchlist(line, rxheader)
+    if !empty(h_match)
+      let header = vimroam#base#normalize_anchor(h_match[2])
+      " Mesure: header level
+      let level = len(h_match[1])
+      call add(anchors, header)
+      let anchor_level[level-1] = header
+      for l in range(level, 6)
+        let anchor_level[l] = ''
+      endfor
+      if level == 1
+        let current_complete_anchor = header
+      else
+        let current_complete_anchor = ''
+        for l in range(level-1)
+          if anchor_level[l] !=? ''
+            let current_complete_anchor .= anchor_level[l].'#'
+          endif
+        endfor
+        let current_complete_anchor .= header
+        " TODO: should not that be out of the if branch ?
+        call add(anchors, current_complete_anchor)
+      endif
+    endif
+
+    " Collect: bold text (there can be several in one line)
+    let bold_count = 1
+    while 1
+      let bold_text = matchstr(line, rxbold, 0, bold_count)
+      if bold_text ==? ''
+        break
+      endif
+      call add(anchors, bold_text)
+      if current_complete_anchor !=? ''
+        call add(anchors, current_complete_anchor.'#'.bold_text)
+      endif
+      let bold_count += 1
+    endwhile
+
+    " Collect: tags text (there can be several in one line)
+    let tag_count = 1
+    while 1
+      let tag_group_text = matchstr(line, rxtag, 0, tag_count)
+      if tag_group_text ==? ''
+        break
+      endif
+      let sep = vimroam#vars#get_syntaxlocal('tag_format', a:syntax).sep
+      for tag_text in split(tag_group_text, sep)
+        call add(anchors, tag_text)
+        if current_complete_anchor !=? ''
+          call add(anchors, current_complete_anchor.'#'.tag_text)
+        endif
+      endfor
+      let tag_count += 1
+    endwhile
+  endfor
+
+  return anchors
+endfunction
+
+
+" :param: anchor <string> <= Heading line
+" :param: (1) previous_anchors <dic[IN/OUT]> of previous normalized anchor
+" -- to know if must append -2, updated on the fly
+" Return: anchor <string> => link in TOC
+" Called: vimroam#base#table_of_contents
+function! vimroam#base#normalize_anchor(anchor, ...) abort
+  " A Trim space
+  let anchor = vimroam#u#trim(a:anchor)
+
+  " Guard: work only for markdown
+  if vimroam#vars#get_wikilocal('syntax') !=# 'markdown'
+    return anchor
+  endif
+
+  " Keep previous anchors cache: See unormalize
+  if a:0
+    let previous_anchors = a:1
+  else
+    let previous_anchors = {}
+  endif
+
+  " 1 Downcase the string
+  let anchor = tolower(anchor)
+
+  " 2 Remove anything that is not a letter, number, CJK character, hyphen or space
+  let punctuation_rx = vimroam#u#get_punctuation_regex()
+  let anchor = substitute(anchor, punctuation_rx, '', 'g')
+
+  " 3 Change any space to a hyphen
+  let anchor = substitute(anchor, ' \+', '-', 'g')
+
+  " 4 Append '-1', '-2', '-3',... to make it unique <= If that not unique
+  if has_key(previous_anchors, anchor)
+    " Inc anchor number (before modifing the anchor)
+    let anchor_nb = previous_anchors[anchor] + 1
+    let previous_anchors[anchor] = anchor_nb
+    " Append suffix
+    let anchor .= '-' . string(anchor_nb)
+  else
+    " Save anchor in dic
+    let previous_anchors[anchor] = 1
+  endif
+
+  return anchor
+endfunction
+
+
+" :param: anchor <string> <= link
+" Return: [anchor_re <regex>, anchor_nb <number>, suffix_re <regex>] to look for
+" -- with or without suffix
+" -- Ex: ['toto", 2] => search for the second occurrence of toto
+" Called: jump_to_anchor
+function! vimroam#base#unnormalize_anchor(anchor) abort
+  " Note:
+  " -- Pandoc keep the '_' in anchor
+  " -- Done after: Add spaces leading and trailing => Later with the template
+  " Link: Inspired from https://gist.github.com/asabaylus/3071099
+  " Issue: #664 => Points to all others
+
+  " A Trim space
+  let anchor = vimroam#u#trim(a:anchor)
+
+  " Guard: work only for markdown
+  if vimroam#vars#get_wikilocal('syntax') !=# 'markdown'
+    return [anchor, 1, '']
+  endif
+
+  let punctuation_rx = vimroam#u#get_punctuation_regex()
+  " Permit url part of link: '](www.i.did.it.my.way.cl)'
+  let link_rx = '\%(\]([^)]*)\)'
+  let invisible_rx =  '\%( \|-\|' . punctuation_rx . '\|' . link_rx . '\)'
+
+
+  " 4 Add '-1', '-2', '-3',... to make it unique if not unique
+  " -- Save the trailing -12
+  let anchor_nb = substitute(anchor, '^.*-\(\d\+\)$', '\1', '')
+  if anchor_nb ==# '' || anchor_nb == 0
+    " No Suffix: number = 1
+    let suffix = ''
+    let anchor_nb = 1
+  else
+    " Yes suffix: number <- read suffix
+    let suffix = invisible_rx.'*'
+    for char in split(anchor_nb, '\zs')
+      let suffix .= char . invisible_rx.'*'
+    endfor
+    let anchor_nb = str2nr(anchor_nb)
+  endif
+  " -- Remove it
+  let anchor = substitute(anchor, '\(-\d\+\)$', '', '')
+
+  " For each char
+  let anchor_loop = ''
+  for char in split(anchor, '\zs')
+    " Nest the char for easyer debugging
+    let anchor_loop .=  '\%('
+
+    " 3 Change any space to a hyphen
+    if char ==# '-'
+      " Match Space or hyphen or punctuation or link
+      let anchor_loop .=  invisible_rx.'\+'
+
+    " 2 Remove anything that is not a letter, number, CJK character, hyphen or space
+    " -- So add puncutation regex at each char
+    else
+      " Match My_char . punctuation . ( link . punctuaction )?
+      " Note: Because there may be punctuation before ad after link
+      let anchor_loop .= char . punctuation_rx.'*'
+      let anchor_loop .= '\%(' . link_rx . punctuation_rx.'*' . '\)' . '\?'
+
+    endif
+
+    " Close nest
+    let anchor_loop .=  '\)'
+  endfor
+  let anchor = punctuation_rx.'*' . anchor_loop
+
+  " 1 Downcase the string
+  let anchor = '\c' . anchor
+
+  return [anchor, anchor_nb, suffix]
+endfunction
+
+
+" Jump to anchor, doing the oposite of normalize_anchor
+" Called: edit_file
+function! s:jump_to_anchor(anchor) abort
+  " Get segments <= anchor
+  let anchor = vimroam#u#escape(a:anchor)
+  let segments = split(anchor, '#', 0)
+
+  " For markdown: there is only one segment
+  for segment in segments
+    " Craft segment pattern so that it is case insensitive and also matches dashes
+    " in anchor link with spaces in heading
+    let [segment_norm_re, segment_nb, segment_suffix] = vimroam#base#unnormalize_anchor(segment)
+
+    " Try once with suffix (If header ends with number)
+    let res =  s:jump_to_segment(segment, segment_norm_re . segment_suffix, 1)
+    " Try segment_nb times otherwise
+    if res != 0
+      let res =  s:jump_to_segment(segment, segment_norm_re, segment_nb)
+    endif
+  endfor
+endfunction
+
+
+" Called: jump_to_anchor with suffix and withtou suffix
+function! s:jump_to_segment(segment, segment_norm_re, segment_nb) abort
+  " Save cursor %% Initialize at top of line
+  let oldpos = getpos('.')
+  call cursor(1, 1)
+
+  " Get anchor regex
+  let anchor_header = s:safesubstitute(
+        \ vimroam#vars#get_syntaxlocal('header_match'),
+        \ '__Header__', a:segment_norm_re, 'g')
+  let anchor_bold = s:safesubstitute(
+        \ vimroam#vars#get_syntaxlocal('bold_match'),
+        \ '__Text__', a:segment, 'g')
+  let anchor_tag = s:safesubstitute(
+        \ vimroam#vars#get_syntaxlocal('tag_match'),
+        \ '__Tag__', a:segment, 'g')
+
+  " Go: Move cursor: maybe more than onces (see markdown suffix)
+  let success_nb = 0
+  let is_last_segment = 0
+  for i in range(a:segment_nb)
+    " Search
+    let pos = 0
+    let pos = pos != 0 ? pos : search(anchor_tag, 'Wc')
+    let pos = pos != 0 ? pos : search(anchor_header, 'Wc')
+    let pos = pos != 0 ? pos : search(anchor_bold, 'Wc')
+
+    " Succeed: Get the result and reloop or leave
+    if pos != 0
+      " Avance, one line more to not rematch the same pattern if not last segment_nb
+      if success_nb < a:segment_nb-1
+        let pos += 1
+        let is_last_segment = -1
+      endif
+      call cursor(pos, 1)
+      let success_nb += 1
+
+      " Break  if last line (avoid infinite loop)
+      " Anyway leave the loop: (Imagine heading # 7271212 at last line)
+      if pos >= line('$')
+        return 0
+      endif
+    " Fail:
+    " Do not move
+    " But maybe suffix -2 is not the segment number but the real header suffix
+    else
+      " If fail at first: do not move
+      if i == 0
+        call setpos('.', oldpos)
+      endif
+      " Anyway leave the loop: (Imagine heading # 7271212, you do not want to loop all that)
+      " Go one line back: if I advanced too much
+      if is_last_segment == -1 | call cursor(line('.')-1, 1) | endif
+      return 1
+    endif
+  endfor
+
+  " Check if happy
+  if success_nb == a:segment_nb
+    return 0
+  endif
+
+  " Or keep on (i.e more than once segment)
+  let oldpos = getpos('.')
+
+  " Said 'fail' to caller
+  return 1
+endfunction
+
+
+" Returns: a list of all links inside the wiki file
+" Params: full path to a wiki file and its wiki number
+" Every list item has the form
+" [target file, anchor, line number of the link in source file, column number]
+function! s:get_links(wikifile, idx) abort
+  if !filereadable(a:wikifile)
+    return []
+  endif
+
+  let syntax = vimroam#vars#get_wikilocal('syntax', a:idx)
+  if syntax ==# 'markdown'
+    let rx_link = vimroam#vars#get_syntaxlocal('rxWeblink1MatchUrl', syntax)
+  else
+    let rx_link = vimroam#vars#get_syntaxlocal('wikilink', syntax)
+  endif
+
+  let links = []
+  let lnum = 0
+
+  for line in readfile(a:wikifile)
+    let lnum += 1
+
+    let link_count = 1
+    while 1
+      let col = match(line, rx_link, 0, link_count)+1
+      let link_text = matchstr(line, rx_link, 0, link_count)
+      if link_text ==? ''
+        break
+      endif
+      let link_count += 1
+      let target = vimroam#base#resolve_link(link_text, a:wikifile)
+      if target.filename !=? '' && target.scheme =~# '\mwiki\d\+\|diary\|file\|local'
+        call add(links, [target.filename, target.anchor, lnum, col])
+      endif
+    endwhile
+  endfor
+
+  return links
+endfunction
+
+
+" Check if all wikilinks are reachable. Answer in quickfix
+function! vimroam#base#check_links(range, line1, line2) abort
+  if a:range == 0
+    let wiki_list = [vimroam#vars#get_bufferlocal('wiki_nr')]
+  elseif a:range == 1
+    let wiki_list = [a:line1]
+  else
+    let wiki_list = range(a:line1, a:line2)
+  endif
+  call vimroam#u#echo('Checking links in wikis ' . string(wiki_list))
+
+  let anchors_of_files = {}
+  let links_of_files = {}
+  let errors = []
+  for idx in wiki_list
+    let syntax = vimroam#vars#get_wikilocal('syntax', idx)
+    let wikifiles = vimroam#base#find_files(idx, 0)
+    for wikifile in wikifiles
+      let links_of_files[wikifile] = s:get_links(wikifile, idx)
+      let anchors_of_files[wikifile] = vimroam#base#get_anchors(wikifile, syntax)
+    endfor
+  endfor
+
+  " Clean: all links: keep only file links
+  for wikifile in keys(links_of_files)
+    for [target_file, target_anchor, lnum, col] in links_of_files[wikifile]
+      if target_file ==? '' && target_anchor ==? ''
+        call add(errors, {'filename':wikifile, 'lnum':lnum, 'col':col,
+              \ 'text': 'numbered scheme refers to a non-existent wiki'})
+      elseif has_key(anchors_of_files, target_file)
+        if target_anchor !=? '' && index(anchors_of_files[target_file], target_anchor) < 0
+          call add(errors, {'filename':wikifile, 'lnum':lnum, 'col':col,
+                \'text': 'there is no such anchor: '.target_anchor})
+        endif
+      else
+        if target_file =~? '\m/$'  " maybe it's a link to a directory
+          if !isdirectory(target_file)
+            call add(errors, {'filename':wikifile, 'lnum':lnum, 'col':col,
+                  \'text': 'there is no such directory: '.target_file})
+          endif
+        else  " maybe it's a non-wiki file
+          if filereadable(target_file)
+            let anchors_of_files[target_file] = []
+          else
+            call add(errors, {'filename':wikifile, 'lnum':lnum, 'col':col,
+                  \'text': 'there is no such file: '.target_file})
+          endif
+        endif
+      endif
+    endfor
+  endfor
+
+  " Check which wiki files are reachable from at least one of the index files.
+  " First, all index files are marked as reachable. Then, pick a reachable file
+  " and mark all files to which it links as reachable, too. Repeat until the
+  " links of all reachable files have been checked.
+
+  " Map every wiki file to a number. 0 means not reachable from any index file,
+  " 1 means reachable, but the outgoing links are not checked yet, 2 means
+  " reachable and done.
+  let reachable_wikifiles = {}
+
+  " first, all files are considered not reachable
+  for wikifile in keys(links_of_files)
+    let reachable_wikifiles[wikifile] = 0
+  endfor
+
+  " Mark: every index file as reachable
+  for idx in wiki_list
+    let index_file = vimroam#vars#get_wikilocal('path', idx) .
+          \ vimroam#vars#get_wikilocal('index', idx) . vimroam#vars#get_wikilocal('ext', idx)
+    if filereadable(index_file)
+      let reachable_wikifiles[index_file] = 1
+    endif
+  endfor
+
+  " Check: if files are reachable (recursively)
+  while 1
+    let next_unvisited_wikifile = ''
+    for wf in keys(reachable_wikifiles)
+      if reachable_wikifiles[wf] == 1
+        let next_unvisited_wikifile = wf
+        let reachable_wikifiles[wf] = 2
+        break
+      endif
+    endfor
+    if next_unvisited_wikifile ==? ''
+      break
+    endif
+    for [target_file, target_anchor, lnum, col] in links_of_files[next_unvisited_wikifile]
+      if has_key(reachable_wikifiles, target_file) && reachable_wikifiles[target_file] == 0
+        let reachable_wikifiles[target_file] = 1
+      endif
+    endfor
+  endwhile
+
+  " Fill: errors
+  for wf in keys(reachable_wikifiles)
+    if reachable_wikifiles[wf] == 0
+      call add(errors, {'text':wf.' is not reachable from the index file'})
+    endif
+  endfor
+
+  " Fill: QuickFix list
+  if empty(errors)
+    call vimroam#u#echo('All links are OK')
+  else
+    call setqflist(errors, 'r')
+    copen
+  endif
+endfunction
+
+
+" Open file (like :e)
+" :param: command <string>: ':e'
+" :param: filename <strign> vimroam#vars#get_wikilocal('path') . key . vimroam#vars#get_wikilocal('ext')
+" :param: anchor
+" :param: (1) vimroam_prev_link
+" :param: (2) vimroam#u#ft_is_vw()
+function! vimroam#base#edit_file(command, filename, anchor, ...) abort
+  let fname = escape(a:filename, '% *|#`')
+  let dir = fnamemodify(a:filename, ':p:h')
+
+  let ok = vimroam#path#mkdir(dir, 1)
+
+  if !ok
+    call vimroam#u#error('Unable to edit file in non-existent directory: '.dir)
+    return
+  endif
+
+  " Check if the file we want to open is already the current file
+  " which happens if we jump to an achor in the current file.
+  " This hack is necessary because apparently Vim messes up the result of
+  " getpos() directly after this command. Strange.
+  if !(a:command ==# ':e ' && vimroam#path#is_equal(a:filename, expand('%:p')))
+    try
+      execute a:command fname
+    catch /E37:/
+      call vimroam#u#warn('Can''t leave the current buffer, because it is modified. Hint: Take a look at'
+            \ . ''':h g:vimroam_autowriteall'' to see how to save automatically.')
+      return
+    catch /E325:/
+      call vimroam#u#warn('Vim couldn''t open the file, probably because a swapfile already exists. See :h E325.')
+      return
+    endtry
+    " If the opened file was not already loaded by Vim, an autocommand is
+    " triggered at this point
+  endif
+
+  " Goto anchor
+  if a:anchor !=? ''
+    call s:jump_to_anchor(a:anchor)
+  endif
+
+  " save previous link
+  " a:1 -- previous vimroam link to save
+  " a:2 -- should we update previous link
+  if a:0 && a:2 && len(a:1) > 0
+    let prev_links = vimroam#vars#get_bufferlocal('prev_links')
+    call insert(prev_links, a:1)
+    call vimroam#vars#set_bufferlocal('prev_links', prev_links)
+  endif
+endfunction
+
+
+" Search for a 1. Pattern (usually a link) with 2. flags
+" Called by find_prev_link
+function! vimroam#base#search_word(wikiRX, flags) abort
+  let match_line = search(a:wikiRX, 's'.a:flags)
+  if match_line == 0
+    call vimroam#u#echo('Wiki link not found')
+  endif
+endfunction
+
+
+" Return: part of the line that matches wikiRX at cursor
+function! vimroam#base#matchstr_at_cursor(wikiRX) abort
+  let col = col('.') - 1
+  let line = getline('.')
+  let ebeg = -1
+  let cont = match(line, a:wikiRX, 0)
+  while (ebeg >= 0 || (0 <= cont) && (cont <= col))
+    let contn = matchend(line, a:wikiRX, cont)
+    if (cont <= col) && (col < contn)
+      let ebeg = match(line, a:wikiRX, cont)
+      let elen = contn - ebeg
+      break
+    else
+      let cont = match(line, a:wikiRX, contn)
+    endif
+  endwh
+  if ebeg >= 0
+    return strpart(line, ebeg, elen)
+  else
+    return ''
+  endif
+endfunction
+
+
+" Replace next 1. wikiRX by 2. sub
+function! vimroam#base#replacestr_at_cursor(wikiRX, sub) abort
+  " Gather: cursor info
+  let col = col('.') - 1
+  let line = getline('.')
+  let ebeg = -1
+  let cont = match(line, a:wikiRX, 0)
+
+  " Find: link
+  while (ebeg >= 0 || (0 <= cont) && (cont <= col))
+    let contn = matchend(line, a:wikiRX, cont)
+    if (cont <= col) && (col < contn)
+      let ebeg = match(line, a:wikiRX, cont)
+      let elen = contn - ebeg
+      break
+    else
+      let cont = match(line, a:wikiRX, contn)
+    endif
+  endwhile
+
+  " Replace: by sub
+  if ebeg >= 0
+    " TODO: There might be problems with Unicode chars...
+    let newline = strpart(line, 0, ebeg).a:sub.strpart(line, ebeg+elen)
+    call setline(line('.'), newline)
+  endif
+endfunction
+
+
+" Print list of global wiki to user
+" Called: by ui_select
+function! s:print_wiki_list() abort
+  " Find the max name length for prettier formatting
+  let max_len = 0
+  for idx in range(vimroam#vars#number_of_wikis())
+    let wname = vimroam#vars#get_wikilocal('name', idx)
+    if len(wname) > max_len
+      let max_len = len(wname)
+    endif
+  endfor
+
+  " Print each wiki, active wiki highlighted and marked with '*'
+  for idx in range(vimroam#vars#number_of_wikis())
+    if idx == vimroam#vars#get_bufferlocal('wiki_nr')
+      let sep = '*'
+      echohl PmenuSel
+    else
+      let sep = ' '
+      echohl None
+    endif
+    let wname = vimroam#vars#get_wikilocal('name', idx)
+    let wpath = vimroam#vars#get_wikilocal('path', idx)
+    if wname ==? ''
+      let wname = '----'
+      if max_len < 4
+        let max_len = 4
+      endif
+    endif
+    let wname = '"' . wname . '"'
+    echo printf('%2d %s %-*s %s', idx+1, sep, max_len+2, wname, wpath)
+  endfor
+  echohl None
+endfunction
+
+
+" Update link in fname.ext
+" Param: fname: the source file where to change links
+" Param: old: url regex of old path relative to wiki root
+" Param: new: url string of new path
+function! s:update_wiki_link(fname, old, new) abort
+  call vimroam#u#echo('Updating links in '.a:fname)
+  let has_updates = 0
+  let dest = []
+  for line in readfile(a:fname)
+    if !has_updates && match(line, a:old) != -1
+      let has_updates = 1
+    endif
+    " XXX: any other characters to escape!?
+    call add(dest, substitute(line, a:old, escape(a:new, '&'), 'g'))
+  endfor
+  " add exception handling...
+  if has_updates
+    call rename(a:fname, a:fname.'#vimroam_upd#')
+    call writefile(dest, a:fname)
+    call delete(a:fname.'#vimroam_upd#')
+  endif
+endfunction
+
+
+" Update link for all files in dir
+" Param: old_url, new_url: path of the old, new url relative to ...
+" Param: dir: directory of the files, relative to wiki_root
+" Called: rename_link
+function! s:update_wiki_links(wiki_nr, dir, old_url, new_url) abort
+  " Get list of wiki files
+  let wiki_root = vimroam#vars#get_wikilocal('path', a:wiki_nr)
+  let fsources = vimroam#base#find_files(a:wiki_nr, 0)
+
+  " Shorten dirname
+  let dir_rel_root = vimroam#path#relpath(wiki_root, a:dir)
+
+  " Cache relative url, because they are often the same, like `../dir1/vim-vimroam.md`
+  let cache_dict = {}
+
+  " Regex from path
+  " Param: wiki_nr <int> to get the syntax template
+  " Param: old_location <string> relative to the current wiki fsource
+  function! s:compute_old_url_r(wiki_nr, old_location) abort
+    " Start, Read param
+    let old_url_r = a:old_location
+    " Escape the '\\/'
+    let old_url_r = escape(old_url_r, '\/')
+    " Add potential  ./
+    let old_url_r = '\%(\.[/\\]\)\?' . old_url_r
+    " Compute old url regex with filename between \zs and \ze
+    let old_url_r = vimroam#base#apply_template(
+          \ vimroam#vars#get_syntaxlocal('WikiLinkMatchUrlTemplate', vimroam#vars#get_wikilocal('syntax', a:wiki_nr))
+            \, old_url_r, '', '', vimroam#vars#get_wikilocal('ext', a:wiki_nr))
+
+    return old_url_r
+  endfunction
+
+  " For each wikifile
+  for fsource in fsources
+    " Shorten fname directory
+    let fsource_rel_root = vimroam#path#relpath(wiki_root, fsource)
+    let fsource_rel_root = fnamemodify(fsource_rel_root, ':h')
+
+    " Compute old_url relative to fname
+    let dir_rel_fsource = vimroam#path#relpath(fsource_rel_root, dir_rel_root)
+    " TODO get relpath coherent (and remove next 2 stuff)
+    " Remove the trailing ./
+    if dir_rel_fsource =~# '.[/\\]$'
+      let dir_rel_fsource = dir_rel_fsource[:-3]
+    endif
+    " Append a / if needed
+    if !empty(dir_rel_fsource) && dir_rel_fsource !~# '[/\\]$'
+      let dir_rel_fsource .= '/'
+    endif
+
+    " New url
+    let new_url = simplify(dir_rel_fsource . a:new_url)
+
+    " Old url
+    " Avoid E713
+    let key = empty(dir_rel_fsource) ? 'NaF' : dir_rel_fsource
+    if index(keys(cache_dict), key) == -1
+      let cache_dict[key] = s:compute_old_url_r(
+            \ a:wiki_nr, dir_rel_fsource . a:old_url)
+    endif
+    let old_url_r = cache_dict[key]
+
+    " Update url in source file
+    call s:update_wiki_link(fsource, old_url_r, new_url)
+  endfor
+endfunction
+
+
+" Get tail of filename
+" TODO move me in path.vim
+function! s:tail_name(fname) abort
+  let result = substitute(a:fname, ':', '__colon__', 'g')
+  let result = fnamemodify(result, ':t:r')
+  let result = substitute(result, '__colon__', ':', 'g')
+  return result
+endfunction
+
+
+" Get list of currently open buffer that are wiki files
+" Called: by rename_link
+function! s:get_wiki_buffers() abort
+  let blist = []
+  let bcount = 1
+  while bcount<=bufnr('$')
+    if bufexists(bcount)
+      let bname = fnamemodify(bufname(bcount), ':p')
+      " this may find buffers that are not part of the current wiki, but that
+      " doesn't hurt
+      if bname =~# vimroam#vars#get_wikilocal('ext').'$'
+        let bitem = [bname, vimroam#vars#get_bufferlocal('prev_links', bcount)]
+        call add(blist, bitem)
+      endif
+    endif
+    let bcount = bcount + 1
+  endwhile
+  return blist
+endfunction
+
+
+" Edit wiki file.
+" Called: by rename_link: Usefull for buffer commands
+function! s:open_wiki_buffer(item) abort
+  call vimroam#base#edit_file(':e', a:item[0], '')
+  if !empty(a:item[1])
+    call vimroam#vars#set_bufferlocal('prev_links', a:item[1], a:item[0])
+  endif
+endfunction
+
+
+" Helper nested syntax
+" Called: by syntax/vimroam (exported)
+" TODO move me out of base
+function! vimroam#base#nested_syntax(filetype, start, end, textSnipHl) abort
+  " From http://vim.wikia.com/wiki/VimTip857
+  let ft=toupper(a:filetype)
+  let group='textGroup'.ft
+  if exists('b:current_syntax')
+    let s:current_syntax=b:current_syntax
+    " Remove current syntax definition, as some syntax files (e.g. cpp.vim)
+    " do nothing if b:current_syntax is defined.
+    unlet b:current_syntax
+  endif
+
+  " Some syntax files set up iskeyword which might scratch vimroam a bit.
+  " Let us save and restore it later.
+  " let b:skip_set_iskeyword = 1
+  let is_keyword = &iskeyword
+
+  " Check for the existence of syntax files in the runtime path before
+  " attempting to include them.
+  " https://vi.stackexchange.com/a/10354
+  " Previously, this used a try/catch block to intercept any errors thrown
+  " when attempting to include files. The error(s) interferred with running
+  " with Vader tests (specifically, testing VimRoamSearch).
+  if !empty(globpath(&runtimepath, 'syntax/'.a:filetype.'.vim'))
+    execute 'syntax include @'.group.' syntax/'.a:filetype.'.vim'
+  endif
+  if !empty(globpath(&runtimepath, 'after/syntax/'.a:filetype.'.vim'))
+    execute 'syntax include @'.group.' after/syntax/'.a:filetype.'.vim'
+  endif
+
+  let &iskeyword = is_keyword
+
+  if exists('s:current_syntax')
+    let b:current_syntax=s:current_syntax
+  else
+    unlet b:current_syntax
+  endif
+
+  " Fix issue #236: tell VimRoam to think in maths when encountering maths
+  " blocks like {{$ }}$. Here, we don't want the tex highlight group, but the
+  " group for tex math.
+  if a:textSnipHl ==# 'VimRoamMath'
+    let group='texMathZoneGroup'
+  endif
+
+  let concealpre = vimroam#vars#get_global('conceal_pre') ? ' concealends' : ''
+  execute 'syntax region textSnip'.ft.
+        \ ' matchgroup='.a:textSnipHl.
+        \ ' start="'.a:start.'" end="'.a:end.'"'.
+        \ ' contains=@'.group.' keepend'.concealpre
+
+  " A workaround to Issue 115: Nested Perl syntax highlighting differs from
+  " regular one.
+  " Perl syntax file has perlFunctionName which is usually has no effect due to
+  " 'contained' flag. Now we have 'syntax include' that makes all the groups
+  " included as 'contained' into specific group.
+  " Here perlFunctionName (with quite an angry regexp "\h\w*[^:]") clashes with
+  " the rest syntax rules as now it has effect being really 'contained'.
+  " Clear it!
+  if ft =~? 'perl'
+    syntax clear perlFunctionName
+  endif
+endfunction
+
+
+" Create or update auto-generated listings in a wiki file, like TOC, diary
+" links, tags list etc.
+" - the listing consists of a header and a list of strings provided by a funcref
+" - a:content_regex is used to determine how long a potentially existing list is
+" - a:default_lnum is the line number where the new listing should be placed if
+"   it's not already present
+" - if a:create is true, it will be created if it doesn't exist, otherwise it
+"   will only be updated if it already exists
+" Called: by functions adding listing to buffer (this is an util function)
+function! vimroam#base#update_listing_in_buffer(Generator, start_header,
+      \ content_regex, default_lnum, header_level, create) abort
+  " Clause: Vim behaves strangely when files change while in diff mode
+  if &diff || &readonly
+    return
+  endif
+
+  " Clause: Check if the listing is already there
+  let already_there = 0
+
+  let header_level = 'rxH' . a:header_level . '_Template'
+  let header_rx = '\m^\s*'.substitute(vimroam#vars#get_syntaxlocal(header_level),
+        \ '__Header__', a:start_header, '') .'\s*$'
+
+  let start_lnum = 1
+  while start_lnum <= line('$')
+    if getline(start_lnum) =~# header_rx
+      let already_there = 1
+      break
+    endif
+    let start_lnum += 1
+  endwhile
+
+  if !already_there && !a:create
+    return
+  endif
+
+  " Save state
+  let winview_save = winsaveview()
+  " Work is supposing an initial visibility (Issue: #921)
+  let foldlevel_save = &l:foldlevel
+  let &l:foldlevel = 100
+  let cursor_line = winview_save.lnum
+  let is_cursor_after_listing = 0
+
+  let is_fold_closed = 1
+  let lines_diff = 0
+
+  " Set working range according to listing presence
+  if already_there
+    " Delete the old listing
+    let is_fold_closed = ( foldclosed(start_lnum) > -1 )
+    let whitespaces_in_first_line = matchstr(getline(start_lnum), '\m^\s*')
+    let end_lnum = start_lnum + 1
+    while end_lnum <= line('$') && getline(end_lnum) =~# a:content_regex
+      let end_lnum += 1
+    endwhile
+    let is_cursor_after_listing = ( cursor_line >= end_lnum )
+    " We'll be removing a range.  But, apparently, if folds are enabled, Vim
+    " won't let you remove a range that overlaps with closed fold -- the entire
+    " fold gets deleted.  So we temporarily disable folds, and then reenable
+    " them right back.
+    let foldenable_save = &l:foldenable
+    setlocal nofoldenable
+    silent exe 'keepjumps ' . start_lnum.','.string(end_lnum - 1).'delete _'
+    let &l:foldenable = foldenable_save
+    let lines_diff = 0 - (end_lnum - start_lnum)
+  else
+    " Create new listing
+    let start_lnum = a:default_lnum
+    let is_cursor_after_listing = ( cursor_line > a:default_lnum )
+    let whitespaces_in_first_line = ''
+    " Append newline if not replacing first line
+    if start_lnum > 1
+      keepjumps call append(start_lnum -1, '')
+      let start_lnum += 1
+    endif
+  endif
+
+  let start_of_listing = start_lnum
+
+  " Write new listing
+  let new_header = whitespaces_in_first_line
+        \ . s:safesubstitute(vimroam#vars#get_syntaxlocal(header_level),
+        \ '__Header__', a:start_header, '')
+  keepjumps call append(start_lnum - 1, new_header)
+  let start_lnum += 1
+  let lines_diff += 1
+  if vimroam#vars#get_wikilocal('syntax') ==# 'markdown'
+    for _ in range(vimroam#vars#get_global('markdown_header_style'))
+      keepjumps call append(start_lnum - 1, '')
+      let start_lnum += 1
+      let lines_diff += 1
+    endfor
+  endif
+  for string in a:Generator.f()
+    keepjumps call append(start_lnum - 1, string)
+    let start_lnum += 1
+    let lines_diff += 1
+  endfor
+
+  " Remove empty line if end of file, otherwise append if needed
+  let current_line = getline(start_lnum)
+  if start_lnum == line('$') && current_line =~# '^\s*$'
+    silent exe 'keepjumps ' . start_lnum.'delete _'
+  elseif start_lnum <= line('$') && current_line !~# '\m^\s*$'
+    keepjumps call append(start_lnum - 1, '')
+    let lines_diff += 1
+  endif
+
+  " Open fold, if needed
+  if !is_fold_closed && ( foldclosed(start_of_listing) > -1 )
+    exe start_of_listing
+    norm! zo
+  endif
+
+  if is_cursor_after_listing
+    let winview_save.lnum += lines_diff
+  endif
+
+  " Restore state
+  let &l:foldlevel = foldlevel_save
+  call winrestview(winview_save)
+endfunction
+
+
+" Find next task (Exported)
+function! vimroam#base#find_next_task() abort
+  let taskRegex = vimroam#vars#get_wikilocal('rxListItemWithoutCB')
+    \ . '\+\(\[ \]\s\+\)\zs'
+  call vimroam#base#search_word(taskRegex, '')
+endfunction
+
+
+" Find next link (Exported)
+function! vimroam#base#find_next_link() abort
+  call vimroam#base#search_word(vimroam#vars#get_syntaxlocal('rxAnyLink'), '')
+endfunction
+
+
+" Find previous link (Exported)
+function! vimroam#base#find_prev_link() abort
+  "Jump 2 times if the cursor is in the middle of a link
+  if synIDattr(synID(line('.'), col('.'), 0), 'name') =~# 'VimRoamLink.*' &&
+        \ synIDattr(synID(line('.'), col('.')-1, 0), 'name') =~# 'VimRoamLink.*'
+    call vimroam#base#search_word(vimroam#vars#get_syntaxlocal('rxAnyLink'), 'b')
+  endif
+  call vimroam#base#search_word(vimroam#vars#get_syntaxlocal('rxAnyLink'), 'b')
+endfunction
+
+
+" Jump to link target (Enter press, Exported)
+function! vimroam#base#follow_link(split, ...) abort
+  let reuse_other_split_window = a:0 >= 1 ? a:1 : 0
+  let move_cursor_to_new_window = a:0 >= 2 ? a:2 : 1
+
+  " Parse link at cursor and pass to VimRoamLinkHandler, or failing that, the
+  " default open_link handler
+
+  " Try WikiLink
+  let lnk = matchstr(vimroam#base#matchstr_at_cursor(vimroam#vars#get_syntaxlocal('rxWikiLink')),
+        \ vimroam#vars#get_syntaxlocal('rxWikiLinkMatchUrl'))
+  " Try WikiIncl
+  if lnk ==? ''
+    let lnk = matchstr(vimroam#base#matchstr_at_cursor(vimroam#vars#get_global('rxWikiIncl')),
+          \ vimroam#vars#get_global('rxWikiInclMatchUrl'))
+  endif
+  " Try Weblink
+  if lnk ==? ''
+    let lnk = matchstr(vimroam#base#matchstr_at_cursor(vimroam#vars#get_syntaxlocal('rxWeblink')),
+          \ vimroam#vars#get_syntaxlocal('rxWeblinkMatchUrl'))
+  endif
+  " Try markdown image ![]()
+  if vimroam#vars#get_wikilocal('syntax') ==# 'markdown' && lnk ==# ''
+    let lnk = matchstr(vimroam#base#matchstr_at_cursor(vimroam#vars#get_syntaxlocal('rxImage')),
+          \ vimroam#vars#get_syntaxlocal('rxWeblinkMatchUrl'))
+    if lnk !=# ''
+      if lnk !~# '\%(\%('.vimroam#vars#get_global('web_schemes1').'\):\%(\/\/\)\?\)\S\{-1,}'
+        " prepend file: scheme so link is opened by sytem handler if it isn't a web url
+        let lnk = 'file:'.lnk
+      endif
+    endif
+  endif
+
+  " If cursor is indeed on a link
+  if lnk !=? ''
+    let processed_by_user_defined_handler = VimRoamLinkHandler(lnk)
+    if processed_by_user_defined_handler
+      return
+    endif
+    let link_info = vimroam#base#resolve_link(lnk)
+    " First check that the scheme is an inter-wiki file
+    if link_info.scheme ==# 'wiki0'
+        if empty(glob(link_info.filename)) 
+            let title = fnamemodify(lnk, ":r")
+            let name = vimroam#zettel#new_zettel_name(title)
+            " prepare_template_variables needs the file saved on disk
+            execute "w"
+            " make variables that will be available in the new page template
+            let variables = vimroam#zettel#prepare_template_variables(expand("%"), title)
+            " replace the visually selected text with a link to the new zettel
+            call vimroam#zettel#zettel_new(title, variables)
+            return
+        endif
+    endif
+
+    if a:split ==# 'hsplit'
+      let cmd = ':split '
+    elseif a:split ==# 'vsplit'
+      let cmd = ':vsplit '
+    elseif a:split ==# 'tab'
+      let cmd = ':tabnew '
+    else
+      let cmd = ':e '
+    endif
+
+    " if we want to and can reuse a split window, jump to that window and open
+    " the new file there
+    if (a:split ==# 'hsplit' || a:split ==# 'vsplit') && reuse_other_split_window
+      let previous_window_nr = winnr('#')
+      if previous_window_nr > 0 && previous_window_nr != winnr()
+        execute previous_window_nr . 'wincmd w'
+        let cmd = ':e'
+      endif
+    endif
+
+
+    if vimroam#vars#get_wikilocal('syntax') ==# 'markdown'
+      let processed_by_markdown_reflink = vimroam#markdown_base#open_reflink(lnk)
+      if processed_by_markdown_reflink
+        return
+      endif
+    endif
+
+    let current_tab_page = tabpagenr()
+
+    call vimroam#base#open_link(cmd, lnk)
+
+    if !move_cursor_to_new_window
+      if (a:split ==# 'hsplit' || a:split ==# 'vsplit')
+        execute 'wincmd p'
+      elseif a:split ==# 'tab'
+        execute 'tabnext ' . current_tab_page
+      endif
+    endif
+
+  " Else cursor is not on a link
+  else
+    if a:0 >= 3
+      execute 'normal! '.a:3
+    elseif vimroam#vars#get_global('create_link')
+      call vimroam#base#normalize_link(0)
+    endif
+  endif
+endfunction
+
+
+" Jump to previous link (Backspace press, Exported)
+function! vimroam#base#go_back_link() abort
+  " Try pop previous link from buffer list
+  let prev_links = vimroam#vars#get_bufferlocal('prev_links')
+  if !empty(prev_links)
+    let prev_link = remove(prev_links, 0)
+    call vimroam#vars#set_bufferlocal('prev_links', prev_links)
+  else
+    let prev_link = []
+  endif
+
+  " Jump to target with edit_file
+  if !empty(prev_link)
+    " go back to saved wiki link
+    call vimroam#base#edit_file(':e ', prev_link[0], '')
+    call setpos('.', prev_link[1])
+  else
+    " maybe we came here by jumping to a tag -> pop from the tag stack
+    silent! pop!
+  endif
+endfunction
+
+
+" Goto index file of wiki specified by index
+function! vimroam#base#goto_index(wnum, ...) abort
+  " if wnum = 0 the current wiki is used
+  if a:wnum == 0
+    let idx = vimroam#vars#get_bufferlocal('wiki_nr')
+    if idx < 0  " not in a wiki
+      let idx = 0
+    endif
+  else
+    let idx = a:wnum - 1 " convert to 0 based counting
+  endif
+
+  if a:wnum > vimroam#vars#number_of_wikis()
+    call vimroam#u#error('Wiki '.a:wnum.' is not registered in your VimRoam settings!')
+    return
+  endif
+
+  if a:0
+    if a:1 == 1
+      let cmd = 'tabedit'
+    elseif a:1 == 2
+      let cmd = 'split'
+    elseif a:1 == 3
+      let cmd = 'vsplit'
+    endif
+  else
+    let cmd = 'edit'
+  endif
+
+  let index_file = vimroam#vars#get_wikilocal('path', idx).
+        \ vimroam#vars#get_wikilocal('index', idx).
+        \ vimroam#vars#get_wikilocal('ext', idx)
+
+  call vimroam#base#edit_file(cmd, index_file, '')
+endfunction
+
+
+" Delete current wiki file
+function! vimroam#base#delete_link() abort
+  " Delete wiki file you are in from filesystem
+  let val = input('Delete "'.expand('%').'" [y]es/[N]o? ')
+  if val !~? '^y'
+    return
+  endif
+  let fname = expand('%:p')
+  try
+    call delete(fname)
+  catch /.*/
+    call vimroam#u#error('Cannot delete "'.expand('%:t:r').'"!')
+    return
+  endtry
+
+  call vimroam#base#go_back_link()
+  execute 'bdelete! '.escape(fname, ' ')
+
+  " Reread buffer => deleted wiki link should appear as non-existent
+  if expand('%:p') !=? ''
+    execute 'e'
+  endif
+endfunction
+
+
+" Ask user for a new filepath
+" Returns: '' if fails
+" Called: rename_link
+function! s:input_rename_link() abort
+  " Ask confirmation
+  let val = input('Rename "'.expand('%:t:r').'" [y]es/[N]o? ')
+  if val !~? '^y'
+    return
+  endif
+
+  " Ask new name
+  let new_link = input('Enter new name: ')
+
+  " Guard: Check link
+  if new_link =~# '[/\\]'
+    call vimroam#u#error('Cannot rename to a filename with path!')
+    return
+  endif
+  if substitute(new_link, '\s', '', 'g') ==? ''
+    call vimroam#u#error('Cannot rename to an empty filename!')
+    return
+  endif
+
+  " Check if new file well formed
+  let url = matchstr(new_link, vimroam#vars#get_syntaxlocal('rxWikiLinkMatchUrl'))
+  if url !=? ''
+    return url
+  endif
+
+  return new_link
+endfunction
+
+
+" Rename current file, update all links to it
+" Param: [new_filepath <string>]
+" Exported: VimRoamRenameFile
+function! vimroam#base#rename_link(...) abort
+  " Get filename and dir relative to wiki root
+  let subdir = vimroam#vars#get_bufferlocal('subdir')
+  " Get old file directory relative to current path
+  let old_dir = expand('%:p:h')
+  let old_fname = subdir.expand('%:t')
+  let wikiroot_path = vimroam#vars#get_wikilocal('path')
+
+  " Clause: Check if there current buffer is a file (new buffer maybe)
+  if glob(expand('%:p')) ==? ''
+    call vimroam#u#error('Cannot rename "'.expand('%:p')
+          \ . '". Current file does not exist! (New file? Save it before renaming.)')
+    return
+  endif
+
+  " Read new_link <- command line || input()
+  let new_link = a:0 > 0 ? a:1 : s:input_rename_link()
+  if new_link ==# '' | return | endif
+
+  let new_link = subdir.new_link
+  let wiki_nr = vimroam#vars#get_bufferlocal('wiki_nr')
+  let new_fname = simplify(wikiroot_path . new_link . vimroam#vars#get_wikilocal('ext'))
+
+  " Guard: Do not rename if file with such name exists
+  let fname = glob(new_fname)
+  if fname !=? ''
+    call vimroam#u#error('Cannot rename to "'.new_fname.'". File with that name exist!')
+    return
+  endif
+
+  " TODO Check new_file is in a wiki dir and warn user if not
+  " Create new directory if needed
+  let new_dir = fnamemodify(new_fname, ':h')
+  if exists('*mkdir')
+    " Sometimes complaining E739 if directory exists
+    try
+      call mkdir(new_dir, 'p')
+    catch | endtry
+  endif
+
+  " Rename wiki link file
+  try
+    call vimroam#u#echo('Renaming '.wikiroot_path.old_fname.' to '.new_fname)
+    let res = rename(expand('%:p'), expand(new_fname))
+    if res != 0
+      throw 'Cannot rename!'
+    end
+  catch /.*/
+    call vimroam#u#error('Cannot rename "'.expand('%:t:r').'" to "'.new_fname.'"')
+    return
+  endtry
+
+  let &buftype='nofile'
+
+  " Save current buffer: [file_name, previous_name, buffer_number]
+  let buf_old_info = [expand('%:p'), vimroam#vars#get_bufferlocal('prev_links'), bufnr('%')]
+  if v:version > 800 || has('patch-8.0.0083')
+    let win_old_id = win_getid()
+  endif
+
+  " Get all wiki buffer
+  let blist = s:get_wiki_buffers()
+
+  " Dump wiki buffers: they may change
+  for bitem in blist
+    execute ':b '.escape(bitem[0], ' ')
+    execute ':update'
+  endfor
+
+  " Prevent prompt from scrolling alone
+  let more_save = &more
+  setlocal nomore
+
+  " Update links
+  let old_fname_abs = wikiroot_path . old_fname
+  let old_fname_rel_dir = vimroam#path#relpath(old_dir, old_fname_abs)
+  let new_fname_rel_dir = vimroam#path#relpath(old_dir, new_fname)
+  call s:update_wiki_links(
+        \ wiki_nr, old_dir,
+        \ fnamemodify(old_fname_rel_dir, ':r'),
+        \ fnamemodify(new_fname_rel_dir, ':r')
+        \ )
+
+  "" Restore wiki buffers
+  let autoread_save = &autoread
+  set autoread
+  for bitem in blist
+    execute ':b '.escape(bitem[0], ' ')
+    execute ':e!'
+  endfor
+  let &autoread = autoread_save
+
+  " Open the new buffer
+  call s:open_wiki_buffer([new_fname, buf_old_info[1]])
+  let buf_new_nb = bufnr('%')
+
+  " Change old_buffer by new buffer in all window
+  windo if bufnr('%') == buf_old_info[2] | exe 'b ' . buf_new_nb | endif
+  " Goto the window I belong
+  if v:version > 800 || has('patch-8.0.0083')
+    call win_gotoid(win_old_id)
+  endif
+
+  " Wipeout the old buffer: avoid surprises <= If it is not the same
+  if buf_old_info[2] != buf_new_nb
+    exe 'bwipeout! ' . buf_old_info[2]
+  else
+    " Should not happen
+    call vimroam#u#error('New buffer is the same as old, so will not delete: '
+          \ . buf_new_nb . '.Please open an issue if see this messsage')
+  endif
+
+  " Log success
+  call vimroam#u#echo(old_fname.' is renamed to '.new_fname)
+
+  " Restore prompt
+  let &more = more_save
+endfunction
+
+
+" Spawn User Interface to select wiki project
+" Called by VimRoamUISelect (Globally Exported)
+function! vimroam#base#ui_select() abort
+  call s:print_wiki_list()
+  let idx = input('Select Wiki by number and press <Enter> (empty cancels): ')
+  if idx ==# ''
+    return
+  elseif idx !~# '\m[0-9]\+'
+    echo "\n"
+    echom 'Invalid wiki selection.'
+    return
+  endif
+  call vimroam#base#goto_index(idx)
+endfunction
+
+
+" Jump to next header (Exported for text object)
+function! vimroam#base#TO_header(inner, including_subheaders, count) abort
+  let headers = s:collect_headers()
+  if empty(headers)
+    return
+  endif
+
+  let current_line = line('.')
+
+  let current_header_index = s:current_header(headers, current_line)
+
+  if current_header_index < 0
+    return
+  endif
+
+  " from which to which header
+  if !a:including_subheaders && a:count <= 1
+    let first_line = headers[current_header_index][0]
+    let last_line = current_header_index == len(headers)-1 ? line('$') :
+          \ headers[current_header_index + 1][0] - 1
+  else
+    let first_header_index = current_header_index
+    for _ in range(a:count - 1)
+      let parent = s:get_another_header(headers, first_header_index, -1, '<')
+      if parent < 0
+        break
+      else
+        let first_header_index = parent
+      endif
+    endfor
+
+    let next_sibling_or_higher = s:get_another_header(headers, first_header_index, +1, '<=')
+
+    let first_line = headers[first_header_index][0]
+    let last_line =
+          \ next_sibling_or_higher >= 0 ? headers[next_sibling_or_higher][0] - 1 : line('$')
+  endif
+
+  if a:inner
+    let first_line += 1
+    let last_line = prevnonblank(last_line)
+  endif
+
+  if first_line > last_line
+    " this can happen e.g. when doing vih on a header with another header in the very next line
+    return
+  endif
+
+  call cursor(first_line, 1)
+  normal! V
+  call cursor(last_line, 1)
+endfunction
+
+
+" Jump to next table cell (Exported for text object)
+function! vimroam#base#TO_table_cell(inner, visual) abort
+  if col('.') == col('$')-1
+    return
+  endif
+
+  if a:visual
+    normal! `>
+    let sel_end = getpos('.')
+    normal! `<
+    let sel_start = getpos('.')
+
+    let firsttime = sel_start == sel_end
+
+    if firsttime
+      if !search('|\|\(-+-\)', 'cb', line('.'))
+        return
+      endif
+      if getline('.')[virtcol('.')] ==# '+'
+        normal! l
+      endif
+      if a:inner
+        normal! 2l
+      endif
+      let sel_start = getpos('.')
+    endif
+
+    normal! `>
+    call search('|\|\(-+-\)', '', line('.'))
+    if getline('.')[virtcol('.')] ==# '+'
+      normal! l
+    endif
+    if a:inner
+      if firsttime || abs(sel_end[2] - getpos('.')[2]) != 2
+        normal! 2h
+      endif
+    endif
+    let sel_end = getpos('.')
+
+    call setpos('.', sel_start)
+    exe "normal! \<C-v>"
+    call setpos('.', sel_end)
+
+    " XXX: WORKAROUND.
+    " if blockwise selection is ended at | character then pressing j to extend
+    " selection further fails. But if we shake the cursor left and right then
+    " it works.
+    normal! hl
+  else
+    if !search('|\|\(-+-\)', 'cb', line('.'))
+      return
+    endif
+    if a:inner
+      normal! 2l
+    endif
+    normal! v
+    call search('|\|\(-+-\)', '', line('.'))
+    if !a:inner && getline('.')[virtcol('.')-1] ==# '|'
+      normal! h
+    elseif a:inner
+      normal! 2h
+    endif
+  endif
+endfunction
+
+
+" Jump to next table col (Exported for text object)
+function! vimroam#base#TO_table_col(inner, visual) abort
+  let t_rows = vimroam#tbl#get_rows(line('.'))
+  if empty(t_rows)
+    return
+  endif
+
+  " TODO: refactor it!
+  if a:visual
+    normal! `>
+    let sel_end = getpos('.')
+    normal! `<
+    let sel_start = getpos('.')
+
+    let firsttime = sel_start == sel_end
+
+    if firsttime
+      " place cursor to the top row of the table
+      call vimroam#u#cursor(t_rows[0][0], virtcol('.'))
+      " do not accept the match at cursor position if cursor is next to column
+      " separator of the table separator (^ is a cursor):
+      " |-----^-+-------|
+      " | bla   | bla   |
+      " |-------+-------|
+      " or it will select wrong column.
+      if strpart(getline('.'), virtcol('.')-1) =~# '^-+'
+        let s_flag = 'b'
+      else
+        let s_flag = 'cb'
+      endif
+      " search the column separator backwards
+      if !search('|\|\(-+-\)', s_flag, line('.'))
+        return
+      endif
+      " -+- column separator is matched --> move cursor to the + sign
+      if getline('.')[virtcol('.')] ==# '+'
+        normal! l
+      endif
+      " inner selection --> reduce selection
+      if a:inner
+        normal! 2l
+      endif
+      let sel_start = getpos('.')
+    endif
+
+    normal! `>
+    if !firsttime && getline('.')[virtcol('.')] ==# '|'
+      normal! l
+    elseif a:inner && getline('.')[virtcol('.')+1] =~# '[|+]'
+      normal! 2l
+    endif
+    " search for the next column separator
+    call search('|\|\(-+-\)', '', line('.'))
+    " Outer selection selects a column without border on the right. So we move
+    " our cursor left if the previous search finds | border, not -+-.
+    if getline('.')[virtcol('.')] !=# '+'
+      normal! h
+    endif
+    if a:inner
+      " reduce selection a bit more if inner.
+      normal! h
+    endif
+    " expand selection to the bottom line of the table
+    call vimroam#u#cursor(t_rows[-1][0], virtcol('.'))
+    let sel_end = getpos('.')
+
+    call setpos('.', sel_start)
+    exe "normal! \<C-v>"
+    call setpos('.', sel_end)
+
+  else
+    " place cursor to the top row of the table
+    call vimroam#u#cursor(t_rows[0][0], virtcol('.'))
+    " do not accept the match at cursor position if cursor is next to column
+    " separator of the table separator (^ is a cursor):
+    " |-----^-+-------|
+    " | bla   | bla   |
+    " |-------+-------|
+    " or it will select wrong column.
+    if strpart(getline('.'), virtcol('.')-1) =~# '^-+'
+      let s_flag = 'b'
+    else
+      let s_flag = 'cb'
+    endif
+    " search the column separator backwards
+    if !search('|\|\(-+-\)', s_flag, line('.'))
+      return
+    endif
+    " -+- column separator is matched --> move cursor to the + sign
+    if getline('.')[virtcol('.')] ==# '+'
+      normal! l
+    endif
+    " inner selection --> reduce selection
+    if a:inner
+      normal! 2l
+    endif
+
+    exe "normal! \<C-V>"
+
+    " search for the next column separator
+    call search('|\|\(-+-\)', '', line('.'))
+    " Outer selection selects a column without border on the right. So we move
+    " our cursor left if the previous search finds | border, not -+-.
+    if getline('.')[virtcol('.')] !=# '+'
+      normal! h
+    endif
+    " reduce selection a bit more if inner.
+    if a:inner
+      normal! h
+    endif
+    " expand selection to the bottom line of the table
+    call vimroam#u#cursor(t_rows[-1][0], virtcol('.'))
+  endif
+endfunction
+
+
+" Increase header level (Exported)
+function! vimroam#base#AddHeaderLevel(...) abort
+  " Clause, argument must be <= 1
+  " Actually argument is not used :-)
+  if a:1 > 1
+    call vimroam#base#AddHeaderLevel(1)
+  endif
+  let lnum = line('.')
+  let line = getline(lnum)
+  let rxHdr = vimroam#vars#get_syntaxlocal('header_symbol')
+  if line =~# '^\s*$'
+    return
+  endif
+
+  if line =~# vimroam#vars#get_syntaxlocal('rxHeader')
+    let level = vimroam#u#count_first_sym(line)
+    if level < 6
+      if vimroam#vars#get_syntaxlocal('symH')
+        let line = substitute(line, '\('.rxHdr.'\+\).\+\1', rxHdr.'&'.rxHdr, '')
+      else
+        let line = substitute(line, '\('.rxHdr.'\+\).\+', rxHdr.'&', '')
+      endif
+      call setline(lnum, line)
+    endif
+  else
+    let line = substitute(line, '^\s*', '&'.rxHdr.' ', '')
+    if vimroam#vars#get_syntaxlocal('symH')
+      let line = substitute(line, '\s*$', ' '.rxHdr.'&', '')
+    endif
+    call setline(lnum, line)
+  endif
+endfunction
+
+
+" Decrease header level (Exported)
+function! vimroam#base#RemoveHeaderLevel(...) abort
+  " Clause, argument must be <= 1
+  " Actually argument is not used :-)
+  if a:1 > 1
+    call vimroam#base#RemoveHeaderLevel(1)
+  endif
+  let lnum = line('.')
+  let line = getline(lnum)
+  let rxHdr = vimroam#vars#get_syntaxlocal('header_symbol')
+  if line =~# '^\s*$'
+    return
+  endif
+
+  if line =~# vimroam#vars#get_syntaxlocal('rxHeader')
+    let level = vimroam#u#count_first_sym(line)
+    let old = repeat(rxHdr, level)
+    let new = repeat(rxHdr, level - 1)
+
+    let chomp = line =~# rxHdr.'\s'
+
+    if vimroam#vars#get_syntaxlocal('symH')
+      let line = substitute(line, old, new, 'g')
+    else
+      let line = substitute(line, old, new, '')
+    endif
+
+    if level == 1 && chomp
+      let line = substitute(line, '^\s', '', 'g')
+      let line = substitute(line, '\s$', '', 'g')
+    endif
+
+    let line = substitute(line, '\s*$', '', '')
+
+    call setline(lnum, line)
+  endif
+endfunction
+
+
+" Returns: all the headers in the current buffer as a list of the form
+" [[line_number, header_level, header_text], [...], [...], ...]
+function! s:collect_headers() abort
+  " Init loop variables
+  let is_inside_pre_or_math = 0  " 1: inside pre, 2: inside math, 0: outside
+  let headers = []
+  let rxHeader = vimroam#vars#get_syntaxlocal('rxHeader')
+
+  " For all lines in file
+  for lnum in range(1, line('$'))
+    let line_content = getline(lnum)
+    if (is_inside_pre_or_math == 1 && line_content =~# vimroam#vars#get_syntaxlocal('rxPreEnd')) ||
+       \ (is_inside_pre_or_math == 2 && line_content =~# vimroam#vars#get_syntaxlocal('rxMathEnd'))
+      let is_inside_pre_or_math = 0
+      continue
+    endif
+    if is_inside_pre_or_math > 0
+      continue
+    endif
+    if line_content =~# vimroam#vars#get_syntaxlocal('rxPreStart')
+      let is_inside_pre_or_math = 1
+      continue
+    endif
+    if line_content =~# vimroam#vars#get_syntaxlocal('rxMathStart')
+      let is_inside_pre_or_math = 2
+      continue
+    endif
+
+    " Check SetExt Header
+    " TODO mutualise SetExt line (for consistency)
+    " TODO replace regex with =\+ or -\+
+    if line_content =~# '^\s\{0,3}[=-][=-]\+\s*$'
+      let header_level = stridx(line_content, '=') != -1 ? 1 : 2
+      let header_text = getline(lnum-1)
+    " Maybe ATX header
+    else
+      " Clause: Must match rxHeader
+      if line_content !~# rxHeader
+        continue
+      endif
+      " Clause: markdown headers must start in the first column
+      if vimroam#vars#get_wikilocal('syntax') ==# 'markdown'
+            \ && stridx(line_content, vimroam#vars#get_syntaxlocal('header_symbol')) > 0
+        continue
+      endif
+      " Get header level
+      let header_level = vimroam#u#count_first_sym(line_content)
+      let header_text = matchstr(line_content, rxHeader)
+    endif
+
+    " Clean && Append to res
+    let header_text = vimroam#u#trim(header_text)
+    call add(headers, [lnum, header_level, header_text])
+  endfor
+
+  return headers
+endfunction
+
+
+" Returns: header index at cursor position
+" Called: by header cursor movements
+function! s:current_header(headers, line_number) abort
+  if empty(a:headers)
+    return -1
+  endif
+
+  if a:line_number >= a:headers[-1][0]
+    return len(a:headers) - 1
+  endif
+
+  let current_header_index = -1
+  while a:headers[current_header_index+1][0] <= a:line_number
+    let current_header_index += 1
+  endwhile
+  return current_header_index
+endfunction
+
+
+" Returns: heading with link urls
+" Called: table_of_content
+function! s:clean_header_text(h_text) abort
+  " Note: I hardcode, who cares ?
+  let h_text = a:h_text
+
+  " Convert: [[url]] -> url
+  let h_text = substitute(h_text, '\[\[\([^]]*\)\]\]', '\1', 'g')
+
+  " Convert: [desc](url) -> url
+  let h_text = substitute(h_text, '\[\([^]]*\)\]([^)]*)', '\1', 'g')
+
+  return h_text
+endfunction
+
+
+" Returns: index of neighbor header
+" Called: by header cursor movements
+function! s:get_another_header(headers, current_index, direction, operation) abort
+  if empty(a:headers) || a:current_index < 0
+    return -1
+  endif
+  let current_level = a:headers[a:current_index][1]
+  let index = a:current_index + a:direction
+
+  while 1
+    if index < 0 || index >= len(a:headers)
+      return -1
+    endif
+    if eval('a:headers[index][1] ' . a:operation . ' current_level')
+      return index
+    endif
+    let index += a:direction
+  endwhile
+endfunction
+
+
+" Jump to parent header
+function! vimroam#base#goto_parent_header() abort
+  let headers = s:collect_headers()
+  let current_header_index = s:current_header(headers, line('.'))
+  let parent_header = s:get_another_header(headers, current_header_index, -1, '<')
+  if parent_header >= 0
+    call cursor(headers[parent_header][0], 1)
+  else
+    call vimroam#u#echo('no parent header found')
+  endif
+endfunction
+
+
+" Jump to next header
+function! vimroam#base#goto_next_header() abort
+  let headers = s:collect_headers()
+  let current_header_index = s:current_header(headers, line('.'))
+  if current_header_index >= 0 && current_header_index < len(headers) - 1
+    call cursor(headers[current_header_index + 1][0], 1)
+  elseif current_header_index < 0 && !empty(headers)  " we're above the first header
+    call cursor(headers[0][0], 1)
+  else
+    call vimroam#u#echo('no next header found')
+  endif
+endfunction
+
+
+" Jump to previous header
+function! vimroam#base#goto_prev_header() abort
+  let headers = s:collect_headers()
+  let current_header_index = s:current_header(headers, line('.'))
+  " if the cursor already was on a header, jump to the previous one
+  if current_header_index >= 1 && headers[current_header_index][0] == line('.')
+    let current_header_index -= 1
+  endif
+  if current_header_index >= 0
+    call cursor(headers[current_header_index][0], 1)
+  else
+    call vimroam#u#echo('no previous header found')
+  endif
+endfunction
+
+
+" Jump to sibling header, next or previous (with same level)
+function! vimroam#base#goto_sibling(direction) abort
+  let headers = s:collect_headers()
+  let current_header_index = s:current_header(headers, line('.'))
+  let next_potential_sibling =
+        \ s:get_another_header(headers, current_header_index, a:direction, '<=')
+  if next_potential_sibling >= 0 && headers[next_potential_sibling][1] ==
+        \ headers[current_header_index][1]
+    call cursor(headers[next_potential_sibling][0], 1)
+  else
+    call vimroam#u#echo('no sibling header found')
+  endif
+endfunction
+
+
+" Create buffer TOC (Exported)
+" a:create == 1: creates or updates TOC in current file
+" a:create == 0: update if TOC exists
+function! vimroam#base#table_of_contents(create) abort
+  " Gather heading
+  let headers = s:collect_headers()
+  let toc_header_text = vimroam#vars#get_wikilocal('toc_header')
+
+  if !a:create
+    " Do nothing if there is no TOC to update. (This is a small performance optimization -- if
+    " auto_toc == 1, but the current buffer has no TOC but is long, saving the buffer could
+    " otherwise take a few seconds for nothing.)
+    let toc_already_present = 0
+    for entry in headers
+      if entry[2] ==# toc_header_text
+        let toc_already_present = 1
+        break
+      endif
+    endfor
+    if !toc_already_present
+      return
+    endif
+  endif
+
+  " use a dictionary function for closure like capability
+  " copy all local variables into dict (add a: if arguments are needed)
+  let GeneratorTOC = copy(l:)
+  function! GeneratorTOC.f() abort
+    " Clean heading informations
+    let numbering = vimroam#vars#get_global('html_header_numbering')
+    " TODO numbering not used !
+    let headers_levels = [['', 0], ['', 0], ['', 0], ['', 0], ['', 0], ['', 0]]
+    let complete_header_infos = []
+    for header in self.headers
+      let h_text = header[2]
+      let h_level = header[1]
+
+      " Don't include the TOC's header itself
+      if h_text ==# self.toc_header_text
+        continue
+      endif
+
+       " Clean text
+       let h_text = s:clean_header_text(h_text)
+
+       " Treat levels
+      let headers_levels[h_level-1] = [h_text, headers_levels[h_level-1][1]+1]
+      for idx in range(h_level, 5) | let headers_levels[idx] = ['', 0] | endfor
+
+      " Add parents header to format if toc_link_format == 0 => extended
+      let h_complete_id = ''
+      if vimroam#vars#get_wikilocal('toc_link_format') == 1
+        for l in range(h_level-1)
+          if headers_levels[l][0] !=? ''
+            let h_complete_id .= headers_levels[l][0].'#'
+          endif
+        endfor
+      endif
+      let h_complete_id .= headers_levels[h_level-1][0]
+
+      " Store
+      call add(complete_header_infos, [h_level, h_complete_id, h_text])
+    endfor
+
+    " Insert the information in the Link Template
+    " -- and create line list
+    let lines = []
+    let startindent = repeat(' ', vimroam#lst#get_list_margin())
+    let indentstring = repeat(' ', vimroam#u#sw())
+    let bullet = vimroam#lst#default_symbol().' '
+    " Keep previous anchor => if redundant => add suffix -2
+    let previous_anchors = {}
+    for [lvl, anchor, desc] in complete_header_infos
+      " [DESC](URL)
+      if vimroam#vars#get_wikilocal('syntax') ==# 'markdown'
+        let link_tpl = vimroam#vars#get_syntaxlocal('Weblink2Template')
+      " [[URL]]
+      elseif vimroam#vars#get_wikilocal('toc_link_format') == 1
+        let link_tpl = vimroam#vars#get_global('WikiLinkTemplate2')
+      " [[URL|DESC]]
+      else
+        let link_tpl = vimroam#vars#get_global('WikiLinkTemplate1')
+      endif
+
+      " Normalize anchor
+      let anchor = vimroam#base#normalize_anchor(anchor, previous_anchors)
+
+      " Insert link in template
+      let link = s:safesubstitute(link_tpl, '__LinkUrl__',
+            \ '#'.anchor, '')
+      let link = s:safesubstitute(link, '__LinkDescription__', desc, '')
+      call add(lines, startindent.repeat(indentstring, lvl-1).bullet.link)
+    endfor
+
+    return lines
+  endfunction
+
+  let links_rx = '\%(^\s*$\)\|^\s*\%(\%('.vimroam#vars#get_syntaxlocal('rxListBullet').'\)\)'
+  call vimroam#base#update_listing_in_buffer(
+        \ GeneratorTOC,
+        \ toc_header_text,
+        \ links_rx,
+        \ 1,
+        \ vimroam#vars#get_wikilocal('toc_header_level'),
+        \ a:create)
+endfunction
+
+
+"   Construct a regular expression matching from template (with special
+"   characters properly escaped), by substituting rxUrl for __LinkUrl__, rxDesc
+"   for __LinkDescription__, rxStyle for __LinkStyle__ and rxExtension for
+"   __FileExtension__.  The four arguments rxUrl, rxDesc, rxStyle and
+"   rxExtension are copied verbatim, without any special character escapes or
+"   substitutions.
+function! vimroam#base#apply_template(template, rxUrl, rxDesc, rxStyle, rxExtension) abort
+  let lnk = a:template
+  if a:rxUrl !=? ''
+    let lnk = s:safesubstitute(lnk, '__LinkUrl__', tolower(a:rxUrl), 'g')
+  endif
+  if a:rxDesc !=? ''
+    let lnk = s:safesubstitute(lnk, '__LinkDescription__', a:rxDesc, 'g')
+  endif
+  if a:rxStyle !=? ''
+    let lnk = s:safesubstitute(lnk, '__LinkStyle__', a:rxStyle, 'g')
+  endif
+  if a:rxExtension !=? ''
+    let lnk = s:safesubstitute(lnk, '__FileExtension__', a:rxExtension, 'g')
+  endif
+  return lnk
+endfunction
+
+
+" Helper: Clean url string
+function! s:clean_url(url) abort
+  " don't use an extension as part of the description
+  let url = substitute(a:url, '\'.vimroam#vars#get_wikilocal('ext').'$', '', '')
+  " remove protocol and tld
+  let url = substitute(url, '^\a\+\d*:', '', '')
+  " remove absolute path prefix
+  let url = substitute(url, '^//', '', '')
+  let url = substitute(url, '^\([^/]\+\)\.\a\{2,4}/', '\1/', '')
+  let url_l = split(url, '/\|=\|-\|&\|?\|\.')
+  " case only a '-'
+  if url_l == []
+    return ''
+  endif
+  let url_l = filter(url_l, 'v:val !=# ""')
+  if url_l[0] ==# 'www'
+    let url_l = url_l[1:]
+  endif
+  if url_l[-1] =~# '^\(htm\|html\|php\)$'
+    let url_l = url_l[0:-2]
+  endif
+  " remove words with black listed codepoints
+  " TODO mutualize blacklist in a variable
+  let url_l = filter(url_l, 'v:val !~?  "[!\"$%&''()*+,:;<=>?\[\]\\^`{}]"')
+  " remove words consisting of only hexadecimal digits
+  let url_l = filter(url_l, 'v:val !~?  "^\\x\\{4,}$" || v:val !~? "\\d"')
+  return join(url_l, ' ')
+endfunction
+
+
+" Check if 1.filename is a diary file
+" An optional second argument allows you to pass in a list of diary files rather
+" than generating a list on each call to the function.
+function! vimroam#base#is_diary_file(filename, ...) abort
+  let l:diary_file_paths = a:0 > 0 ? a:1 : vimroam#diary#get_diary_files()
+  let l:normalised_file_paths =
+        \ map(l:diary_file_paths, 'vimroam#path#normalize(v:val)')
+  " Escape single quote (Issue #886)
+  let filename = substitute(a:filename, "'", "''", 'g')
+  let l:matching_files =
+        \ filter(l:normalised_file_paths, "v:val ==# '" . filename . "'" )
+  return len(l:matching_files) > 0 " filename is a diary file if match is found
+endfunction
+
+
+" Treat link string towards normalization
+" [__LinkDescription__](__LinkUrl__.__FileExtension__)
+function! vimroam#base#normalize_link_helper(str, rxUrl, rxDesc, template) abort
+  let url = matchstr(a:str, a:rxUrl)
+  if vimroam#vars#get_wikilocal('syntax') ==# 'markdown' && vimroam#vars#get_wikilocal('markdown_link_ext')
+    " Strip the extension if it exists so it doesn't get added multiple times
+    let url = substitute(url, '\'.vimroam#vars#get_wikilocal('ext').'$', '', '')
+  endif
+  let descr = matchstr(a:str, a:rxDesc)
+  " Try to clean, do not work if bad link
+  if descr ==# ''
+    let descr = s:clean_url(url)
+    if descr ==# '' | return url | endif
+  endif
+  " Substiture placeholders
+  let lnk = s:safesubstitute(a:template, '__LinkDescription__', descr, '')
+  let lnk = s:safesubstitute(lnk, '__LinkUrl__', tolower(url), '')
+  let file_extension = vimroam#vars#get_wikilocal('ext', vimroam#vars#get_bufferlocal('wiki_nr'))
+  let lnk = s:safesubstitute(lnk, '__FileExtension__', file_extension , '')
+  return lnk
+endfunction
+
+
+" Treat imagelink string towards normalization
+function! vimroam#base#normalize_imagelink_helper(str, rxUrl, rxDesc, rxStyle, template) abort
+  let lnk = vimroam#base#normalize_link_helper(a:str, a:rxUrl, a:rxDesc, a:template)
+  let style = matchstr(a:str, a:rxStyle)
+  let lnk = s:safesubstitute(lnk, '__LinkStyle__', style, '')
+  return lnk
+endfunction
+
+
+" Normalize link in a diary file
+" Refactor: in diary
+function! vimroam#base#normalize_link_in_diary(lnk) abort
+  let sc = vimroam#vars#get_wikilocal('links_space_char')
+  let link = a:lnk . vimroam#vars#get_wikilocal('ext')
+  let link_wiki = substitute(vimroam#vars#get_wikilocal('path') . '/' . link, '\s', sc, 'g')
+  let link_diary = substitute(vimroam#vars#get_wikilocal('path') . '/'
+        \ . vimroam#vars#get_wikilocal('diary_rel_path') . '/' . link, '\s', sc, 'g')
+  let link_exists_in_diary = filereadable(link_diary)
+  let link_exists_in_wiki = filereadable(link_wiki)
+  let link_is_date = a:lnk =~# '\d\d\d\d-\d\d-\d\d'
+
+  if link_is_date
+    let str = a:lnk
+    let rxUrl = vimroam#vars#get_global('rxWord')
+    let rxDesc = '\d\d\d\d-\d\d-\d\d'
+    let template = vimroam#vars#get_global('WikiLinkTemplate1')
+  elseif link_exists_in_wiki
+    let depth = len(split(vimroam#vars#get_wikilocal('diary_rel_path'), '/'))
+    let str = repeat('../', depth) . a:lnk
+    let rxUrl = '.*'
+    let rxDesc = '[^/]*$'
+    let template = vimroam#vars#get_global('WikiLinkTemplate2')
+  else
+    let str = a:lnk
+    let rxUrl = '.*'
+    let rxDesc = ''
+    let template = vimroam#vars#get_global('WikiLinkTemplate1')
+  endif
+
+  if vimroam#vars#get_wikilocal('syntax') ==? 'markdown'
+    let template = vimroam#vars#get_syntaxlocal('Link1')
+  endif
+
+  return vimroam#base#normalize_link_helper(str, rxUrl, rxDesc, template)
+endfunction
+
+
+" Normalize link in normal mode Enter keypress
+function! s:normalize_link_syntax_n() abort
+  " try WikiLink
+  let lnk = vimroam#base#matchstr_at_cursor(vimroam#vars#get_syntaxlocal('rxWikiLink'))
+  if !empty(lnk)
+    let sub = vimroam#base#normalize_link_helper(lnk,
+          \ vimroam#vars#get_syntaxlocal('rxWikiLinkMatchUrl'),
+          \ vimroam#vars#get_syntaxlocal('rxWikiLinkMatchDescr'),
+          \ vimroam#vars#get_global('WikiLinkTemplate2'))
+    call vimroam#base#replacestr_at_cursor(vimroam#vars#get_syntaxlocal('rxWikiLink'), sub)
+    return
+  endif
+
+  " try WikiIncl
+  let lnk = vimroam#base#matchstr_at_cursor(vimroam#vars#get_global('rxWikiIncl'))
+  if !empty(lnk)
+    " NO-OP !!
+    return
+  endif
+
+  " try Weblink
+  let lnk = vimroam#base#matchstr_at_cursor(vimroam#vars#get_syntaxlocal('rxWeblink'))
+  if !empty(lnk)
+    let sub = vimroam#base#normalize_link_helper(lnk,
+          \ lnk, '', vimroam#vars#get_global('WikiLinkTemplate2'))
+    call vimroam#base#replacestr_at_cursor(vimroam#vars#get_syntaxlocal('rxWeblink'), sub)
+    return
+  endif
+
+  " try Word (any characters except separators)
+  " rxWord is less permissive than rxWikiLinkUrl which is used in
+  " normalize_link_syntax_v
+  let lnk = vimroam#base#matchstr_at_cursor(vimroam#vars#get_global('rxWord'))
+  if !empty(lnk)
+    if vimroam#base#is_diary_file(expand('%:p'))
+      let sub = vimroam#base#normalize_link_in_diary(lnk)
+    else
+      let sub = s:safesubstitute(
+            \ vimroam#vars#get_global('WikiLinkTemplate1'), '__LinkUrl__', tolower(lnk), '')
+    endif
+    " Replace file extension
+    let file_extension = vimroam#vars#get_wikilocal('ext', vimroam#vars#get_bufferlocal('wiki_nr'))
+    let sub = s:safesubstitute(sub, '__FileExtension__', file_extension , '')
+    call vimroam#base#replacestr_at_cursor('\V'.lnk, sub)
+    return
+  endif
+endfunction
+
+function! s:convert_to_image_link(url)
+    let text = trim(a:url)
+    if empty(glob(expand(text)))
+        return
+    endif
+    let extension = fnamemodify(text, ":e")
+    let name = fnamemodify(text, ":t:r")
+    if extension !=? "png" && extension[:2] !=? "tif" && extension !=? "bmp" && extension !=? "jpg" && extension !=? "jpeg"
+        return
+    endif
+    let directory = expand("%:p:h") . "/figs/"
+    if empty(glob(directory))
+        silent! execute "!mkdir " . directory
+    endif
+    let name = substitute(name, " ", "_", "g")
+    let output = directory . name . ".jpg"
+    if extension !=? "png" && extension[:2] !=? "tif" && extension !=? "bmp"
+        silent! execute "!convert " . text . " " . output
+    else
+        silent! execute "!cp " . text . " " . output
+    endif
+    " Reduce file size if ImageMagick is installed
+    if executable("mogrify")
+        let width = system("identify -format '%w' " . output)
+        silent! execute '!mogrify -filter Triangle -define filter:support=2 
+                    \ -thumbnail ' . float2nr(round(width/2))
+                    \ . ' -unsharp 0.25x0.25+8.3+0.065
+                    \ -dither None -posterize 136 -quality 82 -define
+                    \ jpeg:fancy-upsampling=off -interlace none 
+                    \ -colorspace sRGB ' . output
+    endif
+    execute ":'<,'>s#" . fnameescape(text) . "#![" . name . "](figs/" . name . ".jpg)#"
+endfunction
+
+
+" TODO mutualize most code with syntax_n
+" Normalize link in visual mode Enter keypress
+function! s:normalize_link_syntax_v() abort
+  " Get selection content
+  let visual_selection = vimroam#u#get_selection()
+  let extension = fnamemodify(trim(visual_selection), ":e")
+  if extension ==? "png" || extension[:2] ==? "tif" || extension ==? "bmp" || extension ==? "jpg" || extension ==? "jpeg"
+    call s:convert_to_image_link(visual_selection)
+    return
+  endif
+  " Embed link in template
+  " In case of a diary link, wiki or markdown link
+  if vimroam#base#is_diary_file(expand('%:p'))
+    let link = vimroam#base#normalize_link_in_diary(visual_selection)
+  else
+    let link_tpl = vimroam#vars#get_syntaxlocal('Link1')
+    let link = s:safesubstitute(link_tpl, '__LinkUrl__', tolower(visual_selection), '')
+  endif
+
+  " Transform link:
+  " Replace description (used for markdown)
+  let link = s:safesubstitute(link, '__LinkDescription__', visual_selection, '')
+  " Replace file extension
+  let file_extension = vimroam#vars#get_wikilocal('ext', vimroam#vars#get_bufferlocal('wiki_nr'))
+  let link = s:safesubstitute(link, '__FileExtension__', file_extension , '')
+  " Replace space characters
+  let sc = vimroam#vars#get_wikilocal('links_space_char')
+  let link = substitute(link, '\s', sc, 'g')
+  " Remove newlines
+  let link = substitute(link, '\n', '', '')
+
+  " Paste result
+  call vimroam#u#get_selection(link)
+endfunction
+
+
+" Normalize link (Implemented as a switch function)
+function! vimroam#base#normalize_link(is_visual_mode) abort
+  " If visual mode
+  if a:is_visual_mode
+    return s:normalize_link_syntax_v()
+
+  " If Syntax-specific normalizer exists: call it
+  elseif exists('*vimroam#'.vimroam#vars#get_wikilocal('syntax').'_base#normalize_link')
+    return vimroam#{vimroam#vars#get_wikilocal('syntax')}_base#normalize_link()
+
+  " Normal mode default
+  else
+    return s:normalize_link_syntax_n()
+  endif
+endfunction
+
+
+" Get nested syntax are present
+" Return: dictionary of syntaxes
+function! vimroam#base#detect_nested_syntax() abort
+  let last_word = '\v.*<(\w+)\s*$'
+  let lines = map(filter(getline(1, '$'), 'v:val =~# "\\%({{{\\|`\\{3,\}\\|\\~\\{3,\}\\)" && v:val =~# last_word'),
+        \ 'substitute(v:val, last_word, "\\=submatch(1)", "")')
+  let dict = {}
+  for elem in lines
+    let dict[elem] = elem
+  endfor
+  return dict
+endfunction
+
+
+" Complete escaping globlinks
+function! vimroam#base#complete_links_escaped(ArgLead, CmdLine, CursorPos) abort
+  return vimroam#base#get_globlinks_escaped(a:ArgLead)
+endfunction
+
+
+" Complete filename relatie to current file
+" Called: rename_link
+function! vimroam#base#complete_file(ArgLead, CmdLine, CursorPos) abort
+  " Start from current file
+  let base_path = expand('%:h')
+
+  " Get every file you can
+  let completion_pattern = base_path . '/' . a:ArgLead . '*'
+  let completion_list = split(glob(completion_pattern), '\n')
+
+  " Remove base_path prefix from the result
+  let base_len = len(base_path)
+  let completion_list = map(completion_list, 'v:val[base_len+1:]')
+  return completion_list
+endfunction
+
+
+" Read caption
+" Called: by generate_links
+function! vimroam#base#read_caption(file) abort
+  let rx_header = vimroam#vars#get_syntaxlocal('rxHeader')
+
+  if filereadable(a:file)
+    for line in readfile(a:file, '', g:vimroam_max_scan_for_caption)
+      if line =~# rx_header
+        return vimroam#u#trim(matchstr(line, rx_header))
+      endif
+    endfor
+  endif
+
+  return ''
+endfunction
+
+
+" Search for 1.pattern
+" Called by commands VimRoamSearch and VWS
+function! vimroam#base#search(search_pattern) abort
+  if empty(a:search_pattern)
+    call vimroam#u#error('No search pattern given.')
+    return
+  endif
+
+  let pattern = a:search_pattern
+
+  " If the pattern does not start with a '/', then we'll assume that a
+  " literal search is intended and enclose and escape it:
+  if match(pattern, '^/') == -1
+    let pattern = '/'.escape(pattern, '\').'/'
+  endif
+
+  let path = fnameescape(vimroam#vars#get_wikilocal('path'))
+  let ext  = vimroam#vars#get_wikilocal('ext')
+  let cmd  = 'lvimgrep '.pattern.' '.path.'**/*'.ext
+
+  " Catch E480 error from lvimgrep if there's no match and present
+  " a friendlier error message.
+  try
+    execute cmd
+  catch
+    call vimroam#u#echo('Search: No match found.')
+  endtry
+endfunction
+
+" used by function linkify to extract web page <title>
+function! s:get_title(match) abort
+    " Do not overwrite if g:page_title is already set
+    " when there are multiple <title> tags, only use the first one
+    " this is a side effect of the substitute's 'n' flag (count number of
+    " occurences and evaluate \= for each one
+    if (g:page_title !=# '')
+        return
+    endif
+    let l:title = a:match
+
+    " cleanup title so it's compatible with vimroam links
+    let l:title = substitute(l:title, '\\', '', 'g')
+    let l:title = substitute(l:title, '\[', '(', 'g')
+    let l:title = substitute(l:title, '\]', ')', 'g')
+
+    " cosmetic cleanup (html entities), maybe more to add
+    let l:title = substitute(l:title, '&lt;', '<', 'g')
+    let l:title = substitute(l:title, '&gt;', '>', 'g')
+    let l:title = substitute(l:title, '&nbsp;', ' ', 'g')
+
+    " store title in global var
+    let g:page_title = l:title
+endfunction
+
+" transform the url under the cursor to a wiki link
+function! vimroam#base#linkify() abort
+    let g:page_title = ''
+
+    " save existing value of @u and delete url under the cursor into @u
+    let l:save_reg = @u
+    exe 'normal! "udiW'
+
+    " create a scratch buffer and switch to it
+    let current_buf = bufnr('')
+    let scratch_buf = bufnr('scratch',1)
+    exe 'sil! ' . scratch_buf . 'buffer'
+
+    " load web page into scratch buffer using Nread with mode=2
+    " FIXME: on Windows, with vim 7/8 (not with nvim), makes the cmd.exe window show up (annoying)
+    exe 'sil! :2Nread ' . @u
+
+    " extract title from html
+    " Note: if URL cannot be downloaded the buffer is empty or contains a single
+    " line: 'Not found'
+    let page_ok=0
+    if (wordcount().chars !=0 && getline(1) !=? 'Not found')
+        let page_ok=1
+        " regex seems to work fine, but may not cover all cases
+        exe 'sil! :keepp %s/\v\<title.{-}\>((.|\r)+)\<\/title\>/\=s:get_title(submatch(1))/n'
+    endif
+
+    " wipeout scratch buffer and switch to current
+    exe scratch_buf . 'bwipeout'
+    exe current_buf . 'buffer'
+
+    if (page_ok)
+        " use template [[URL|DESCRIPTION]]
+        let template = g:vimroam_global_vars.WikiLinkTemplate2
+        let link = substitute(template, '__LinkUrl__', @u, '')
+        let link = substitute(link, '__LinkDescription__', g:page_title==#'' ? @u : g:page_title, '')
+        exe 'normal! i' . link
+    else
+        "if URL could not be downloaded, undo and display message
+        "TODO: other behaviours may be possible (user options?)
+        exe 'normal! u'
+        echomsg 'Error downloading URL: ' . @u
+    endif
+
+    " restore initial value of @u
+    let @u = l:save_reg
+endfunction
+
+"Config for markdown files
+
+" Search all text that match pattern in files within dir
+function! vimroam#base#rg_text(fullscreen, pattern, dir)
+  call fzf#vim#grep(
+  \   'rg --column --line-number --smart-case --no-heading --color=always ' . shellescape(a:pattern) . ' ' . fnameescape(a:dir), 1,
+  \   a:fullscreen ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+  \           : fzf#vim#with_preview({'down': '40%', 'options': '--delimiter : --nth 4.. -e'}, 'right:50%', '?'),
+  \   a:fullscreen)
+endfunction
+"
+" Search all text that match pattern in files within dir
+function! vimroam#base#rg_text_files(fullscreen, pattern, dir)
+  call fzf#vim#grep(
+  \   'rg --column --line-number --smart-case --no-heading --color=always ' . shellescape(a:pattern) . ' ' . fnameescape(a:dir), 1,
+  \   a:fullscreen ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview({'down': '40%'}, 'right:50%', '?'),
+  \   a:fullscreen)
+endfunction
+
+
+" Search for files in dir that match pattern
+function! vimroam#base#rg_files(fullscreen, dir, pattern)
+    call fzf#vim#files(a:dir, fzf#vim#with_preview({
+               \ 'source': join(['rg', '--files', '--follow', '--smart-case', '--line-number', '--color never', '--no-messages',
+                   \ a:pattern]),
+               \ 'down': '40%',
+               \ 'options': ['--layout=reverse', '--inline-info']
+               \ }), a:fullscreen)
+endfunction
+
+function! s:insert_link_file(lines) abort
+    if a:lines == [] || a:lines == [''] || a:lines == ['', '']
+        call feedkeys('a', 'n')
+        return
+    endif
+    let filename = split(a:lines[1], "\\.md")[0]
+    let link = "[" . filename . "](" . a:lines[1] . ")"
+    let @* = link
+    silent! let @* = link
+    silent! let @+ = link
+    call feedkeys('pa', 'n')
+endfunction
+
+" JMM - VimRoamInsertLink function: 
+function! vimroam#base#insert_link(fullscreen) abort
+      call fzf#vim#files(vimroam#vars#get_wikilocal('path'), 
+      \ {
+              \ 'sink*': function('s:insert_link_file'),
+              \ 'source': join([
+                   \ 'rg',
+                   \ '--files',
+                   \ '--follow',
+                   \ '--smart-case',
+                   \ '--line-number',
+                   \ '--color never',
+                   \ '--no-messages',
+                   \ '*'.vimroam#vars#get_wikilocal('ext'),
+                   \ ]),
+              \ 'down': '40%',
+              \ 'options': [
+                  \ '--layout=reverse', '--inline-info',
+                    \ '--preview=' . 'cat {}']
+              \ }, a:fullscreen)
+endfunction
+
+function! vimroam#base#complete_colorize(ArgLead, CmdLine, CursorPos) abort
+  " We can safely ignore args if we use -custom=complete option, Vim engine
+  " will do the job of filtering
+  let colorlist = keys(vimroam#vars#get_wikilocal('color_dic'))
+  return join(colorlist, "\n")
+endfunction
+
+function! vimroam#base#colorize(...) abort 
+  " TODO Must be coherent with color_tag_template
+  " -- Just removeing spaces, \/ -> /,  replacing COLORFG will do it
+  let key = a:0 ? a:1 : 'default'
+  let color_dic = vimroam#vars#get_wikilocal('color_dic')
+
+  " Guard: color key nust exist
+  if !has_key(color_dic, key)
+    call vimroam#u#error('color_dic variable has no key ''' . key . '''')
+    return
+  endif
+
+  " Get content
+  let content = getline('.')
+  " TODO save position for visual selection: see u#get_selection
+
+  " Surround
+  " -- pre
+  let [fg, bg] = color_dic[key]
+  let pre = '<span style="' 
+  if fg !=# ''
+    let pre .= 'color:' . fg . ';'
+  endif
+  if bg !=# ''
+    let pre .= 'background:' . bg . ';'
+  endif
+  let pre .= '">'
+  " -- post
+  let post = '</span>'
+  " -- concat
+  let content = pre . content . post
+
+  " Set buffer content
+  call setline('.', content)
+endfunction
+
+" -------------------------------------------------------------------------
+" Load syntax-specific Wiki functionality
+for s:syn in s:vimroam_get_known_syntaxes()
+  execute 'runtime! autoload/vimroam/'.s:syn.'_base.vim'
+endfor
+" -------------------------------------------------------------------------

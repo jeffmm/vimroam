@@ -1,6 +1,9 @@
-# Vim-Roam: A Vim-Powered and Roam-Inspired Markdown Wiki
+![VimRoam: A Personal Wiki For Vim](doc/splash.png)
+
+[中文](README-cn.md)
 
 - [Intro](#introduction)
+- [Screenshots](#screenshots)
 - [Installation](#installation)
     - [Prerequisites](#prerequisites)
     - [VIM Packages](#installation-using-vim-packages-since-vim-741528)
@@ -21,13 +24,21 @@
 
 ## Introduction
 
-[Roam Research](https://roamresearch.com/) is a note-taking tool that eschews the typical hierarchical organization structure, and replaces it with a graph of individual pieces of knowledge connected to their related ideas using links. In this way, information is organized in much the same way as one organizes thoughts in their brain (which is why this organization structure can also go by the name 'second brain'). 
+VimRoam is a personal wiki for Vim -- a number of linked text files that have
+their own syntax highlighting. See the [VimRoam Wiki](https://vimroam.github.io/vimroamwiki/)
+for an example website built with VimRoam!
 
-I wanted to build a second brain of my own using the tool with which I am most productive: Vim. There are other great note-taking plugins out there, and my plugin of choice has always been VimRoam. I also discovered a plugin that extended VimRoam to build a Zettelkasten-style note-taking system. However, I found the integration of the two wanting, and some of the navigation tools too cumbersome for my liking.
+For the latest features and fixes checkout the [dev branch](https://github.com/jeffmm/vimroam/tree/dev).
+If you are interested in contributing see [this section](#helping-vimroam).
 
-So I decided to take what I liked most about each and integrated their functionality with the great search plugin FZF to create my own version of a Roam Research-inspired Vim-powered markdown wiki.
+With VimRoam, you can:
 
-## Quick start
+- Organize notes and ideas
+- Manage to-do lists
+- Write documentation
+- Maintain a diary
+- Export everything to HTML
+
 To do a quick start, press `<Leader>ww` (default is `\ww`) to go to your index
 wiki file. By default, it is located in `~/vimroam/index.wiki`. See `:h vimroam_list`
 for registering a different path/wiki.
