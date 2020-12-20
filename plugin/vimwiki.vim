@@ -49,7 +49,7 @@ function! s:vimwiki_new_note()
     if idx > 0
       call vimwiki#base#goto_index(idx)
     else
-      call vimwiki#base#goto_index(1)
+      call vimwiki#base#goto_index(0)
     endif
     let title = input("New note name: ", strftime("%Y%m%d%H%M"))
     call vimwiki#zettel#zettel_new(title)
@@ -361,8 +361,30 @@ command! VimwikiShowVersion call s:get_version()
 
 command! -nargs=* -complete=customlist,vimwiki#vars#complete
       \ VimwikiVar call vimwiki#vars#cmd(<q-args>)
+" Search for note that link to current note
+command! -nargs=* -bang VimwikiRgBacklinks 
+      \ call vimwiki#base#rg_text_files(<bang>0, '('.expand("%:t").')',
+      \ s:get_default('path'))
+" Search note tags, which is any word surrounded by colons (vimwiki style tags)
+command! -nargs=* -bang VimwikiRgTags 
+      \ call vimwiki#base#rg_text(<bang>0, ':[a-zA-Z0-9]+:', s:get_default('path'))
+" Search for text in wiki files
+command! -nargs=* -bang VimwikiRgText 
+      \ call vimwiki#base#rg_text(<bang>0, '[a-zA-Z0-9]+', fnameescape(s:get_default('path')))
+" Search for filenames in wiki
+command! -nargs=* -bang VimwikiRgFiles 
+      \ call vimwiki#base#rg_files(<bang>0, s:get_default('path'), 
+      \ "*" . s:get_default('ext'))
+" Create a new note
+command! -nargs=* -bang VimwikiNewNote call s:vimwiki_new_note()
 
-
+function! s:get_default(val)
+  let idx = vimwiki#vars#get_bufferlocal('wiki_nr')
+  if idx > 0
+    return vimwiki#vars#get_wikilocal(a:val, idx)
+  endif
+  return vimwiki#vars#get_wikilocal(a:val, 0)
+endfunction
 " Declare global maps
 " <Plug> global definitions
 nnoremap <silent><script> <Plug>VimwikiIndex
@@ -386,21 +408,24 @@ nnoremap <silent><script> <Plug>VimwikiMakeTomorrowDiaryNote
     \ :<C-U>call vimwiki#diary#make_note(v:count, 0,
     \ vimwiki#diary#diary_date_link(localtime(), 1))<CR>
 
-
 " Set default global key mappings
 if str2nr(vimwiki#vars#get_global('key_mappings').global)
   " Get the user defined prefix (default <leader>w)
   let s:map_prefix = vimwiki#vars#get_global('map_prefix')
 
   call vimwiki#u#map_key('n', s:map_prefix . 'w', '<Plug>VimwikiIndex', 2)
-  call vimwiki#u#map_key('n', s:map_prefix . 't', '<Plug>VimwikiTabIndex', 2)
-  call vimwiki#u#map_key('n', s:map_prefix . 's', '<Plug>VimwikiUISelect', 2)
   call vimwiki#u#map_key('n', s:map_prefix . 'i', '<Plug>VimwikiDiaryIndex', 2)
+  call vimwiki#u#map_key('n', s:map_prefix . 'b', '<Plug>VimwikiRgBacklinks', 2)
+  call vimwiki#u#map_key('n', s:map_prefix . 's', '<Plug>VimwikiRgText', 2)
+  call vimwiki#u#map_key('n', s:map_prefix . 't', '<Plug>VimwikiRgTags', 2)
+  call vimwiki#u#map_key('n', s:map_prefix . 'f', '<Plug>VimwikiRgFiles', 2)
+  call vimwiki#u#map_key('n', s:map_prefix . 'n', '<Plug>VimwikiNewNote', 2)
   call vimwiki#u#map_key('n', s:map_prefix . '<Leader>i', '<Plug>VimwikiDiaryGenerateLinks', 2)
   call vimwiki#u#map_key('n', s:map_prefix . '<Leader>w', '<Plug>VimwikiMakeDiaryNote', 2)
   call vimwiki#u#map_key('n', s:map_prefix . '<Leader>t', '<Plug>VimwikiTabMakeDiaryNote', 2)
   call vimwiki#u#map_key('n', s:map_prefix . '<Leader>y', '<Plug>VimwikiMakeYesterdayDiaryNote', 2)
   call vimwiki#u#map_key('n', s:map_prefix . '<Leader>m', '<Plug>VimwikiMakeTomorrowDiaryNote', 2)
+
 endif
 
 

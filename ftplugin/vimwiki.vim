@@ -310,20 +310,6 @@ command! -buffer -nargs=* VimwikiVSplitLink call vimwiki#base#follow_link('vspli
 " JMM -- New functions using FZF search
 " Create function for inserting a link to another note
 command! -bang VimwikiInsertLink call vimwiki#base#insert_link(<bang>0)
-" Search for note that link to current note
-command! -nargs=* -bang VimwikiRgBacklinks 
-      \ call vimwiki#base#rg_text(<bang>0, '('.expand("%:t").')',
-      \ vimwiki#vars#get_wikilocal('path'))
-" Search note tags, which is any word surrounded by colons (vimwiki style tags)
-command! -nargs=* -bang VimwikiRgTags 
-      \ call vimwiki#base#rg_text(<bang>0, ':[a-zA-Z0-9]+:', vimwiki#vars#get_wikilocal('path'))
-" Search for text in wiki files
-command! -nargs=* -bang VimwikiRgText 
-      \ call vimwiki#base#rg_text(<bang>0, '[a-zA-Z0-9]+', vimwiki#vars#get_wikilocal('path'))
-" Search for filenames in wiki
-command! -nargs=* -bang VimwikiRgFiles 
-      \ call vimwiki#base#rg_files(<bang>0, vimwiki#vars#get_wikilocal('path'), 
-      \ "*" . vimwiki#vars#get_wikilocal('ext'))
 
 command! -buffer -nargs=? VimwikiNormalizeLink call vimwiki#base#normalize_link(<f-args>)
 
@@ -450,16 +436,7 @@ nnoremap <silent><script><buffer> <Plug>VimwikiDiaryNextDay
     \ :VimwikiDiaryNextDay<CR>
 nnoremap <silent><script><buffer> <Plug>VimwikiDiaryPrevDay
     \ :VimwikiDiaryPrevDay<CR>
-" JMM - FZF Navigation functions
-nnoremap <silent><script><buffer> <Plug>VimwikiRgBacklinks
-      \ :VimwikiRgBacklinks<CR>
-nnoremap <silent><script><buffer> <Plug>VimwikiRgTags
-      \ :VimwikiRgTags<CR>
-nnoremap <silent><script><buffer> <Plug>VimwikiRgText
-      \ :VimwikiRgText<CR>
-nnoremap <silent><script><buffer> <Plug>VimwikiRgFiles
-      \ :VimwikiRgFiles<CR>
-
+"
 " default links key mappings
 if str2nr(vimwiki#vars#get_global('key_mappings').links)
   call vimwiki#u#map_key('n', '<CR>', '<Plug>VimwikiFollowLink')
@@ -471,9 +448,8 @@ if str2nr(vimwiki#vars#get_global('key_mappings').links)
   call vimwiki#u#map_key('n', '<D-CR>', '<Plug>VimwikiTabnewLink')
   call vimwiki#u#map_key('n', '<C-S-CR>', '<Plug>VimwikiTabnewLink', 1)
   call vimwiki#u#map_key('n', '<BS>', '<Plug>VimwikiGoBackLink')
-  call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'n', '<Plug>VimwikiGoto')
-  call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'d', '<Plug>VimwikiDeleteFile')
-  call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'r', '<Plug>VimwikiRenameFile')
+  call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'D', '<Plug>VimwikiDeleteFile')
+  call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'R', '<Plug>VimwikiRenameFile')
   call vimwiki#u#map_key('n', '-', '<Plug>VimwikiDiaryNextDay')
   call vimwiki#u#map_key('n', '=', '<Plug>VimwikiDiaryPrevDay')
   call vimwiki#u#map_key('i', '[]', '<Plug>VimwikiInsertLink')
