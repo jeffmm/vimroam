@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #
-# This script converts markdown into html, to be used with vimwiki's
+# This script converts markdown into html, to be used with vimroam's
 # "customwiki2html" option.  Experiment with the two proposed methods by
 # commenting / uncommenting the relevant lines below.
 #
 #   NEW!  An alternative converter was developed by Jason6Anderson, and can
-#   be located at https://github.com/vimwiki-backup/vimwiki/issues/384
+#   be located at https://github.com/vimroam-backup/vimroam/issues/384
 #
 #
 # To use this script, you must have the Discount converter installed.
@@ -20,9 +20,9 @@
 #
 # Then, in your .vimrc file, set:
 #
-#   g:vimwiki_customwiki2html=$HOME.'/.vim/autoload/vimwiki/customwiki2html.sh'
+#   g:vimroam_customwiki2html=$HOME.'/.vim/autoload/vimroam/customwiki2html.sh'
 #
-# On your next restart, Vimwiki will run this script instead of using the
+# On your next restart, VimRoam will run this script instead of using the
 # internal wiki2html converter.
 #
 

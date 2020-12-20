@@ -1,8 +1,8 @@
 " vim:tabstop=2:shiftwidth=2:expandtab:textwidth=99
 " File: Emoji List
-" Home: https://github.com/vimwiki/vimwiki/
+" Home: https://github.com/jeffmm/vimroam/
 " Desc: For emoji concealing and completion
-" Called: syntax/vimwiki.vim
+" Called: syntax/vimroam.vim
 " List Copied From: https://github.com/onmyway133/emoji/blob/master/README.md
 " Code Copied From: https://github.com/junegunn/vim-emoji
 
@@ -1758,7 +1758,7 @@ let s:emojis = []
 let s:emoji_dic = {}
 
 
-function! vimwiki#emoji#get_dic() abort
+function! vimroam#emoji#get_dic() abort
   if s:emoji_dic == {}
     call extend(s:emoji_dic, s:emoji_multiple)
     call extend(s:emoji_dic, s:emoji_single)
@@ -1767,9 +1767,9 @@ function! vimwiki#emoji#get_dic() abort
 endfunction
 
 " Conceal
-function! vimwiki#emoji#apply_conceal() abort
+function! vimroam#emoji#apply_conceal() abort
   for [name, emoji] in items(s:emoji_single)
-    exe 'syn keyword VimwikiEmoji :' . name . ': conceal cchar=' . emoji
+    exe 'syn keyword VimRoamEmoji :' . name . ': conceal cchar=' . emoji
   endfor
 endfunction
 
@@ -1786,10 +1786,10 @@ endfunction
 
 
 " Complete
-function! vimwiki#emoji#complete(findstart, base) abort
+function! vimroam#emoji#complete(findstart, base) abort
   " Init full list if must
   if s:emojis == []
-    let s:emojis = map(sort(keys(vimwiki#emoji#get_dic())),
+    let s:emojis = map(sort(keys(vimroam#emoji#get_dic())),
             \ '{ "word": ":".v:val.":", "kind": get(s:emoji_dic, v:val, "") }')
   endif
 

@@ -13,8 +13,8 @@
 - [Commands](#commands)
 - [Changing Wiki Syntax](#changing-wiki-syntax)
 - [Getting Help](#getting-help)
-- [Helping VimWiki](#helping-vimwiki)
-- [Wiki](https://github.com/vimwiki/vimwiki/wiki)
+- [Helping VimRoam](#helping-vimroam)
+- [Wiki](https://github.com/jeffmm/vimroam/wiki)
 - [License](#license)
 
 ----
@@ -23,13 +23,13 @@
 
 [Roam Research](https://roamresearch.com/) is a note-taking tool that eschews the typical hierarchical organization structure, and replaces it with a graph of individual pieces of knowledge connected to their related ideas using links. In this way, information is organized in much the same way as one organizes thoughts in their brain (which is why this organization structure can also go by the name 'second brain'). 
 
-I wanted to build a second brain of my own using the tool with which I am most productive: Vim. There are other great note-taking plugins out there, and my plugin of choice has always been Vimwiki. I also discovered a plugin that extended Vimwiki to build a Zettelkasten-style note-taking system. However, I found the integration of the two wanting, and some of the navigation tools too cumbersome for my liking.
+I wanted to build a second brain of my own using the tool with which I am most productive: Vim. There are other great note-taking plugins out there, and my plugin of choice has always been VimRoam. I also discovered a plugin that extended VimRoam to build a Zettelkasten-style note-taking system. However, I found the integration of the two wanting, and some of the navigation tools too cumbersome for my liking.
 
 So I decided to take what I liked most about each and integrated their functionality with the great search plugin FZF to create my own version of a Roam Research-inspired Vim-powered markdown wiki.
 
 ## Quick start
 To do a quick start, press `<Leader>ww` (default is `\ww`) to go to your index
-wiki file. By default, it is located in `~/vimwiki/index.wiki`. See `:h vimwiki_list`
+wiki file. By default, it is located in `~/vimroam/index.wiki`. See `:h vimroam_list`
 for registering a different path/wiki.
 
 Feed it with the following example:
@@ -42,11 +42,11 @@ Feed it with the following example:
 ```
 
 Place your cursor on `Tasks` and press Enter to create a link. Once pressed,
-`Tasks` will become `[[Tasks]]` -- a VimWiki link. Press Enter again to
+`Tasks` will become `[[Tasks]]` -- a VimRoam link. Press Enter again to
 open it. Edit the file, save it, and then press Backspace to jump back to your
 index.
 
-A VimWiki link can be constructed from more than one word. Just visually
+A VimRoam link can be constructed from more than one word. Just visually
 select the words to be linked and press Enter. Try it, with `Project Gutenberg`.
 The result should look something like:
 
@@ -66,7 +66,7 @@ The result should look something like:
 
 ## Installation
 
-VimWiki has been tested on **Vim >= 7.3**. It will likely work on older
+VimRoam has been tested on **Vim >= 7.3**. It will likely work on older
 versions but will not be officially supported.
 
 ### Prerequisites
@@ -79,16 +79,16 @@ filetype plugin on
 syntax on
 ```
 
-Without them, VimWiki will not work properly.
+Without them, VimRoam will not work properly.
 
 #### Installation using [Vim packages](http://vimhelp.appspot.com/repeat.txt.html#packages) (since Vim 7.4.1528)
 
 ```sh
 
-git clone https://github.com/vimwiki/vimwiki.git ~/.vim/pack/plugins/start/vimwiki
+git clone https://github.com/jeffmm/vimroam.git ~/.vim/pack/plugins/start/vimroam
 
-# to generate documentation i.e. ':h vimwiki'
-vim -c 'helptags ~/.vim/pack/plugins/start/vimwiki/doc' -c quit
+# to generate documentation i.e. ':h vimroam'
+vim -c 'helptags ~/.vim/pack/plugins/start/vimroam/doc' -c quit
 
 ```
 
@@ -104,7 +104,7 @@ Notes:
 cd ~/.vim
 mkdir bundle
 cd bundle
-git clone https://github.com/vimwiki/vimwiki.git
+git clone https://github.com/jeffmm/vimroam.git
 
 ```
 
@@ -114,7 +114,7 @@ Add the following to the plugin-configuration in your vimrc:
 
 ```vim
 
-Plug 'vimwiki/vimwiki'
+Plug 'jeffmm/vimroam'
 
 ```
 
@@ -122,7 +122,7 @@ Then run `:PlugInstall`.
 
 #### Installation using [Vundle](https://github.com/VundleVim/Vundle.vim)
 
-Add `Plugin 'vimwiki/vimwiki'` to your vimrc file and run:
+Add `Plugin 'jeffmm/vimroam'` to your vimrc file and run:
 
 ```sh
 
@@ -132,10 +132,10 @@ vim +PluginInstall +qall
 
 #### Manual Install
 
-Download the [zip archive](https://github.com/vimwiki/vimwiki/archive/master.zip)
+Download the [zip archive](https://github.com/jeffmm/vimroam/archive/master.zip)
 and extract it in `~/.vim/bundle/`
 
-Then launch Vim, run `:Helptags` and then `:help vimwiki` to verify it was
+Then launch Vim, run `:Helptags` and then `:help vimroam` to verify it was
 installed.
 
 ## Basic Markup
@@ -172,14 +172,14 @@ _italic_ -- italic text
     b) numbered list item 4
 ```
 
-For other syntax elements, see `:h vimwiki-syntax`
+For other syntax elements, see `:h vimroam-syntax`
 
 ## Key bindings
 
 ### Normal mode
 
 **Note:** your terminal may prevent capturing some of the default bindings
-listed below. See `:h vimwiki-local-mappings` for suggestions for alternative
+listed below. See `:h vimroam-local-mappings` for suggestions for alternative
 bindings if you encounter a problem.
 
 #### Basic key bindings
@@ -198,59 +198,59 @@ bindings if you encounter a problem.
 
 #### Advanced key bindings
 
-Refer to the complete documentation at `:h vimwiki-mappings` to see many
+Refer to the complete documentation at `:h vimroam-mappings` to see many
 more bindings.
 
 ## Commands
 
-- `:Vimwiki2HTML` -- Convert current wiki link to HTML.
-- `:VimwikiAll2HTML` -- Convert all your wiki links to HTML.
-- `:help vimwiki-commands` -- List all commands.
-- `:help vimwiki` -- General vimwiki help docs.
+- `:VimRoam2HTML` -- Convert current wiki link to HTML.
+- `:VimRoamAll2HTML` -- Convert all your wiki links to HTML.
+- `:help vimroam-commands` -- List all commands.
+- `:help vimroam` -- General vimroam help docs.
 
 ## Changing Wiki Syntax
 
-VimWiki currently ships with 3 syntaxes: VimWiki (default), Markdown
+VimRoam currently ships with 3 syntaxes: VimRoam (default), Markdown
 (markdown), and MediaWiki (media).
 
 **NOTE:** Only the default syntax ships with a built-in HTML converter. For
-Markdown or MediaWiki see `:h vimwiki-option-custom_wiki2html`. Some examples
-and 3rd party tools are available [here](https://vimwiki.github.io/vimwikiwiki/Related%20Tools.html#Related%20Tools-External%20Tools).
+Markdown or MediaWiki see `:h vimroam-option-custom_wiki2html`. Some examples
+and 3rd party tools are available [here](https://vimroam.github.io/vimroamwiki/Related%20Tools.html#Related%20Tools-External%20Tools).
 
 If you would prefer to use either Markdown or MediaWiki syntaxes, set the
 following option in your `.vimrc`:
 
 ```vim
 
-let g:vimwiki_list = [{'path': '~/vimwiki/',
+let g:vimroam_list = [{'path': '~/vimroam/',
                       \ 'syntax': 'markdown', 'ext': '.md'}]
 
 ```
 
-This option will treat all markdown files in your system as part of vimwiki (check `set filetype?`). Add
+This option will treat all markdown files in your system as part of vimroam (check `set filetype?`). Add
 ```vim
-let g:vimwiki_global_ext = 0
+let g:vimroam_global_ext = 0
 ```
-to your `.vimrc` to restrict Vimwiki's operation to only those paths listed in `g:vimwiki_list`.
+to your `.vimrc` to restrict VimRoam's operation to only those paths listed in `g:vimroam_list`.
 Other markdown files wouldn't be treated as wiki pages.
-See [g:vimwiki_global_ext](https://github.com/vimwiki/vimwiki/blob/619f04f89861c58e5a6415a4f83847752928252d/doc/vimwiki.txt#L2631).
+See [g:vimroam_global_ext](https://github.com/jeffmm/vimroam/blob/619f04f89861c58e5a6415a4f83847752928252d/doc/vimroam.txt#L2631).
 
 ## Getting help
 
-[GitHub issues](https://github.com/vimwiki/vimwiki/issues) are the primary
+[GitHub issues](https://github.com/jeffmm/vimroam/issues) are the primary
 method for raising bug reports or feature requests.
 
-Additional resources include the IRC channel [#vimwiki](https://webchat.freenode.net/?channels=#vimwiki) on Freenode
-([webchat](https://webchat.freenode.net/?channels=#vimwiki), also synced to Matrix/Riot: `#freenode_#vimwiki:matrix.org` and [Telegram](https://t.me/joinchat/JqBaKBfWs04qNVrp5oWcMg))
-or post to the [mailing list](https://groups.google.com/forum/#!forum/vimwiki).
+Additional resources include the IRC channel [#vimroam](https://webchat.freenode.net/?channels=#vimroam) on Freenode
+([webchat](https://webchat.freenode.net/?channels=#vimroam), also synced to Matrix/Riot: `#freenode_#vimroam:matrix.org` and [Telegram](https://t.me/joinchat/JqBaKBfWs04qNVrp5oWcMg))
+or post to the [mailing list](https://groups.google.com/forum/#!forum/vimroam).
 
-## Helping VimWiki
+## Helping VimRoam
 
-VimWiki has a lot of users but only very few recurring developers or people
+VimRoam has a lot of users but only very few recurring developers or people
 helping the community. Your help is therefore appreciated. Everyone can help!
-See [#625](https://github.com/vimwiki/vimwiki/issues/625) for information on how you can help.
+See [#625](https://github.com/jeffmm/vimroam/issues/625) for information on how you can help.
 
-Also, take a look at [CONTRIBUTING.md](https://github.com/vimwiki/vimwiki/blob/master/CONTRIBUTING.md) and [design_notes.md](doc/design_notes.md)
+Also, take a look at [CONTRIBUTING.md](https://github.com/jeffmm/vimroam/blob/master/CONTRIBUTING.md) and [design_notes.md](doc/design_notes.md)
 
 ----
 

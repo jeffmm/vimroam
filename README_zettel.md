@@ -1,8 +1,8 @@
 # The `vim-zettel` package
 
 This is a Vim plugin that implements ideas of the
-[Zettelkasten](https://zettelkasten.de/) method using Vimwiki. 
-It supports both Vimwiki and Markdown syntaxes.
+[Zettelkasten](https://zettelkasten.de/) method using VimRoam. 
+It supports both VimRoam and Markdown syntaxes.
 
 Main features:
 
@@ -25,7 +25,7 @@ command in Vim after package installation.
 ## Using Vundle:
 
 
-    Plugin 'vimwiki/vimwiki'
+    Plugin 'jeffmm/vimroam'
     Plugin 'junegunn/fzf'
     Plugin 'junegunn/fzf.vim'
     Plugin 'michal-h21/vim-zettel'
@@ -34,7 +34,7 @@ command in Vim after package installation.
 ## Using [vim-plug](https://github.com/junegunn/vim-plug)
 
     call plug#begin()
-    Plug 'vimwiki/vimwiki'
+    Plug 'jeffmm/vimroam'
     Plug 'junegunn/fzf'
     Plug 'junegunn/fzf.vim'
     Plug 'michal-h21/vim-zettel'
@@ -46,7 +46,7 @@ The used command can be changed by setting the `g:zettel_fzf_command` variable.
 # Usage
 
 `Vim-zettel` adds some commands and mappings on top of
-[Vimwiki](http://vimwiki.github.io/). See Vimwiki documentation on how to set up a
+[VimRoam](http://vimroam.github.io/). See VimRoam documentation on how to set up a
 basic wiki and navigate it.
 
 # Known issues
@@ -58,7 +58,7 @@ basic wiki and navigate it.
 
 # Related packages
 
-The following packages may be useful in conjunction with Vimwiki and Vim-zettel:
+The following packages may be useful in conjunction with VimRoam and Vim-zettel:
 
 - [Notational FZF](https://github.com/alok/notational-fzf-vim) - fast searching
   notes with preview window. Similar functionality is now built in in
@@ -68,4 +68,4 @@ To search in the Zettelkasten, set the following variable with path to the Zette
 
     let g:nv_search_paths = ['/path/to/zettelkasten/dir']
 
-- [Vimwiki-sync](https://github.com/michal-h21/vimwiki-sync) - automatically commit changes in wiki and synchronize them with external Git repository.
+- [VimRoam-sync](https://github.com/michal-h21/vimroam-sync) - automatically commit changes in wiki and synchronize them with external Git repository.

@@ -1,23 +1,23 @@
 # Design Notes
 
-This file is meant to document design decisions and algorithms inside Vimwiki
+This file is meant to document design decisions and algorithms inside VimRoam
 which are too large for code comments, and not necessarily interesting to
 users. Please create a new section to document each behavior.
 
 ## Formatting tables
 
-In Vimwiki, formatting tables occurs dynamically, when navigating between cells
+In VimRoam, formatting tables occurs dynamically, when navigating between cells
 and adding new rows in a table in the Insert mode, or statically, when pressing
-`gqq` or `gqw` (which are mappings for commands `VimwikiTableAlignQ` and
-`VimwikiTableAlignW` respectively) in the Normal mode. It also triggers when
-leaving Insert mode, provided variable `g:vimwiki_table_auto_fmt` is set. In
+`gqq` or `gqw` (which are mappings for commands `VimRoamTableAlignQ` and
+`VimRoamTableAlignW` respectively) in the Normal mode. It also triggers when
+leaving Insert mode, provided variable `g:vimroam_table_auto_fmt` is set. In
 this section, the original and the newer optimized algorithms of table
 formatting will be described and compared.
 
 ### The older table formatting algorithm and why this is not optimal
 
 Let's consider a simple example. Open a new file, say _tmp.wiki_, and create a
-new table with command `VimwikiTable`. This should create a blank table.
+new table with command `VimRoamTable`. This should create a blank table.
 
 ```
 |   |   |   |   |   |
@@ -86,7 +86,7 @@ once per one press!
 ```vim
 function! s:kbd_create_new_row(cols, goto_first)
   let cmd = "\<ESC>o".s:create_empty_row(a:cols)
-  let cmd .= "\<ESC>:call vimwiki#tbl#format(line('.'))\<CR>"
+  let cmd .= "\<ESC>:call vimroam#tbl#format(line('.'))\<CR>"
   let cmd .= "\<ESC>0"
   if a:goto_first
     let cmd .= ":call search('\\(".s:rxSep()."\\)\\zs', 'c', line('.'))\<CR>"
@@ -101,9 +101,9 @@ endfunction
 ```
 
 Function `s:kbd_create_new_row()` is called when _Tab_ or _Enter_ get pressed.
-Formatting of the whole table happens in function `vimwiki#tbl#format()`. But
+Formatting of the whole table happens in function `vimroam#tbl#format()`. But
 remember that leaving the Insert mode triggers re-formatting of a table when
-variable `g:vimwiki_table_auto_fmt` is set. This means that formatting of the
+variable `g:vimroam_table_auto_fmt` is set. This means that formatting of the
 whole table is called on all those multiple interleaves between the Insert and
 the Normal mode in `s:kbd_create_new_row` (notice `\<ESC>`, `o`, etc.).
 
@@ -188,12 +188,12 @@ pressing `gqq` in the Normal mode.
 
 ## Scoped Variable
 
-Vimwiki's variables have a scope. They can be:
+VimRoam's variables have a scope. They can be:
 
 1. Global [ex: `global_ext`]
 2. Wikilocal (1, 2, 3 ...) [ex: `path`]
 3. Syntaxlocal (default, markdown, media) [ex: `bullet_types`]
-4. Bufferlocal [ex: `b:vimwiki_wiki_nr`]
+4. Bufferlocal [ex: `b:vimroam_wiki_nr`]
 
 They all can be configured, changed by user
 
@@ -211,16 +211,16 @@ dictionaries to hold internal variables (there is only one bufferlocal variable
 so a dictionary was clearly overkill) and 3 other dictionaries for user
 configuration. The internal dictionaries get updated at startup (`:h extend`)
 with the user content but do not modify it. They can also be updated later with
-`VimwikiVar` function.
+`VimRoamVar` function.
 
 Here, `key` is the variable name, `2` the wiki number and `markdown` the syntax
 
 ```vim
 " External              -> Internal
-g:vimwiki_{key}         -> g:vimwiki_global_vars[key]
-g:vimwiki_syntax_list['markdown'][key]
-                        -> g:vimwiki_syntaxlocal_vars['markdown'][key]
-g:vimwiki_list[2][key]  -> g:vimwiki_wikilocal_vars[2][key]
+g:vimroam_{key}         -> g:vimroam_global_vars[key]
+g:vimroam_syntax_list['markdown'][key]
+                        -> g:vimroam_syntaxlocal_vars['markdown'][key]
+g:vimroam_list[2][key]  -> g:vimroam_wikilocal_vars[2][key]
 ```
 
 All are defined in `vars.vim` and in case of a conflict while executing it, the
@@ -230,7 +230,7 @@ reasons for such a complex system is:
 2. The nature of new (2020) issues asking for some deep customisation (ex: of
    the link format) or high functionality (ex: on demand wiki creation and
    configuration)
-3. Historical excuses that Vimwiki was not designed to be highly configurable at
+3. Historical excuses that VimRoam was not designed to be highly configurable at
    beginning and many temporary internal variables where created to "fix some
    holes"
 

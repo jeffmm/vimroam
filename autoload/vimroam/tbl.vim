@@ -1,23 +1,23 @@
 " vim:tabstop=2:shiftwidth=2:expandtab:textwidth=99
-" Vimwiki autoload plugin file
+" VimRoam autoload plugin file
 " Description: Tables
 " | Easily | manageable | text  | tables | !       |
 " |--------|------------|-------|--------|---------|
 " | Have   | fun!       | Drink | tea    | Period. |
 "
-" Home: https://github.com/vimwiki/vimwiki/
+" Home: https://github.com/jeffmm/vimroam/
 
 
 
 " Clause: Load only once
-if exists('g:loaded_vimwiki_tbl_auto') || &compatible
+if exists('g:loaded_vimroam_tbl_auto') || &compatible
   finish
 endif
-let g:loaded_vimwiki_tbl_auto = 1
+let g:loaded_vimroam_tbl_auto = 1
 
 
 function! s:rxSep() abort
-  return vimwiki#vars#get_syntaxlocal('rxTableSep')
+  return vimroam#vars#get_syntaxlocal('rxTableSep')
 endfunction
 
 
@@ -28,7 +28,7 @@ function! s:wide_len(str) abort
   endif
 
   " get str display width in vim ver < 7.2
-  if !vimwiki#vars#get_global('CJK_length')
+  if !vimroam#vars#get_global('CJK_length')
     let ret = strlen(substitute(a:str, '.', 'x', 'g'))
   else
     let savemodified = &modified
@@ -135,7 +135,7 @@ function! s:create_row_sep(cols) abort
 endfunction
 
 
-function! vimwiki#tbl#get_cells(line, ...) abort
+function! vimroam#tbl#get_cells(line, ...) abort
   let result = []
   let state = 'NONE'
   let cell_start = 0
@@ -164,7 +164,7 @@ function! vimwiki#tbl#get_cells(line, ...) abort
           if a:0 && a:1
             let cell = substitute(cell, '^ \(.*\) $', '\1', '')
           else
-            let cell = vimwiki#u#trim(cell)
+            let cell = vimroam#u#trim(cell)
           endif
           call add(result, cell)
           let cell_start = idx + 1
@@ -196,7 +196,7 @@ endfunction
 
 
 function! s:col_count(lnum) abort
-  return len(vimwiki#tbl#get_cells(getline(a:lnum)))
+  return len(vimroam#tbl#get_cells(getline(a:lnum)))
 endfunction
 
 
@@ -268,7 +268,7 @@ function! s:get_cell_aligns(lnum, ...) abort
   let depth = a:0 > 0 ? a:1 : 0
   for [lnum, row] in s:get_rows(a:lnum, depth)
     if s:is_separator(row)
-      let cells = vimwiki#tbl#get_cells(row)
+      let cells = vimroam#tbl#get_cells(row)
       for idx in range(len(cells))
         let cell = cells[idx]
         if cell =~# '^--\+:'
@@ -280,7 +280,7 @@ function! s:get_cell_aligns(lnum, ...) abort
         endif
       endfor
     else
-      let cells = vimwiki#tbl#get_cells(row)
+      let cells = vimroam#tbl#get_cells(row)
       for idx in range(len(cells))
         if !has_key(aligns, idx)
           let aligns[idx] = 'left'
@@ -299,7 +299,7 @@ function! s:get_cell_aligns_fast(rows) abort
     if s:is_separator(row)
       return s:get_cell_aligns(lnum, 1)
     endif
-    let cells = vimwiki#tbl#get_cells(row, 1)
+    let cells = vimroam#tbl#get_cells(row, 1)
     let clen = len(cells)
     for idx in range(clen)
       let cell = cells[idx]
@@ -335,7 +335,7 @@ function! s:get_cell_max_lens(lnum, ...) abort
     if s:is_separator(row)
       continue
     endif
-    let cells = a:0 > 1 ? a:1[lnum - a:2] : vimwiki#tbl#get_cells(row)
+    let cells = a:0 > 1 ? a:1[lnum - a:2] : vimroam#tbl#get_cells(row)
     for idx in range(len(cells))
       let value = cells[idx]
       if has_key(max_lens, idx)
@@ -363,7 +363,7 @@ function! s:get_aligned_rows(lnum, col1, col2, depth) abort
     if lrows == a:depth + 1
       let line = rows[-1][1]
       if !s:is_separator(line)
-        let lcells = vimwiki#tbl#get_cells(line)
+        let lcells = vimroam#tbl#get_cells(line)
         let lclen = len(lcells)
         let lmax_lens = repeat([0], lclen)
         let laligns = repeat(['left'], lclen)
@@ -371,12 +371,12 @@ function! s:get_aligned_rows(lnum, col1, col2, depth) abort
       endif
       let i = 1
       for [lnum, row] in rows
-        call add(cells, vimwiki#tbl#get_cells(row, i != lrows - 1))
+        call add(cells, vimroam#tbl#get_cells(row, i != lrows - 1))
         let i += 1
       endfor
       let max_lens = s:get_cell_max_lens(a:lnum, cells, startlnum, rows)
       " user option not to expand last call
-      if vimwiki#vars#get_global('table_reduce_last_col')
+      if vimroam#vars#get_global('table_reduce_last_col')
         let last_index = keys(max_lens)[-1]
         let max_lens[last_index] = 1
       endif
@@ -392,11 +392,11 @@ function! s:get_aligned_rows(lnum, col1, col2, depth) abort
     let startlnum = rows[0][0]
     let cells = []
     for [lnum, row] in rows
-      call add(cells, vimwiki#tbl#get_cells(row))
+      call add(cells, vimroam#tbl#get_cells(row))
     endfor
     let max_lens = s:get_cell_max_lens(a:lnum, cells, startlnum, rows)
     " user option not to expand last call
-    if vimwiki#vars#get_global('table_reduce_last_col')
+    if vimroam#vars#get_global('table_reduce_last_col')
       let last_index = keys(max_lens)[-1]
       let max_lens[last_index] = 1
     endif
@@ -510,7 +510,7 @@ endfunction
 
 function! s:kbd_create_new_row(cols, goto_first) abort
   let cmd = "\<ESC>o".s:create_empty_row(a:cols)
-  let cmd .= "\<ESC>:call vimwiki#tbl#format(line('.'), 2)\<CR>"
+  let cmd .= "\<ESC>:call vimroam#tbl#format(line('.'), 2)\<CR>"
   let cmd .= "\<ESC>0"
   if a:goto_first
     let cmd .= ":call search('\\(".s:rxSep()."\\)\\zs', 'c', line('.'))\<CR>"
@@ -543,7 +543,7 @@ endfunction
 
 
 " Used in s:kbd_goto_next_col
-function! vimwiki#tbl#goto_next_col() abort
+function! vimroam#tbl#goto_next_col() abort
   let curcol = virtcol('.')
   let lnum = line('.')
   let depth = 2
@@ -552,7 +552,7 @@ function! vimwiki#tbl#goto_next_col() abort
   let startlnum = rows[0][0]
   let cells = []
   for [lnum, row] in rows
-    call add(cells, vimwiki#tbl#get_cells(row, 1))
+    call add(cells, vimroam#tbl#get_cells(row, 1))
   endfor
   let max_lens = s:get_cell_max_lens(lnum, cells, startlnum, rows)
   for cell_len in values(max_lens)
@@ -562,7 +562,7 @@ function! vimwiki#tbl#goto_next_col() abort
     let newcol += cell_len + 3 " +3 == 2 spaces + 1 separator |<space>...<space>
   endfor
   let newcol += 2 " +2 == 1 separator + 1 space |<space
-  call vimwiki#u#cursor(lnum, newcol)
+  call vimroam#u#cursor(lnum, newcol)
 endfunction
 
 
@@ -572,13 +572,13 @@ function! s:kbd_goto_next_col(jumpdown) abort
     let seps = s:count_separators_down(line('.'))
     let cmd .= seps.'j0'
   endif
-  let cmd .= ":call vimwiki#tbl#goto_next_col()\<CR>a"
+  let cmd .= ":call vimroam#tbl#goto_next_col()\<CR>a"
   return cmd
 endfunction
 
 
 " Used in s:kbd_goto_prev_col
-function! vimwiki#tbl#goto_prev_col() abort
+function! vimroam#tbl#goto_prev_col() abort
   let curcol = virtcol('.')
   let lnum = line('.')
   let depth = 2
@@ -587,7 +587,7 @@ function! vimwiki#tbl#goto_prev_col() abort
   let startlnum = rows[0][0]
   let cells = []
   for [lnum, row] in rows
-    call add(cells, vimwiki#tbl#get_cells(row, 1))
+    call add(cells, vimroam#tbl#get_cells(row, 1))
   endfor
   let max_lens = s:get_cell_max_lens(lnum, cells, startlnum, rows)
   let prev_cell_len = 0
@@ -603,7 +603,7 @@ function! vimwiki#tbl#goto_prev_col() abort
     let newcol += delta
   endfor
   let newcol += 2 " +2 == 1 separator + 1 space |<space
-  call vimwiki#u#cursor(lnum, newcol)
+  call vimroam#u#cursor(lnum, newcol)
 endfunction
 
 
@@ -614,21 +614,21 @@ function! s:kbd_goto_prev_col(jumpup) abort
     let cmd .= seps.'k'
     let cmd .= '$'
   endif
-  let cmd .= ":call vimwiki#tbl#goto_prev_col()\<CR>a"
+  let cmd .= ":call vimroam#tbl#goto_prev_col()\<CR>a"
   " let cmd .= ":call search('\\(".s:rxSep()."\\)\\zs', 'b', line('.'))\<CR>"
   " let cmd .= "a"
   return cmd
 endfunction
 
 
-function! vimwiki#tbl#kbd_cr() abort
+function! vimroam#tbl#kbd_cr() abort
   let lnum = line('.')
   if !s:is_table(getline(lnum))
     return ''
   endif
 
   if s:is_separator(getline(lnum+1)) || !s:is_table(getline(lnum+1))
-    let cols = len(vimwiki#tbl#get_cells(getline(lnum)))
+    let cols = len(vimroam#tbl#get_cells(getline(lnum)))
     return s:kbd_create_new_row(cols, 0)
   else
     return s:kbd_goto_next_row()
@@ -636,7 +636,7 @@ function! vimwiki#tbl#kbd_cr() abort
 endfunction
 
 
-function! vimwiki#tbl#kbd_tab() abort
+function! vimroam#tbl#kbd_tab() abort
   let lnum = line('.')
   if !s:is_table(getline(lnum))
     return "\<Tab>"
@@ -644,16 +644,16 @@ function! vimwiki#tbl#kbd_tab() abort
 
   let last = s:is_last_column(lnum, col('.'))
   let is_sep = s:is_separator_tail(getline(lnum))
-  "vimwiki#u#debug("DEBUG kbd_tab> last=".last.", is_sep=".is_sep)
+  "vimroam#u#debug("DEBUG kbd_tab> last=".last.", is_sep=".is_sep)
   if (is_sep || last) && !s:is_table(getline(lnum+1))
-    let cols = len(vimwiki#tbl#get_cells(getline(lnum)))
+    let cols = len(vimroam#tbl#get_cells(getline(lnum)))
     return s:kbd_create_new_row(cols, 1)
   endif
   return s:kbd_goto_next_col(is_sep || last)
 endfunction
 
 
-function! vimwiki#tbl#kbd_shift_tab() abort
+function! vimroam#tbl#kbd_shift_tab() abort
   let lnum = line('.')
   if !s:is_table(getline(lnum))
     return "\<S-Tab>"
@@ -661,7 +661,7 @@ function! vimwiki#tbl#kbd_shift_tab() abort
 
   let first = s:is_first_column(lnum, col('.'))
   let is_sep = s:is_separator_tail(getline(lnum))
-  "vimwiki#u#debug("kbd_tab> ".first)
+  "vimroam#u#debug("kbd_tab> ".first)
   if (is_sep || first) && !s:is_table(getline(lnum-1))
     return ''
   endif
@@ -669,9 +669,9 @@ function! vimwiki#tbl#kbd_shift_tab() abort
 endfunction
 
 
-function! vimwiki#tbl#format(lnum, ...) abort
+function! vimroam#tbl#format(lnum, ...) abort
   " Clause in
-  if !vimwiki#u#ft_is_vw()
+  if !vimroam#u#ft_is_vw()
     return
   endif
   let line = getline(a:lnum)
@@ -712,7 +712,7 @@ function! vimwiki#tbl#format(lnum, ...) abort
 endfunction
 
 
-function! vimwiki#tbl#create(...) abort
+function! vimroam#tbl#create(...) abort
   if a:0 > 1
     let cols = a:1
     let rows = a:2
@@ -748,9 +748,9 @@ function! vimwiki#tbl#create(...) abort
 endfunction
 
 
-function! vimwiki#tbl#align_or_cmd(cmd, ...) abort
+function! vimroam#tbl#align_or_cmd(cmd, ...) abort
   if s:is_table(getline('.'))
-    call call('vimwiki#tbl#format', [line('.')] + a:000)
+    call call('vimroam#tbl#format', [line('.')] + a:000)
   else
     exe 'normal! '.a:cmd
   endif
@@ -758,7 +758,7 @@ endfunction
 
 
 " TODO: move_column_left and move_column_right are good candidates to be refactored.
-function! vimwiki#tbl#move_column_left() abort
+function! vimroam#tbl#move_column_left() abort
   " Clause in
   let line = getline('.')
   if !s:is_table(line)
@@ -772,7 +772,7 @@ function! vimwiki#tbl#move_column_left() abort
     return
   endif
 
-  call vimwiki#tbl#format(line('.'), cur_col-1, cur_col)
+  call vimroam#tbl#format(line('.'), cur_col-1, cur_col)
   call cursor(line('.'), 1)
 
   let sep = '\('.s:rxSep().'\).\zs'
@@ -789,7 +789,7 @@ function! vimwiki#tbl#move_column_left() abort
 endfunction
 
 
-function! vimwiki#tbl#move_column_right() abort
+function! vimroam#tbl#move_column_right() abort
   " Clause in
   let line = getline('.')
   if !s:is_table(line)
@@ -804,7 +804,7 @@ function! vimwiki#tbl#move_column_right() abort
   endif
 
   " Format table && Put cursor on first col
-  call vimwiki#tbl#format(line('.'), cur_col, cur_col+1)
+  call vimroam#tbl#format(line('.'), cur_col, cur_col+1)
   call cursor(line('.'), 1)
 
   " Change add one to all col
@@ -822,26 +822,26 @@ function! vimwiki#tbl#move_column_right() abort
 endfunction
 
 
-function! vimwiki#tbl#get_rows(lnum) abort
+function! vimroam#tbl#get_rows(lnum) abort
   return s:get_rows(a:lnum)
 endfunction
 
 
-function! vimwiki#tbl#is_table(line) abort
+function! vimroam#tbl#is_table(line) abort
   return s:is_table(a:line)
 endfunction
 
 
-function! vimwiki#tbl#is_separator(line) abort
+function! vimroam#tbl#is_separator(line) abort
   return s:is_separator(a:line)
 endfunction
 
 
-function! vimwiki#tbl#cell_splitter() abort
+function! vimroam#tbl#cell_splitter() abort
   return s:cell_splitter()
 endfunction
 
 
-function! vimwiki#tbl#sep_splitter() abort
+function! vimroam#tbl#sep_splitter() abort
   return s:sep_splitter()
 endfunction

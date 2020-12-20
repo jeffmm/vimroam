@@ -1,7 +1,7 @@
 " vim:tabstop=2:shiftwidth=2:expandtab:textwidth=99
-" Vimwiki autoload plugin file
+" VimRoam autoload plugin file
 " Description: Tag manipulation functions
-" Home: https://github.com/vimwiki/vimwiki/
+" Home: https://github.com/jeffmm/vimroam/
 "
 " Tags metadata in-memory format:
 " metadata := { 'pagename': [entries, ...] }
@@ -15,22 +15,22 @@
 " can afford that, we assume metadata file is always updated before use.
 "
 " Pagename and link are not saved in standard ctags fields, so we'll add
-" an optional field, "vimwiki:".  In this field, we encode tab-separated values
+" an optional field, "vimroam:".  In this field, we encode tab-separated values
 " of missing parameters -- "pagename" and "link".
 
 
-let s:TAGS_METADATA_FILE_NAME = '.vimwiki_tags'
+let s:TAGS_METADATA_FILE_NAME = '.vimroam_tags'
 
 
 " Update tags metadata.
 " Param: a:full_rebuild == 1: re-scan entire wiki
 " Param: a:full_rebuild == 0: only re-scan current page
 " a:all_files == '':   only if the file is newer than .tags
-function! vimwiki#tags#update_tags(full_rebuild, all_files) abort
+function! vimroam#tags#update_tags(full_rebuild, all_files) abort
   let all_files = a:all_files !=? ''
   if !a:full_rebuild
     " Updating for one page (current)
-    let page_name = vimwiki#vars#get_bufferlocal('subdir') . expand('%:t:r')
+    let page_name = vimroam#vars#get_bufferlocal('subdir') . expand('%:t:r')
     " Collect tags in current file
     let tags = s:scan_tags(getline(1, '$'), page_name)
     " Load metadata file
@@ -42,13 +42,13 @@ function! vimwiki#tags#update_tags(full_rebuild, all_files) abort
     " Save
     call s:write_tags_metadata(metadata)
   else " full rebuild
-    let files = vimwiki#base#find_files(vimwiki#vars#get_bufferlocal('wiki_nr'), 0)
-    let wiki_base_dir = vimwiki#vars#get_wikilocal('path')
-    let tags_file_last_modification = getftime(vimwiki#tags#metadata_file_path())
+    let files = vimroam#base#find_files(vimroam#vars#get_bufferlocal('wiki_nr'), 0)
+    let wiki_base_dir = vimroam#vars#get_wikilocal('path')
+    let tags_file_last_modification = getftime(vimroam#tags#metadata_file_path())
     let metadata = s:load_tags_metadata()
     for file in files
       if all_files || getftime(file) >= tags_file_last_modification
-        let subdir = vimwiki#base#subdir(wiki_base_dir, file)
+        let subdir = vimroam#base#subdir(wiki_base_dir, file)
         let page_name = subdir . fnamemodify(file, ':t:r')
         let tags = s:scan_tags(readfile(file), page_name)
         let metadata = s:remove_page_from_tags(metadata, page_name)
@@ -71,14 +71,14 @@ endfunction
 " Scan the list of text lines (argument) and produces tags metadata as a list of tag entries.
 function! s:scan_tags(lines, page_name) abort
   " Code wireframe to scan for headers -- borrowed from
-  " vimwiki#base#get_anchors(), with minor modifications.
+  " vimroam#base#get_anchors(), with minor modifications.
 
   let entries = []
 
   " Get syntax wide regex
-  let rxheader = vimwiki#vars#get_syntaxlocal('header_search')
-  let tag_search_rx = vimwiki#vars#get_syntaxlocal('tag_search')
-  let tag_format = vimwiki#vars#get_syntaxlocal('tag_format')
+  let rxheader = vimroam#vars#get_syntaxlocal('header_search')
+  let tag_search_rx = vimroam#vars#get_syntaxlocal('tag_search')
+  let tag_format = vimroam#vars#get_syntaxlocal('tag_format')
 
   let anchor_level = ['', '', '', '', '', '', '']
   let current_complete_anchor = ''
@@ -90,7 +90,7 @@ function! s:scan_tags(lines, page_name) abort
     let line = a:lines[line_nr - 1]
 
     " ignore verbatim blocks
-    if vimwiki#u#is_codeblock(line_nr)
+    if vimroam#u#is_codeblock(line_nr)
       continue
     endif
 
@@ -98,7 +98,7 @@ function! s:scan_tags(lines, page_name) abort
     let h_match = matchlist(line, rxheader)
     if !empty(h_match) " got a header
       let header_line_nr = line_nr
-      let header = vimwiki#base#normalize_anchor(h_match[2])
+      let header = vimroam#base#normalize_anchor(h_match[2])
       let level = len(h_match[1])
       let anchor_level[level-1] = header
       for l in range(level, 6)
@@ -156,15 +156,15 @@ endfunction
 
 
 " Return: tags metadata file path
-function! vimwiki#tags#metadata_file_path() abort
-  return fnamemodify(vimwiki#path#join_path(vimwiki#vars#get_wikilocal('path'),
+function! vimroam#tags#metadata_file_path() abort
+  return fnamemodify(vimroam#path#join_path(vimroam#vars#get_wikilocal('path'),
         \ s:TAGS_METADATA_FILE_NAME), ':p')
 endfunction
 
 
 " Load tags metadata from file, returns a dictionary
 function! s:load_tags_metadata() abort
-  let metadata_path = vimwiki#tags#metadata_file_path()
+  let metadata_path = vimroam#tags#metadata_file_path()
   if !filereadable(metadata_path)
     return {}
   endif
@@ -175,28 +175,28 @@ function! s:load_tags_metadata() abort
     endif
     let parts = matchlist(line, '^\(.\{-}\);"\(.*\)$')
     if parts[0] ==? '' || parts[1] ==? '' || parts[2] ==? ''
-      throw 'VimwikiTags1: Metadata file corrupted'
+      throw 'VimRoamTags1: Metadata file corrupted'
     endif
     let std_fields = split(parts[1], '\t')
     if len(std_fields) != 3
-      throw 'VimwikiTags2: Metadata file corrupted'
+      throw 'VimRoamTags2: Metadata file corrupted'
     endif
     let vw_part = parts[2]
     if vw_part[0] !=? "\t"
-      throw 'VimwikiTags3: Metadata file corrupted'
+      throw 'VimRoamTags3: Metadata file corrupted'
     endif
     let vw_fields = split(vw_part[1:], "\t")
-    if len(vw_fields) != 1 || vw_fields[0] !~# '^vimwiki:'
-      throw 'VimwikiTags4: Metadata file corrupted'
+    if len(vw_fields) != 1 || vw_fields[0] !~# '^vimroam:'
+      throw 'VimRoamTags4: Metadata file corrupted'
     endif
-    let vw_data = substitute(vw_fields[0], '^vimwiki:', '', '')
+    let vw_data = substitute(vw_fields[0], '^vimroam:', '', '')
     let vw_data = substitute(vw_data, '\\n', "\n", 'g')
     let vw_data = substitute(vw_data, '\\r', "\r", 'g')
     let vw_data = substitute(vw_data, '\\t', "\t", 'g')
     let vw_data = substitute(vw_data, '\\\\', "\\", 'g')
     let vw_fields = split(vw_data, "\t")
     if len(vw_fields) != 2
-      throw 'VimwikiTags5: Metadata file corrupted'
+      throw 'VimRoamTags5: Metadata file corrupted'
     endif
     let pagename = vw_fields[0]
     let entry = {}
@@ -267,7 +267,7 @@ endfunction
 
 " Save metadata object into a file. Throws exceptions in case of problems.
 function! s:write_tags_metadata(metadata) abort
-  let metadata_path = vimwiki#tags#metadata_file_path()
+  let metadata_path = vimroam#tags#metadata_file_path()
   let tags = []
   for pagename in keys(a:metadata)
     for entry in a:metadata[pagename]
@@ -278,20 +278,20 @@ function! s:write_tags_metadata(metadata) abort
       let entry_data = substitute(entry_data, "\n", '\\n', 'g')
       call add(tags,
             \   entry.tagname  . "\t"
-            \ . pagename . vimwiki#vars#get_wikilocal('ext') . "\t"
+            \ . pagename . vimroam#vars#get_wikilocal('ext') . "\t"
             \ . entry.lineno
             \ . ';"'
-            \ . "\t" . 'vimwiki:' . entry_data
+            \ . "\t" . 'vimroam:' . entry_data
             \)
     endfor
   endfor
   call sort(tags, 's:tags_entry_cmp')
   let tag_comments = [
     \ "!_TAG_PROGRAM_VERSION\t2.5",
-    \ "!_TAG_PROGRAM_URL\thttps://github.com/vimwiki/vimwiki",
-    \ "!_TAG_PROGRAM_NAME\tVimwiki Tags",
-    \ "!_TAG_PROGRAM_AUTHOR\tVimwiki",
-    \ "!_TAG_OUTPUT_MODE\tvimwiki-tags",
+    \ "!_TAG_PROGRAM_URL\thttps://github.com/jeffmm/vimroam",
+    \ "!_TAG_PROGRAM_NAME\tVimRoam Tags",
+    \ "!_TAG_PROGRAM_AUTHOR\tVimRoam",
+    \ "!_TAG_OUTPUT_MODE\tvimroam-tags",
     \ "!_TAG_FILE_SORTED\t1",
     \ "!_TAG_FILE_FORMAT\t2",
     \ ]
@@ -303,7 +303,7 @@ endfunction
 
 
 " Return: list of unique tags found in the .tags file
-function! vimwiki#tags#get_tags() abort
+function! vimroam#tags#get_tags() abort
   let metadata = s:load_tags_metadata()
   let tags = {}
   for entries in values(metadata)
@@ -316,12 +316,12 @@ endfunction
 
 
 " Generate tags in current buffer
-" Similar to vimwiki#base#generate_links.  In the current buffer, appends
+" Similar to vimroam#base#generate_links.  In the current buffer, appends
 " tags and references to all their instances.  If no arguments (tags) are
 " specified, outputs all tags.
-function! vimwiki#tags#generate_tags(create, ...) abort
+function! vimroam#tags#generate_tags(create, ...) abort
   let specific_tags = a:000
-  let header_level = vimwiki#vars#get_global('tags_header_level')
+  let header_level = vimroam#vars#get_global('tags_header_level')
 
   " use a dictionary function for closure like capability
   " copy all local variables into dict (add a: if arguments are needed)
@@ -344,7 +344,7 @@ function! vimwiki#tags#generate_tags(create, ...) abort
     endfor
 
     let lines = []
-    let bullet = repeat(' ', vimwiki#lst#get_list_margin()).vimwiki#lst#default_symbol().' '
+    let bullet = repeat(' ', vimroam#lst#get_list_margin()).vimroam#lst#default_symbol().' '
     for tagname in sort(keys(tags_entries))
       if need_all_tags || index(self.specific_tags, tagname) != -1
         if len(lines) > 0
@@ -352,23 +352,23 @@ function! vimwiki#tags#generate_tags(create, ...) abort
         endif
 
         let tag_tpl = printf('rxH%d_Template', self.header_level + 1)
-        call add(lines, s:safesubstitute(vimwiki#vars#get_syntaxlocal(tag_tpl), '__Header__', tagname, ''))
+        call add(lines, s:safesubstitute(vimroam#vars#get_syntaxlocal(tag_tpl), '__Header__', tagname, ''))
 
-        if vimwiki#vars#get_wikilocal('syntax') ==# 'markdown'
-          for _ in range(vimwiki#vars#get_global('markdown_header_style'))
+        if vimroam#vars#get_wikilocal('syntax') ==# 'markdown'
+          for _ in range(vimroam#vars#get_global('markdown_header_style'))
             call add(lines, '')
           endfor
         endif
 
         for taglink in sort(tags_entries[tagname])
-          if vimwiki#vars#get_wikilocal('syntax') ==# 'markdown'
-            let link_tpl = vimwiki#vars#get_syntaxlocal('Weblink3Template')
-            let link_infos = vimwiki#base#resolve_link(taglink)
+          if vimroam#vars#get_wikilocal('syntax') ==# 'markdown'
+            let link_tpl = vimroam#vars#get_syntaxlocal('Weblink3Template')
+            let link_infos = vimroam#base#resolve_link(taglink)
             if empty(link_infos.anchor)
-              let link_tpl = vimwiki#vars#get_syntaxlocal('Link1')
+              let link_tpl = vimroam#vars#get_syntaxlocal('Link1')
               let entry = s:safesubstitute(link_tpl, '__LinkUrl__', taglink, '')
               let entry = s:safesubstitute(entry, '__LinkDescription__', taglink, '')
-              let file_extension = vimwiki#vars#get_wikilocal('ext', vimwiki#vars#get_bufferlocal('wiki_nr'))
+              let file_extension = vimroam#vars#get_wikilocal('ext', vimroam#vars#get_bufferlocal('wiki_nr'))
               let entry = s:safesubstitute(entry, '__FileExtension__', file_extension , '')
             else
               let link_caption = split(link_infos.anchor, '#', 0)[-1]
@@ -376,14 +376,14 @@ function! vimwiki#tags#generate_tags(create, ...) abort
               let entry = s:safesubstitute(link_tpl, '__LinkUrl__', link_text, '')
               let entry = s:safesubstitute(entry, '__LinkAnchor__', link_infos.anchor, '')
               let entry = s:safesubstitute(entry, '__LinkDescription__', link_caption, '')
-              let file_extension = vimwiki#vars#get_wikilocal('ext', vimwiki#vars#get_bufferlocal('wiki_nr'))
+              let file_extension = vimroam#vars#get_wikilocal('ext', vimroam#vars#get_bufferlocal('wiki_nr'))
               let entry = s:safesubstitute(entry, '__FileExtension__', file_extension , '')
             endif
 
             call add(lines, bullet . entry)
           else
-            let link_tpl = vimwiki#vars#get_global('WikiLinkTemplate1')
-            let file_extension = vimwiki#vars#get_wikilocal('ext', vimwiki#vars#get_bufferlocal('wiki_nr'))
+            let link_tpl = vimroam#vars#get_global('WikiLinkTemplate1')
+            let file_extension = vimroam#vars#get_wikilocal('ext', vimroam#vars#get_bufferlocal('wiki_nr'))
             let link_tpl = s:safesubstitute(link_tpl, '__FileExtension__', file_extension , '')
             call add(lines, bullet . substitute(link_tpl, '__LinkUrl__', taglink, ''))
           endif
@@ -395,12 +395,12 @@ function! vimwiki#tags#generate_tags(create, ...) abort
   endfunction
 
   let tag_match = printf('rxH%d', header_level + 1)
-  let links_rx = '^\%('.vimwiki#vars#get_syntaxlocal(tag_match).'\)\|'.
-        \ '\%(^\s*$\)\|^\s*\%('.vimwiki#vars#get_syntaxlocal('rxListBullet').'\)'
+  let links_rx = '^\%('.vimroam#vars#get_syntaxlocal(tag_match).'\)\|'.
+        \ '\%(^\s*$\)\|^\s*\%('.vimroam#vars#get_syntaxlocal('rxListBullet').'\)'
 
-  call vimwiki#base#update_listing_in_buffer(
+  call vimroam#base#update_listing_in_buffer(
         \ GeneratorTags,
-        \ vimwiki#vars#get_global('tags_header'),
+        \ vimroam#vars#get_global('tags_header'),
         \ links_rx,
         \ line('$')+1,
         \ header_level,
@@ -409,9 +409,9 @@ endfunction
 
 
 " Complete tags
-function! vimwiki#tags#complete_tags(ArgLead, CmdLine, CursorPos) abort
+function! vimroam#tags#complete_tags(ArgLead, CmdLine, CursorPos) abort
   " We can safely ignore args if we use -custom=complete option, Vim engine
   " will do the job of filtering.
-  let taglist = vimwiki#tags#get_tags()
+  let taglist = vimroam#tags#get_tags()
   return join(taglist, "\n")
 endfunction

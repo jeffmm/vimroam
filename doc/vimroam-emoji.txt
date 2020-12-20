@@ -1,25 +1,25 @@
-*vimwiki-emoji.txt*   A Reference table of markdown emoji
+*vimroam-emoji.txt*   A Reference table of markdown emoji
 
 ==============================================================================
-CONTENTS                                                       *vimwiki-emoji*
+CONTENTS                                                       *vimroam-emoji*
 
-    1. People                        |vimwiki-emoji-people|
-        1.1. Face                    |vimwiki-emoji-face|
-        1.2. Job                     |vimwiki-emoji-job|
-        1.3. Familly                 |vimwiki-emoji-familly|
-    2. Activity                      |vimwiki-emoji-activity|
-    3. Places                        |vimwiki-emoji-places|
-    4. Nature                        |vimwiki-emoji-nature|
-    5. Objects                       |vimwiki-emoji-objects|
-    6. Foods                         |vimwiki-emoji-foods|
-    7. Symbols                       |vimwiki-emoji-symbols|
-    8. Flags                         |vimwiki-emoji-flags|
+    1. People                        |vimroam-emoji-people|
+        1.1. Face                    |vimroam-emoji-face|
+        1.2. Job                     |vimroam-emoji-job|
+        1.3. Familly                 |vimroam-emoji-familly|
+    2. Activity                      |vimroam-emoji-activity|
+    3. Places                        |vimroam-emoji-places|
+    4. Nature                        |vimroam-emoji-nature|
+    5. Objects                       |vimroam-emoji-objects|
+    6. Foods                         |vimroam-emoji-foods|
+    7. Symbols                       |vimroam-emoji-symbols|
+    8. Flags                         |vimroam-emoji-flags|
 
 ==============================================================================
-1. People                                                 *vimwiki-emoji-people*
+1. People                                                 *vimroam-emoji-people*
 
 ------------------------------------------------------------------------------
-1.1 Face                                                  *vimwiki-emoji-face*
+1.1 Face                                                  *vimroam-emoji-face*
 
 | 😀 | grinning             | 😃 | smiley               | 😄 | smile
 | 😁 | grin                 | 😆 | laughing             | 😅 | sweat_smile
@@ -69,7 +69,7 @@ CONTENTS                                                       *vimwiki-emoji*
 | 👁 | eye                  | 👀 | eyes                | 🗣 | speaking_head
 
 ------------------------------------------------------------------------------
-1.2 Job                                                    *vimwiki-emoji-job*
+1.2 Job                                                    *vimroam-emoji-job*
 
 | 👤 | bust_in_silhouette   | 👥 | busts_in_silhouette | 👶 | baby
 | 👦 | boy                  | 👧 | girl                | 👨 | man
@@ -127,7 +127,7 @@ CONTENTS                                                       *vimwiki-emoji*
 | 🌂 | closed_umbrella      | ☂️  | open_umbrella
 
 ------------------------------------------------------------------------------
-1.3 Familly                                            *vimwiki-emoji-familly*
+1.3 Familly                                            *vimroam-emoji-familly*
 
 | 👫 | couple
 | 👭 | two_women_holding_hands
@@ -166,7 +166,7 @@ CONTENTS                                                       *vimwiki-emoji*
 
 
 ==============================================================================
-2. Activity                                             *vimwiki-emoji-activity*
+2. Activity                                             *vimroam-emoji-activity*
 
 | 👴 | older_man            | 👵 | older_woman         | 👲 | man_with_gua_pi_mao
 | ⚽️ | soccer               | 🏀 | basketball          | 🏈 | football
@@ -204,7 +204,7 @@ CONTENTS                                                       *vimwiki-emoji*
 
 
 ==============================================================================
-3. Places                                                 *vimwiki-emoji-places*
+3. Places                                                 *vimroam-emoji-places*
 
 | 🚗 | car                  | 🚕 | taxi                | 🚙 | blue_car
 | 🚌 | bus                  | 🚎 | trolleybus          | 🏎 | racing_car
@@ -249,7 +249,7 @@ CONTENTS                                                       *vimwiki-emoji*
 
 
 ==============================================================================
-4. Nature                                                 *vimwiki-emoji-nature*
+4. Nature                                                 *vimroam-emoji-nature*
 
 | 🐶 | dog                  | 🐱 | cat                 | 🐭 | mouse
 | 🐹 | hamster              | 🐰 | rabbit              | 🦊 | fox_face
@@ -309,7 +309,7 @@ CONTENTS                                                       *vimwiki-emoji*
 
 
 ==============================================================================
-5. Objects                                               *vimwiki-emoji-objects*
+5. Objects                                               *vimroam-emoji-objects*
 
 | ⌚️ | watch                | 📱 | iphone              | 📲 | calling
 | 💻 | computer             | ⌨️  | keyboard            | 🖥 | desktop_computer
@@ -373,7 +373,7 @@ CONTENTS                                                       *vimwiki-emoji*
 
 
 ==============================================================================
-6. Foods                                                   *vimwiki-emoji-foods*
+6. Foods                                                   *vimroam-emoji-foods*
 
 | 🍏 | green_apple          | 🍎 | apple               | 🍐 | pear
 | 🍊 | tangerine            | 🍋 | lemon               | 🍌 | banana
@@ -407,7 +407,7 @@ CONTENTS                                                       *vimwiki-emoji*
 
 
 ==============================================================================
-7. Symbols                                               *vimwiki-emoji-symbols*
+7. Symbols                                               *vimroam-emoji-symbols*
 
 | ❤️  | heart                | 💛 | yellow_heart        | 💚 | green_heart
 | 💙 | blue_heart           | 💜 | purple_heart        | 🖤 | black_heart
@@ -506,7 +506,7 @@ CONTENTS                                                       *vimwiki-emoji*
 | 🕧 | clock1230
 
 
-8. Flags                                                 *vimwiki-emoji-flags*
+8. Flags                                                 *vimroam-emoji-flags*
 ==============================================================================
 
 | 🏳️ | white_flag           | 🏴 | black_flag          | 🏁 | checkered_flag

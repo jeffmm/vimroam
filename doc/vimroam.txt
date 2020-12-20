@@ -1,4 +1,4 @@
-*vimwiki.txt*   A Personal Wiki for Vim
+*vimroam.txt*   A Personal Wiki for Vim
 
              __   __  ___   __   __  _     _  ___   ___   _  ___             ~
             |  | |  ||   | |  |_|  || | _ | ||   | |   | | ||   |            ~
@@ -12,69 +12,69 @@
                                Version: 2.5
 
 ==============================================================================
-CONTENTS                                                             *vimwiki*
+CONTENTS                                                             *vimroam*
 
-    1. Intro                         |vimwiki-intro|
-    2. Prerequisites                 |vimwiki-prerequisites|
-    3. Mappings                      |vimwiki-mappings|
-        3.1. Global mappings         |vimwiki-global-mappings|
-        3.2. Local mappings          |vimwiki-local-mappings|
-        3.3. Text objects            |vimwiki-text-objects|
-    4. Commands                      |vimwiki-commands|
-        4.1. Global commands         |vimwiki-global-commands|
-        4.2. Local commands          |vimwiki-local-commands|
-    5. Wiki syntax                   |vimwiki-syntax|
-        5.1. Typefaces               |vimwiki-syntax-typefaces|
-        5.2. Links                   |vimwiki-syntax-links|
-        5.3. Headers                 |vimwiki-syntax-headers|
-        5.4. Paragraphs              |vimwiki-syntax-paragraphs|
-        5.5. Lists                   |vimwiki-syntax-lists|
-        5.6. Tables                  |vimwiki-syntax-tables|
-        5.7. Preformatted text       |vimwiki-syntax-preformatted|
-        5.8. Mathematical formulae   |vimwiki-syntax-math|
-        5.9. Blockquotes             |vimwiki-syntax-blockquotes|
-        5.10. Comments               |vimwiki-syntax-comments|
-        5.11. Horizontal line        |vimwiki-syntax-hr|
-        5.12. Tags                   |vimwiki-syntax-tags|
-    6. Folding/Outline               |vimwiki-folding|
-    7. Placeholders                  |vimwiki-placeholders|
-    8. Lists                         |vimwiki-lists|
-    9. Tables                        |vimwiki-tables|
-    10. Diary                        |vimwiki-diary|
-    11. Anchors                      |vimwiki-anchors|
-    12. Options                      |vimwiki-options|
-        12.1. Registered Wiki        |vimwiki-register-wiki|
-        12.2. Temporary Wiki         |vimwiki-temporary-wiki|
-        12.3. Per-Wiki Options       |vimwiki-local-options|
-        12.4. Per-Syntax Options     |vimwiki-syntax-options|
-        12.5. Global Options         |vimwiki-global-options|
-    13. Getting help                 |vimwiki-help|
-    14. Contributing & Bug reports   |vimwiki-contributing|
-    15. Development                  |vimwiki-development|
-    16. Changelog                    |vimwiki-changelog|
-    17. License                      |vimwiki-license|
+    1. Intro                         |vimroam-intro|
+    2. Prerequisites                 |vimroam-prerequisites|
+    3. Mappings                      |vimroam-mappings|
+        3.1. Global mappings         |vimroam-global-mappings|
+        3.2. Local mappings          |vimroam-local-mappings|
+        3.3. Text objects            |vimroam-text-objects|
+    4. Commands                      |vimroam-commands|
+        4.1. Global commands         |vimroam-global-commands|
+        4.2. Local commands          |vimroam-local-commands|
+    5. Wiki syntax                   |vimroam-syntax|
+        5.1. Typefaces               |vimroam-syntax-typefaces|
+        5.2. Links                   |vimroam-syntax-links|
+        5.3. Headers                 |vimroam-syntax-headers|
+        5.4. Paragraphs              |vimroam-syntax-paragraphs|
+        5.5. Lists                   |vimroam-syntax-lists|
+        5.6. Tables                  |vimroam-syntax-tables|
+        5.7. Preformatted text       |vimroam-syntax-preformatted|
+        5.8. Mathematical formulae   |vimroam-syntax-math|
+        5.9. Blockquotes             |vimroam-syntax-blockquotes|
+        5.10. Comments               |vimroam-syntax-comments|
+        5.11. Horizontal line        |vimroam-syntax-hr|
+        5.12. Tags                   |vimroam-syntax-tags|
+    6. Folding/Outline               |vimroam-folding|
+    7. Placeholders                  |vimroam-placeholders|
+    8. Lists                         |vimroam-lists|
+    9. Tables                        |vimroam-tables|
+    10. Diary                        |vimroam-diary|
+    11. Anchors                      |vimroam-anchors|
+    12. Options                      |vimroam-options|
+        12.1. Registered Wiki        |vimroam-register-wiki|
+        12.2. Temporary Wiki         |vimroam-temporary-wiki|
+        12.3. Per-Wiki Options       |vimroam-local-options|
+        12.4. Per-Syntax Options     |vimroam-syntax-options|
+        12.5. Global Options         |vimroam-global-options|
+    13. Getting help                 |vimroam-help|
+    14. Contributing & Bug reports   |vimroam-contributing|
+    15. Development                  |vimroam-development|
+    16. Changelog                    |vimroam-changelog|
+    17. License                      |vimroam-license|
 
 
 ==============================================================================
-1. Intro                                                       *vimwiki-intro*
+1. Intro                                                       *vimroam-intro*
 
-Vimwiki makes it very easy for you create a personal wiki using the Vim text
+VimRoam makes it very easy for you create a personal wiki using the Vim text
 editor. A wiki is a collection of text documents linked together and formatted
 with wiki or markdown syntax that can be highlighted for readability using
 Vim's syntax highlighting feature.
 
-With Vimwiki you can:
+With VimRoam you can:
     - organize notes and ideas
     - manage todo-lists
     - write documentation
     - maintain a diary
     - export your documents to HTML
 
-Getting started with Vimwiki is easy. Once installed, simply type `vim` into
+Getting started with VimRoam is easy. Once installed, simply type `vim` into
 your terminal to launch Vim and then type <Leader>ww (the <Leader> key is `\`
 by default) to create or open the index wiki file, the "top" page in your
 hierarchical collection of wiki pages. By default, this page will be located
-at ~/vimwiki/index.wiki.
+at ~/vimroam/index.wiki.
 
 Now add the following example lines to the document:
 
@@ -84,12 +84,12 @@ Now add the following example lines to the document:
     * Scratchpad -- various temporary stuff.
 
 Next, move your cursor to the word 'Tasks' and press `Enter`. This will create
-a Vimwiki link by surrounding 'Tasks' with double square brackets:
+a VimRoam link by surrounding 'Tasks' with double square brackets:
 '[[Tasks]]'. Pressing `Enter` a second time will generate a new blank buffer
 in Vim where you can input your tasks. After you add some tasks and save the
 new file, you can hit `Backspace` to jump back to the index document.
 
-A Vimwiki link can contain multiple words by entering Vim's "visual" mode (the
+A VimRoam link can contain multiple words by entering Vim's "visual" mode (the
 "v" key, by default) and selecting the words to be linked. Once selected,
 press `Enter`.
 
@@ -106,41 +106,41 @@ pages, you can create an unlimited number of neatly structured, interconnected
 documents to help you organize your notes, documenation, and tasks.
 
 ==============================================================================
-2. Prerequisites                                       *vimwiki-prerequisites*
+2. Prerequisites                                       *vimroam-prerequisites*
 
 Make sure you have these settings in your vimrc file: >
     set nocompatible
     filetype plugin on
     syntax on
 
-Without them Vimwiki will not work properly.
+Without them VimRoam will not work properly.
 
 
 ==============================================================================
-3. Mappings                                                 *vimwiki-mappings*
+3. Mappings                                                 *vimroam-mappings*
 
-There are global and local mappings in Vimwiki.
+There are global and local mappings in VimRoam.
 
 ------------------------------------------------------------------------------
-3.1. Global mappings                                 *vimwiki-global-mappings*
+3.1. Global mappings                                 *vimroam-global-mappings*
 
-Below is a list of all default global key mappings provided by Vimwiki. As
+Below is a list of all default global key mappings provided by VimRoam. As
 global settings, they work in all vim sessions no matter what filetype you
-have open. Vimwiki respects pre-existing global mappings created by you or
+have open. VimRoam respects pre-existing global mappings created by you or
 other plugins and will not overwrite them.
 
-If a conflict exists between Vimwiki and pre-existing maps or if you wish to
+If a conflict exists between VimRoam and pre-existing maps or if you wish to
 customize these default mappings, you can remap them with: >
 
          :nmap {map} <Plug>{command}
 
 where
         `{map}` is the new key sequence of your choosing
-        `{command}` is the Vimwiki command you are remapping
+        `{command}` is the VimRoam command you are remapping
 
-So, for example, to remap the |:VimwikiIndex| mapping, you'd do something
+So, for example, to remap the |:VimRoamIndex| mapping, you'd do something
 like: >
-        :nmap <Leader>wx <Plug>VimwikiIndex
+        :nmap <Leader>wx <Plug>VimRoamIndex
 
 Note that the recursive version of "map" command is needed to expand the right
 hand side to retrieve the <Plug> definition. "noremap" will not work. <Plug> is
@@ -150,139 +150,139 @@ You can also place remappings in your vimrc file, without the leading colon, of
 course.
 
 
-                                                          *vimwiki_<Leader>ww*
+                                                          *vimroam_<Leader>ww*
 [count]<Leader>ww
         Open index file of the [count]'s wiki.
 
-        <Leader>ww opens the first wiki from |g:vimwiki_list| if no wiki is
+        <Leader>ww opens the first wiki from |g:vimroam_list| if no wiki is
         open. Otherwise the index of the currently active wiki is opened.
-        1<Leader>ww opens the first wiki from |g:vimwiki_list|.
-        2<Leader>ww opens the second wiki from |g:vimwiki_list|.
-        3<Leader>ww opens the third wiki from |g:vimwiki_list|.
+        1<Leader>ww opens the first wiki from |g:vimroam_list|.
+        2<Leader>ww opens the second wiki from |g:vimroam_list|.
+        3<Leader>ww opens the third wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimwikiIndex`
+        Remap command: `<Plug>VimRoamIndex`
 
-See also |:VimwikiIndex|
+See also |:VimRoamIndex|
 
 
-                                                          *vimwiki_<Leader>wt*
+                                                          *vimroam_<Leader>wt*
 [count]<Leader>wt
         Open index file of the [count]'s wiki in a new tab.
 
-        <Leader>wt tabopens the first wiki from |g:vimwiki_list|.
-        1<Leader>wt as above tabopens the first wiki from |g:vimwiki_list|.
-        2<Leader>wt tabopens the second wiki from |g:vimwiki_list|.
-        3<Leader>wt tabopens the third wiki from |g:vimwiki_list|.
+        <Leader>wt tabopens the first wiki from |g:vimroam_list|.
+        1<Leader>wt as above tabopens the first wiki from |g:vimroam_list|.
+        2<Leader>wt tabopens the second wiki from |g:vimroam_list|.
+        3<Leader>wt tabopens the third wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimwikiTabIndex`
+        Remap command: `<Plug>VimRoamTabIndex`
 
-See also |:VimwikiTabIndex|
+See also |:VimRoamTabIndex|
 
-                                                          *vimwiki_<Leader>ws*
+                                                          *vimroam_<Leader>ws*
 <Leader>ws
         List and select available wikis.
 
-        Remap command: `<Plug>VimwikiUISelect`
+        Remap command: `<Plug>VimRoamUISelect`
 
-See also |:VimwikiUISelect|
+See also |:VimRoamUISelect|
 
-                                                          *vimwiki_<Leader>wi*
+                                                          *vimroam_<Leader>wi*
 [count]<Leader>wi
         Open diary index file of the [count]'s wiki.
 
         <Leader>wi opens diary index file of the current wiki.
         1<Leader>wi opens diary index file of the first wiki from
-        |g:vimwiki_list|.
+        |g:vimroam_list|.
         2<Leader>wi opens diary index file of the second wiki from
-        |g:vimwiki_list|.
+        |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimwikiDiaryIndex`
+        Remap command: `<Plug>VimRoamDiaryIndex`
 
-See also |:VimwikiDiaryIndex|
+See also |:VimRoamDiaryIndex|
 
-                                                  *vimwiki_<Leader>w<Leader>w*
+                                                  *vimroam_<Leader>w<Leader>w*
 [count]<Leader>w<Leader>w
         Open diary wiki-file for today of the [count]'s wiki.
 
         <Leader>w<Leader>w opens diary wiki-file for today in the current wiki
         1<Leader>w<Leader>w opens diary wiki-file for today in the first wiki
-        from |g:vimwiki_list|.
+        from |g:vimroam_list|.
         2<Leader>w<Leader>w opens diary wiki-file for today in the second wiki
-        from |g:vimwiki_list|.
+        from |g:vimroam_list|.
         3<Leader>w<Leader>w opens diary wiki-file for today in the third wiki
-        from |g:vimwiki_list|.
+        from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimwikiMakeDiaryNote`
+        Remap command: `<Plug>VimRoamMakeDiaryNote`
 
-See also |:VimwikiMakeDiaryNote|
+See also |:VimRoamMakeDiaryNote|
 
 
-                                                  *vimwiki_<Leader>w<Leader>t*
+                                                  *vimroam_<Leader>w<Leader>t*
 [count]<Leader>w<Leader>t
         Open diary wiki-file for today of the [count]'s wiki in a new tab.
 
         <Leader>w<Leader>t tabopens diary wiki-file for today in the current
         wiki
         1<Leader>w<Leader>t tabopens diary wiki-file for today in the
-        first wiki from |g:vimwiki_list|.
+        first wiki from |g:vimroam_list|.
         2<Leader>w<Leader>t tabopens diary wiki-file for today in the second
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         3<Leader>w<Leader>t tabopens diary wiki-file for today in the third
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimwikiTabMakeDiaryNote`
+        Remap command: `<Plug>VimRoamTabMakeDiaryNote`
 
-See also |:VimwikiTabMakeDiaryNote|
+See also |:VimRoamTabMakeDiaryNote|
 
 
-                                                  *vimwiki_<Leader>w<Leader>y*
+                                                  *vimroam_<Leader>w<Leader>y*
 [count]<Leader>w<Leader>y
         Open diary wiki-file for yesterday of the [count]'s wiki.
 
         <Leader>w<Leader>y opens diary wiki-file for yesterday in the current
         wiki
         1<Leader>w<Leader>y opens diary wiki-file for yesterday in the first
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         2<Leader>w<Leader>y opens diary wiki-file for yesterday in the second
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         3<Leader>w<Leader>y opens diary wiki-file for yesterday in the third
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimwikiMakeYesterdayDiaryNote`
+        Remap command: `<Plug>VimRoamMakeYesterdayDiaryNote`
 
-See also |:VimwikiMakeYesterdayDiaryNote|
+See also |:VimRoamMakeYesterdayDiaryNote|
 
-                                                  *vimwiki_<Leader>w<Leader>m*
+                                                  *vimroam_<Leader>w<Leader>m*
 [count]<Leader>w<Leader>m
         Open diary wiki-file for tomorrow of the [count]'s wiki.
 
         <Leader>w<Leader>m opens diary wiki-file for tomorrow in the current
         wiki
         1<Leader>w<Leader>m opens diary wiki-file for tomorrow in the first
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         2<Leader>w<Leader>m opens diary wiki-file for tomorrow in the second
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         3<Leader>w<Leader>m opens diary wiki-file for tomorrow in the third
-        wiki from |g:vimwiki_list|.
+        wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimwikiMakeTomorrowDiaryNote`
+        Remap command: `<Plug>VimRoamMakeTomorrowDiaryNote`
 
-See also |:VimwikiMakeTomorrowDiaryNote|
+See also |:VimRoamMakeTomorrowDiaryNote|
 
 ------------------------------------------------------------------------------
-3.2. Local mappings                                   *vimwiki-local-mappings*
+3.2. Local mappings                                   *vimroam-local-mappings*
 
-Below is a listing of all local key mappings provided by Vimwiki. As local
-settings, they are available when |FileType| is set to "vimwiki". These
+Below is a listing of all local key mappings provided by VimRoam. As local
+settings, they are available when |FileType| is set to "vimroam". These
 mappings may overwrite pre-existing mappings, but they can be remapped or
-disabled (see |g:vimwiki_key_mappings|).
+disabled (see |g:vimroam_key_mappings|).
 
 To remap commands that begin with <Plug>, you should do the following:
 
@@ -295,14 +295,14 @@ For commands that do not begin with <Plug>, do:
 where
         `{mode}` is set to `n` for "normal" mode, `v` for "visual", and `i` for "insert"
         `{map}` is the new key sequence of your choosing
-        `{command}` is the Vimwiki command you are remapping
+        `{command}` is the VimRoam command you are remapping
 
 Examples: >
-       :nmap <Leader>tl <Plug>VimwikiToggleListItem
-       :vmap <Leader>tl <Plug>VimwikiToggleListItem
-       :nnoremap glo :VimwikiChangeSymbolTo a)<CR>
+       :nmap <Leader>tl <Plug>VimRoamToggleListItem
+       :vmap <Leader>tl <Plug>VimRoamToggleListItem
+       :nnoremap glo :VimRoamChangeSymbolTo a)<CR>
 
-The first two lines remap "\tl" to the |:VimwikiToggleListItem| command in both
+The first two lines remap "\tl" to the |:VimRoamToggleListItem| command in both
 normal and visual modes. |<Leader>| is set to "\" by default. Use `:echo mapleader`
 to determine if it is set to another value. The third map listed
 above, which does not contain <Plug>, maps directly to an |Ex| mode command.
@@ -313,7 +313,7 @@ the <Plug> definition. "noremap" will not work. <Plug> is required and
 considered to be part of the command.
 
 It is recommended that you place your local mappings into a file at
-ftplugin/vimwiki.vim within your .vim configuration directory. Create this file
+ftplugin/vimroam.vim within your .vim configuration directory. Create this file
 if it doesn't already exist. Or, if you prefer, you can set up a FileType
 |autocmd| in your vimrc.
 
@@ -323,113 +323,113 @@ a Filetype based autocommand. See the Vim help for a description of these
 options.
 
 MAP                MODE
-                                                          *vimwiki_<Leader>wh*
+                                                          *vimroam_<Leader>wh*
 <Leader>wh         n    Convert current wiki page to HTML.
-                        Maps to |:Vimwiki2HTML|
-                        Remap command: `<Plug>Vimwiki2HTML`
+                        Maps to |:VimRoam2HTML|
+                        Remap command: `<Plug>VimRoam2HTML`
 
-                                                         *vimwiki_<Leader>whh*
+                                                         *vimroam_<Leader>whh*
 <Leader>whh        n    Convert current wiki page to HTML and open it in the
                         webbrowser.
-                        Maps to |:Vimwiki2HTMLBrowse|
-                        Remap command: `<Plug>Vimwiki2HTMLBrowse`
+                        Maps to |:VimRoam2HTMLBrowse|
+                        Remap command: `<Plug>VimRoam2HTMLBrowse`
 
-                                                  *vimwiki_<Leader>w<Leader>i*
+                                                  *vimroam_<Leader>w<Leader>i*
 <Leader>w<Leader>i n    Update diary section (delete old, insert new)
                         Only works from the diary index.
-                        Maps to |:VimwikiDiaryGenerateLinks|
-                        Remap command: `<Plug>VimwikiDiaryGenerateLinks`
+                        Maps to |:VimRoamDiaryGenerateLinks|
+                        Remap command: `<Plug>VimRoamDiaryGenerateLinks`
 
-                                                                *vimwiki_<CR>*
+                                                                *vimroam_<CR>*
 <CR>               n    Follow/create wiki link (create target wiki page if
                         needed).
-                        Maps to |:VimwikiFollowLink|.
-                        Remap command: `<Plug>VimwikiFollowLink`
+                        Maps to |:VimRoamFollowLink|.
+                        Remap command: `<Plug>VimRoamFollowLink`
 
-                                                              *vimwiki_<S-CR>*
+                                                              *vimroam_<S-CR>*
 <S-CR>             n    Split and follow (create target wiki page if needed).
                         May not work in some terminals. Remapping could help.
-                        Maps to |:VimwikiSplitLink|.
-                        Remap command: `<Plug>VimwikiSplitLink`
+                        Maps to |:VimRoamSplitLink|.
+                        Remap command: `<Plug>VimRoamSplitLink`
 
-                                                              *vimwiki_<C-CR>*
+                                                              *vimroam_<C-CR>*
 <C-CR>             n    Vertical split and follow (create target wiki page if
                         needed).  May not work in some terminals. Remapping
                         could help.
-                        Maps to |:VimwikiVSplitLink|.
-                        Remap command: `<Plug>VimwikiVSplitLink`
+                        Maps to |:VimRoamVSplitLink|.
+                        Remap command: `<Plug>VimRoamVSplitLink`
 
-                                        *vimwiki_<C-S-CR>*    *vimwiki_<D-CR>*
+                                        *vimroam_<C-S-CR>*    *vimroam_<D-CR>*
 <C-S-CR>, <D-CR>   n    Follow wiki link (create target wiki page if needed),
                         opening in a new tab.
                         May not work in some terminals. Remapping could help.
-                        Maps to |:VimwikiTabnewLink|.
-                        Remap command: `<Plug>VimwikiTabnewLink`
+                        Maps to |:VimRoamTabnewLink|.
+                        Remap command: `<Plug>VimRoamTabnewLink`
 
-                                                         *vimwiki_<Backspace>*
+                                                         *vimroam_<Backspace>*
 <Backspace>        n    Go back to previously visited wiki page.
-                        Maps to |:VimwikiGoBackLink|.
-                        Remap command: `<Plug>VimwikiGoBackLink`
+                        Maps to |:VimRoamGoBackLink|.
+                        Remap command: `<Plug>VimRoamGoBackLink`
 
-                                                               *vimwiki_<Tab>*
+                                                               *vimroam_<Tab>*
 <Tab>              n    Find next link in the current page.
-                        Maps to |:VimwikiNextLink|.
-                        Remap command: `<Plug>VimwikiNextLink`
+                        Maps to |:VimRoamNextLink|.
+                        Remap command: `<Plug>VimRoamNextLink`
 
-                                                             *vimwiki_<S-Tab>*
+                                                             *vimroam_<S-Tab>*
 <S-Tab>            n    Find previous link in the current page.
-                        Maps to |:VimwikiPrevLink|.
-                        Remap command: `<Plug>VimwikiPrevLink`
+                        Maps to |:VimRoamPrevLink|.
+                        Remap command: `<Plug>VimRoamPrevLink`
 
-                                                          *vimwiki_<Leader>wn*
+                                                          *vimroam_<Leader>wn*
 <Leader>wn         n    Goto or create new wiki page.
-                        Maps to |:VimwikiGoto|.
-                        Remap command: `<Plug>VimwikiGoto`
+                        Maps to |:VimRoamGoto|.
+                        Remap command: `<Plug>VimRoamGoto`
 
-                                                          *vimwiki_<Leader>wd*
+                                                          *vimroam_<Leader>wd*
 <Leader>wd         n    Delete wiki page you are in.
-                        Maps to |:VimwikiDeleteFile|.
-                        Remap command: `<Plug>VimwikiDeleteFile`
+                        Maps to |:VimRoamDeleteFile|.
+                        Remap command: `<Plug>VimRoamDeleteFile`
 
-                                                          *vimwiki_<Leader>wr*
+                                                          *vimroam_<Leader>wr*
 <Leader>wr         n    Rename wiki page you are in.
-                        Maps to |:VimwikiRenameFile|.
-                        Remap command: `<Plug>VimwikiRenameFile`
+                        Maps to |:VimRoamRenameFile|.
+                        Remap command: `<Plug>VimRoamRenameFile`
 
-                                                                   *vimwiki_=*
+                                                                   *vimroam_=*
 =                  n    Add header level. Create if needed.
                         There is nothing to indent with '==' command in
-                        Vimwiki, so it should be ok to use '=' here.
-                        Remap command: `<Plug>VimwikiAddHeaderLevel`
+                        VimRoam, so it should be ok to use '=' here.
+                        Remap command: `<Plug>VimRoamAddHeaderLevel`
 
-                                                                   *vimwiki_-*
+                                                                   *vimroam_-*
 -                  n    Remove header level.
-                        Remap command: `<Plug>VimwikiRemoveHeaderLevel`
+                        Remap command: `<Plug>VimRoamRemoveHeaderLevel`
 
-                                                                  *vimwiki_[[*
+                                                                  *vimroam_[[*
 [[                 n    Go to the previous header in the buffer.
-                        Remap command: `<Plug>VimwikiGoToPrevHeader`
+                        Remap command: `<Plug>VimRoamGoToPrevHeader`
 
-                                                                  *vimwiki_]]*
+                                                                  *vimroam_]]*
 ]]                 n    Go to the next header in the buffer.
-                        Remap command: `<Plug>VimwikiGoToNextHeader`
+                        Remap command: `<Plug>VimRoamGoToNextHeader`
 
-                                                                  *vimwiki_[=*
+                                                                  *vimroam_[=*
 [=                 n    Go to the previous header which has the same level as
                         the header the cursor is currently under.
-                        Remap command: `<Plug>VimwikiGoToPrevSiblingHeader`
+                        Remap command: `<Plug>VimRoamGoToPrevSiblingHeader`
 
-                                                                  *vimwiki_]=*
+                                                                  *vimroam_]=*
 ]=                 n    Go to the next header which has the same level as the
                         header the cursor is currently under.
-                        Remap command: `<Plug>VimwikiGoToNextSiblingHeader`
+                        Remap command: `<Plug>VimRoamGoToNextSiblingHeader`
 
-                                                    *vimwiki_]u*  *vimwiki_[u*
+                                                    *vimroam_]u*  *vimroam_[u*
 ]u [u              n    Go one level up -- that is, to the parent header of
                         the header the cursor is currently under.
-                        Remap command: `<Plug>VimwikiGoToParentHeader`
+                        Remap command: `<Plug>VimRoamGoToParentHeader`
 
-                                                                   *vimwiki_+*
+                                                                   *vimroam_+*
 +                  n v  Create and/or decorate links.  Depending on the
                         context, this command will: convert words into
                         wikilinks; convert raw URLs into wikilinks; and add
@@ -438,158 +438,158 @@ MAP                MODE
                         mode with the cursor over a word or link, or in visual
                         mode with the selected text.
                         Remap commands:
-                        `<Plug>VimwikiNormalizeLink` (normal mode)
-                        `<Plug>VimwikiNormalizeLinkVisual` (visual mode)
+                        `<Plug>VimRoamNormalizeLink` (normal mode)
+                        `<Plug>VimRoamNormalizeLinkVisual` (visual mode)
 
-                                                          *vimwiki_<C-Space>*
+                                                          *vimroam_<C-Space>*
 <C-Space>         n     Toggle checkbox of a list item on/off.
-                        Maps to |:VimwikiToggleListItem|.
-                        See |vimwiki-todo-lists|.
-                        Remap command: `<Plug>VimwikiToggleListItem`
+                        Maps to |:VimRoamToggleListItem|.
+                        See |vimroam-todo-lists|.
+                        Remap command: `<Plug>VimRoamToggleListItem`
 
-                                                                *vimwiki_gnt*
+                                                                *vimroam_gnt*
 gnt               n     Find next unfinished task in the current page.
-                        Maps to |:VimwikiNextTask|
-                        Remap command: `<Plug>VimwikiNextTask`
+                        Maps to |:VimRoamNextTask|
+                        Remap command: `<Plug>VimRoamNextTask`
 
-                                      *vimwiki_gl<Space>* *vimwiki_gL<Space>*
+                                      *vimroam_gl<Space>* *vimroam_gL<Space>*
 gl<Space>         n     Remove checkbox from list item.
-                        Remap command: `<Plug>VimwikiRemoveSingleCB`
+                        Remap command: `<Plug>VimRoamRemoveSingleCB`
 gL<Space>               Remove checkboxes from all sibling list items.
-                        Remap command: `<Plug>VimwikiRemoveCBInList`
+                        Remap command: `<Plug>VimRoamRemoveCBInList`
 
-                                                  *vimwiki_gln* *vimwiki_glp*
+                                                  *vimroam_gln* *vimroam_glp*
 gln               n v   Increase the "done" status of a list checkbox, i.e.
-                        from [ ] to [.] to [o] etc. See |vimwiki-todo-lists|.
+                        from [ ] to [.] to [o] etc. See |vimroam-todo-lists|.
 glp                     Decrease the "done" status.
-                        Remap command: `<Plug>VimwikiIncrementListItem`
+                        Remap command: `<Plug>VimRoamIncrementListItem`
 
-                                                  *vimwiki_gll* *vimwiki_gLl*
+                                                  *vimroam_gll* *vimroam_gLl*
 gll               n     Increase the level of a list item.
-                        Remap command: `<Plug>VimwikiIncreaseLvlSingleItem`
+                        Remap command: `<Plug>VimRoamIncreaseLvlSingleItem`
 gLl                     Increase the level of a list item and all child items.
-                        Remap command: `<Plug>VimwikiIncreaseLvlWholeItem`
+                        Remap command: `<Plug>VimRoamIncreaseLvlWholeItem`
 
-                                                  *vimwiki_glh* *vimwiki_gLh*
+                                                  *vimroam_glh* *vimroam_gLh*
 glh               n     Decrease the level of a list item.
-                        Remap command: `<Plug>VimwikiDecreaseLvlSingleItem`
+                        Remap command: `<Plug>VimRoamDecreaseLvlSingleItem`
 gLh                     Decrease the level of a list item and all child items.
-                        Remap command: `<Plug>VimwikiDecreaseLvlWholeItem`
+                        Remap command: `<Plug>VimRoamDecreaseLvlWholeItem`
 
-                                                  *vimwiki_glr* *vimwiki_gLr*
+                                                  *vimroam_glr* *vimroam_gLr*
 glr               n     Renumber list items if the cursor is on a numbered
                         list item.
-                        Remap command: `<Plug>VimwikiRenumberList`
+                        Remap command: `<Plug>VimRoamRenumberList`
 gLr                     Renumber list items in all numbered lists in the whole
                         file. Also readjust checkboxes.
-                        Remap command: `<Plug>VimwikiRenumberAllLists`
+                        Remap command: `<Plug>VimRoamRenumberAllLists`
 
-                                            *vimwiki_glstar* *vimwiki_gLstar*
+                                            *vimroam_glstar* *vimroam_gLstar*
 gl*               n     Make a list item out of a normal line or change the
                         symbol of the current item to *.
 gL*                     Change the symbol of the current list to *.
-                        Remap command: `:VimwikiChangeSymbolTo *<CR>`
-                        noremap glO :VimwikiChangeSymbolInListTo *<CR>
+                        Remap command: `:VimRoamChangeSymbolTo *<CR>`
+                        noremap glO :VimRoamChangeSymbolInListTo *<CR>
 
-                                                  *vimwiki_gl#* *vimwiki_gL#*
+                                                  *vimroam_gl#* *vimroam_gL#*
 gl#               n     Make a list item out of a normal line or change the
                         symbol of the current item to #.
 gL#                     Change the symbol of the current list to #.
-                        Remap command: `:VimwikiChangeSymbolTo #<CR>`
-                        Remap command: `:VimwikiChangeSymbolInListTo #<CR>`
+                        Remap command: `:VimRoamChangeSymbolTo #<CR>`
+                        Remap command: `:VimRoamChangeSymbolInListTo #<CR>`
 
-                                                  *vimwiki_gl-* *vimwiki_gL-*
+                                                  *vimroam_gl-* *vimroam_gL-*
 gl-               n     Make a list item out of a normal line or change the
                         symbol of the current item to -.
-                        Remap command:  `:VimwikiChangeSymbolTo -<CR>`
+                        Remap command:  `:VimRoamChangeSymbolTo -<CR>`
 gL-                     Change the symbol of the current list to -.
-                        Remap command: `:VimwikiChangeSymbolInListTo -<CR>`
+                        Remap command: `:VimRoamChangeSymbolInListTo -<CR>`
 
-                                                  *vimwiki_gl1* *vimwiki_gL1*
+                                                  *vimroam_gl1* *vimroam_gL1*
 gl1               n     Make a list item out of a normal line or change the
                         symbol of the current item to 1., the numbering is
                         adjusted according to the surrounding list items.
-                        Remap command: `:VimwikiChangeSymbolTo 1.<CR>`
+                        Remap command: `:VimRoamChangeSymbolTo 1.<CR>`
 gL1                     Change the symbol of the current list to 1. 2. 3. ...
-                        Remap command: `:VimwikiChangeSymbolInListTo 1.<CR>`
+                        Remap command: `:VimRoamChangeSymbolInListTo 1.<CR>`
 
-                                                  *vimwiki_gla* *vimwiki_gLa*
+                                                  *vimroam_gla* *vimroam_gLa*
 gla              n      Make a list item out of a normal line or change the
                         symbol of the current item to a), the numbering is
                         adjusted according to the surrounding list items.
-                        Remap command: `:VimwikiChangeSymbolTo a)<CR>`
+                        Remap command: `:VimRoamChangeSymbolTo a)<CR>`
 gLa                     Change the symbol of the current list to a) b) c) ...
-                        Remap command: `:VimwikiChangeSymbolInListTo a)<CR>`
+                        Remap command: `:VimRoamChangeSymbolInListTo a)<CR>`
 
-                                                  *vimwiki_glA* *vimwiki_gLA*
+                                                  *vimroam_glA* *vimroam_gLA*
 glA              n      Make a list item out of a normal line or change the
                         symbol of the current item to A), the numbering is
                         adjusted according to the surrounding list items.
-                        Remap command: `:VimwikiChangeSymbolTo A)<CR>`
+                        Remap command: `:VimRoamChangeSymbolTo A)<CR>`
 gLA                     Change the symbol of the current list to A) B) C) ...
-                        Remap command: `:VimwikiChangeSymbolInListTo A)<CR>`
+                        Remap command: `:VimRoamChangeSymbolInListTo A)<CR>`
 
-                                                  *vimwiki_gli* *vimwiki_gLi*
+                                                  *vimroam_gli* *vimroam_gLi*
 gli              n      Make a list item out of a normal line or change the
                         symbol of the current item to i), the numbering is
                         adjusted according to the surrounding list items.
-                        Remap command: `:VimwikiChangeSymbolTo i)<CR>`
+                        Remap command: `:VimRoamChangeSymbolTo i)<CR>`
 gLi                     Change the symbol of the current list to
                         i) ii) iii) ...
-                        Remap command: `:VimwikiChangeSymbolInListTo i)<CR>`
+                        Remap command: `:VimRoamChangeSymbolInListTo i)<CR>`
 
-                                                  *vimwiki_glI* *vimwiki_gLI*
+                                                  *vimroam_glI* *vimroam_gLI*
 glI              n      Make a list item out of a normal line or change the
                         symbol of the current item to I), the numbering is
                         adjusted according to the surrounding list items.
-                        Remap command: `:VimwikiChangeSymbolTo I)<CR>`
+                        Remap command: `:VimRoamChangeSymbolTo I)<CR>`
 gLI                     Change the symbol of the current list to
                         I) II) III) ...
-                        Remap command: `:VimwikiChangeSymbolInListTo I)<CR>`
+                        Remap command: `:VimRoamChangeSymbolInListTo I)<CR>`
 
-                                                                *vimwiki_glx*
+                                                                *vimroam_glx*
 glx              n      Toggle checkbox of a list item disabled/off.
-                        Maps to |:VimwikiToggleRejectedListItem|.
-                        See |vimwiki-todo-lists|.
-                        Remap command: `<Plug>VimwikiToggleRejectedListItem`
+                        Maps to |:VimRoamToggleRejectedListItem|.
+                        See |vimroam-todo-lists|.
+                        Remap command: `<Plug>VimRoamToggleRejectedListItem`
 
-                                                 *vimwiki_gqq*  *vimwiki_gww*
+                                                 *vimroam_gqq*  *vimroam_gww*
 gqq              n      Reformats table after making changes.
- or                     Remap command: `<Plug>VimwikiTableAlignQ`
-gww                     Remap command: `<Plug>VimwikiTableAlignW`
+ or                     Remap command: `<Plug>VimRoamTableAlignQ`
+gww                     Remap command: `<Plug>VimRoamTableAlignW`
 
-                                                 *vimwiki_gq1*  *vimwiki_gw1*
+                                                 *vimroam_gq1*  *vimroam_gw1*
 gq1              n      Fast format table. The same as the previous, except
  or                     that only a few lines above the current line are
                         tested. If the alignment of the current line differs,
                         then the whole table gets reformatted.
-                        Remap command: `<Plug>VimwikiTableAlignQ1`
-gw1                     Remap command:`<Plug>VimwikiTableAlignW1`
+                        Remap command: `<Plug>VimRoamTableAlignQ1`
+gw1                     Remap command:`<Plug>VimRoamTableAlignW1`
 
-                                                           *vimwiki_<A-Left>*
+                                                           *vimroam_<A-Left>*
 <A-Left>         n      Move current table column to the left.
-                        See |:VimwikiTableMoveColumnLeft|
-                        Remap command: `<Plug>VimwikiTableMoveColumnLeft`
+                        See |:VimRoamTableMoveColumnLeft|
+                        Remap command: `<Plug>VimRoamTableMoveColumnLeft`
 
-                                                          *vimwiki_<A-Right>*
+                                                          *vimroam_<A-Right>*
 <A-Right>        n      Move current table column to the right.
-                        See |:VimwikiTableMoveColumnRight|
-                        Remap command: `<Plug>VimwikiTableMoveColumnRight`
+                        See |:VimRoamTableMoveColumnRight|
+                        Remap command: `<Plug>VimRoamTableMoveColumnRight`
 
-                                                             *vimwiki_<C-Up>*
+                                                             *vimroam_<C-Up>*
 <C-Up>           n      Open the previous day's diary link if available.
-                        See |:VimwikiDiaryPrevDay|
-                        Remap command: `<Plug>VimwikiDiaryPrevDay`
+                        See |:VimRoamDiaryPrevDay|
+                        Remap command: `<Plug>VimRoamDiaryPrevDay`
 
-                                                           *vimwiki_<C-Down>*
+                                                           *vimroam_<C-Down>*
 <C-Down>         n      Open the next day's diary link if available.
-                        See |:VimwikiDiaryNextDay|
-                        Remap command: `<Plug>VimwikiDiaryNextDay`
+                        See |:VimRoamDiaryNextDay|
+                        Remap command: `<Plug>VimRoamDiaryNextDay`
 
-Mouse mappings                                                *vimwiki_mouse*
+Mouse mappings                                                *vimroam_mouse*
 
 These mappings are disabled by default.
-See |g:vimwiki_key_mappings| to enable.
+See |g:vimroam_key_mappings| to enable.
 
 <2-LeftMouse>           Follow wiki link (create target wiki page if needed).
 
@@ -605,63 +605,63 @@ Note: <2-LeftMouse> is just left double click.
 
 
 
-TABLE MAPPINGS, INSERT MODE                           *vimwiki-table-mappings*
-                                                        *vimwiki_i_<CR>_table*
+TABLE MAPPINGS, INSERT MODE                           *vimroam-table-mappings*
+                                                        *vimroam_i_<CR>_table*
 <CR>                    Go to the table cell beneath the current one, create
                         a new row if on the last one.
 
-                                                       *vimwiki_i_<Tab>_table*
+                                                       *vimroam_i_<Tab>_table*
 <Tab>                   Go to the next table cell, create a new row if on the
                         last cell. Adjusts the whole column width according
                         to the largest cell.
-                        Remap command: `<Plug>VimwikiTableNextCell`
+                        Remap command: `<Plug>VimRoamTableNextCell`
 
-                                                       *vimwiki_i_<Tab>_table*
+                                                       *vimroam_i_<Tab>_table*
 <S-Tab>                 Go to the previous table cell. Adjusts the whole
                         column width according to the largest cell.
-                        Remap command: `<Plug>VimwikiTablePrevCell`
+                        Remap command: `<Plug>VimRoamTablePrevCell`
 
-LIST MAPPINGS, INSERT MODE                             *vimwiki-list-mappings*
-                                                              *vimwiki_i_<CR>*
+LIST MAPPINGS, INSERT MODE                             *vimroam-list-mappings*
+                                                              *vimroam_i_<CR>*
 <CR>                    In a list item, insert a new bullet or number in the
                         next line, numbers are incremented.
                         In an empty list item, delete the item symbol. This is
                         useful to end a list, simply press <CR> twice.
-                        See |vimwiki-lists| for details and for how to
+                        See |vimroam-lists| for details and for how to
                         configure the behavior.
 
-                                                            *vimwiki_i_<S-CR>*
+                                                            *vimroam_i_<S-CR>*
 <S-CR>                  Does not insert a new list item, useful to create
-                        multilined list items. See |vimwiki-lists| for
+                        multilined list items. See |vimroam-lists| for
                         details and for how to configure the behavior. The
                         default map may not work in all terminals and may
                         need to be remapped.
 
-                                                             *vimwiki_i_<C-T>*
+                                                             *vimroam_i_<C-T>*
 <C-T>                   Increase the level of a list item.
-                        Remap command: `<Plug>VimwikiIncreaseLvlSingleItem`
+                        Remap command: `<Plug>VimRoamIncreaseLvlSingleItem`
 
-                                                             *vimwiki_i_<C-D>*
+                                                             *vimroam_i_<C-D>*
 <C-D>                   Decrease the level of a list item.
-                        Remap command: `<Plug>VimwikiDecreaseLvlSingleItem`
+                        Remap command: `<Plug>VimRoamDecreaseLvlSingleItem`
 
-                                                       *vimwiki_i_<C-L>_<C-J>*
+                                                       *vimroam_i_<C-L>_<C-J>*
 <C-L><C-J>              Change the symbol of the current list item to the next
                         available. From - to 1. to * to I) to a).
-                        Remap command: `<Plug>VimwikiListNextSymbol`
+                        Remap command: `<Plug>VimRoamListNextSymbol`
 
-                                                       *vimwiki_i_<C-L>_<C-K>*
+                                                       *vimroam_i_<C-L>_<C-K>*
 <C-L><C-K>              Change the symbol of the current list item to the prev
                         available. From - to a) to I) to * to 1.
-                        Remap command: `<Plug>VimwikiListPrevSymbol`
+                        Remap command: `<Plug>VimRoamListPrevSymbol`
 
-                                                       *vimwiki_i_<C-L>_<C-M>*
+                                                       *vimroam_i_<C-L>_<C-M>*
 <C-L><C-M>              Create/remove a symbol from a list item.
-                        Remap command: `<Plug>VimwikiListToggle`
+                        Remap command: `<Plug>VimRoamListToggle`
 
 
 ------------------------------------------------------------------------------
-3.3. Text objects                                       *vimwiki-text-objects*
+3.3. Text objects                                       *vimroam-text-objects*
 
 ah                      A header including its content up to the next header.
 ih                      The content under a header (like 'ah', but excluding
@@ -690,90 +690,90 @@ il                      A single list item.
 
 These key mappings can be modified by replacing the default keys: >
 
-  omap ah <Plug>VimwikiTextObjHeader
-  vmap ah <Plug>VimwikiTextObjHeaderV
-  omap ih <Plug>VimwikiTextObjHeaderContent
-  vmap ih <Plug>VimwikiTextObjHeaderContentV
-  omap aH <Plug>VimwikiTextObjHeaderSub
-  vmap aH <Plug>VimwikiTextObjHeaderSubV
-  omap iH <Plug>VimwikiTextObjHeaderSubContent
-  vmap iH <Plug>VimwikiTextObjHeaderSubContentV
-  omap a\ <Plug>VimwikiTextObjTableCell
-  vmap a\ <Plug>VimwikiTextObjTableCellV
-  omap i\ <Plug>VimwikiTextObjTableCellInner
-  vmap i\ <Plug>VimwikiTextObjTableCellInnerV
-  omap ac <Plug>VimwikiTextObjColumn
-  vmap ac <Plug>VimwikiTextObjColumnV
-  omap ic <Plug>VimwikiTextObjColumnInner
-  vmap ic <Plug>VimwikiTextObjColumnInnerV
-  omap al <Plug>VimwikiTextObjListChildren
-  vmap al <Plug>VimwikiTextObjListChildrenV
-  omap il <Plug>VimwikiTextObjListSingle
-  vmap il <Plug>VimwikiTextObjListSingleV
+  omap ah <Plug>VimRoamTextObjHeader
+  vmap ah <Plug>VimRoamTextObjHeaderV
+  omap ih <Plug>VimRoamTextObjHeaderContent
+  vmap ih <Plug>VimRoamTextObjHeaderContentV
+  omap aH <Plug>VimRoamTextObjHeaderSub
+  vmap aH <Plug>VimRoamTextObjHeaderSubV
+  omap iH <Plug>VimRoamTextObjHeaderSubContent
+  vmap iH <Plug>VimRoamTextObjHeaderSubContentV
+  omap a\ <Plug>VimRoamTextObjTableCell
+  vmap a\ <Plug>VimRoamTextObjTableCellV
+  omap i\ <Plug>VimRoamTextObjTableCellInner
+  vmap i\ <Plug>VimRoamTextObjTableCellInnerV
+  omap ac <Plug>VimRoamTextObjColumn
+  vmap ac <Plug>VimRoamTextObjColumnV
+  omap ic <Plug>VimRoamTextObjColumnInner
+  vmap ic <Plug>VimRoamTextObjColumnInnerV
+  omap al <Plug>VimRoamTextObjListChildren
+  vmap al <Plug>VimRoamTextObjListChildrenV
+  omap il <Plug>VimRoamTextObjListSingle
+  vmap il <Plug>VimRoamTextObjListSingleV
 
 
 ==============================================================================
-4. Commands                                                 *vimwiki-commands*
+4. Commands                                                 *vimroam-commands*
 
 ------------------------------------------------------------------------------
-4.1. Global Commands                                 *vimwiki-global-commands*
+4.1. Global Commands                                 *vimroam-global-commands*
 
-*:VimwikiIndex* [count]
+*:VimRoamIndex* [count]
     Open index file of the current wiki. If a [count] is given the
-    corresponding wiki from |g:vimwiki_list| is opened instead.
+    corresponding wiki from |g:vimroam_list| is opened instead.
 
-*:VimwikiTabIndex* [count]
+*:VimRoamTabIndex* [count]
     Open index file of the current wiki in a new tab. If a [count] is given
-    the corresponding wiki from |g:vimwiki_list| is opened instead.
+    the corresponding wiki from |g:vimroam_list| is opened instead.
 
-*:VimwikiUISelect*
+*:VimRoamUISelect*
     Displays a list of registered wikis and opens the index file of the
     selected wiki.
 
-*:VimwikiVar* [varname] [value]
-    Get / Set vimwiki variable. Depending on the number of argument:
-    0. Echo vimwiki's variables
+*:VimRoamVar* [varname] [value]
+    Get / Set vimroam variable. Depending on the number of argument:
+    0. Echo vimroam's variables
     1. Echo variable varname. Completion works with existing variables
     2. Set variable varname to value. Completion works with the current value
        of variable
 
-*:VimwikiDiaryIndex* [count]
+*:VimRoamDiaryIndex* [count]
     Open diary index file of the current wiki. If a [count] is given the
-    corresponding wiki from |g:vimwiki_list| is opened instead.
+    corresponding wiki from |g:vimroam_list| is opened instead.
 
-*:VimwikiMakeDiaryNote* [count]
+*:VimRoamMakeDiaryNote* [count]
     Open diary wiki-file for today of the current wiki. If a [count] is given
-    a diary wiki-file for the corresponding wiki from |g:vimwiki_list| is
+    a diary wiki-file for the corresponding wiki from |g:vimroam_list| is
     opened instead.
 
-*:VimwikiTabMakeDiaryNote* [count]
+*:VimRoamTabMakeDiaryNote* [count]
     Open diary wiki-file for today of the current wiki in a new tab. If
     a [count] is given a diary wiki-file for the corresponding wiki from
-    |g:vimwiki_list| is opened instead.
+    |g:vimroam_list| is opened instead.
 
-*:VimwikiMakeYesterdayDiaryNote* [count]
+*:VimRoamMakeYesterdayDiaryNote* [count]
     Open diary wiki-file for yesterday of the current wiki. If a [count] is
-    given a diary wiki-file for the corresponding wiki from |g:vimwiki_list|
+    given a diary wiki-file for the corresponding wiki from |g:vimroam_list|
     is opened instead.
 
-*:VimwikiMakeTomorrowDiaryNote* [count]
+*:VimRoamMakeTomorrowDiaryNote* [count]
     Open diary wiki-file for tomorrow of the current wiki. If a [count] is
-    given a diary wiki-file for the corresponding wiki from |g:vimwiki_list|
+    given a diary wiki-file for the corresponding wiki from |g:vimroam_list|
     is opened instead.
 
 ------------------------------------------------------------------------------
-4.2. Local commands                                   *vimwiki-local-commands*
+4.2. Local commands                                   *vimroam-local-commands*
 
 These commands are only available (and meaningful) when you are currently in a
-Vimwiki file.
+VimRoam file.
 
-*:VimwikiFollowLink*
+*:VimRoamFollowLink*
     Follow wiki link (or create target wiki page if needed).
 
-*:VimwikiGoBackLink*
+*:VimRoamGoBackLink*
     Go back to the wiki page you came from.
 
-*:VimwikiSplitLink* [reuse] [move_cursor]
+*:VimRoamSplitLink* [reuse] [move_cursor]
     Split and follow wiki link (create target wiki page if needed).
 
     If the argument 'reuse' is given and nonzero, the link is opened in a
@@ -782,7 +782,7 @@ Vimwiki file.
     If 'move_cursor' is given and nonzero, the cursor moves to the window with
     the opened link, otherwise, it stays in the window with the link.
 
-*:VimwikiVSplitLink* [reuse] [move_cursor]
+*:VimRoamVSplitLink* [reuse] [move_cursor]
     Vertical split and follow wiki link (create target wiki page if needed).
 
     If the argument 'reuse' is given and nonzero, the link is opened in a
@@ -791,31 +791,31 @@ Vimwiki file.
     If 'move_cursor' is given and nonzero, the cursor moves to the window with
     the opened link, otherwise, it stays in the window with the link.
 
-*:VimwikiTabnewLink*
+*:VimRoamTabnewLink*
     Follow wiki link in a new tab (create target wiki page if needed).
 
-*:VimwikiNextLink*
+*:VimRoamNextLink*
     Find next link on the current page.
 
-*:VimwikiPrevLink*
+*:VimRoamPrevLink*
     Find previous link on the current page.
 
-*:VimwikiGoto*
+*:VimRoamGoto*
     Goto link provided by an argument. For example: >
-        :VimwikiGoto HelloWorld
+        :VimRoamGoto HelloWorld
 <    opens/creates HelloWorld wiki page.
 
     Supports |cmdline-completion| for link name. If name is not specified, a
     prompt will be shown.
 
-*:VimwikiDeleteFile*
+*:VimRoamDeleteFile*
     Delete the wiki page you are in.
 
-*:VimwikiRenameFile*
+*:VimRoamRenameFile*
     Rename the wiki page you are in.
 
-*:VimwikiRemoveDone*
-    With range: Remove all lines that have a checked |vimwiki-todo-lists| checkbox
+*:VimRoamRemoveDone*
+    With range: Remove all lines that have a checked |vimroam-todo-lists| checkbox
 
     Otherwise:
     Remove all lines in the current todo-list that have a checked box. This is
@@ -823,20 +823,20 @@ Vimwiki file.
     The status of parents is updated accordingly.
     If you want to remove only items of the current nesting level, (re)define
     a command that calls the same function with `0` as first argument: >
-        :command! -buffer -range VimwikiRemoveDone call
-           \ vimwiki#lst#remove_done(0, "<range>", <line1>, <line2>)
+        :command! -buffer -range VimRoamRemoveDone call
+           \ vimroam#lst#remove_done(0, "<range>", <line1>, <line2>)
 <
-*:VimwikiNextTask*
+*:VimRoamNextTask*
     Jump to the next unfinished task in the current wiki page.
 
-*:Vimwiki2HTML*
-    Convert current wiki page to HTML using Vimwiki's own converter or a
-    user-supplied script (see |vimwiki-option-custom_wiki2html|).
+*:VimRoam2HTML*
+    Convert current wiki page to HTML using VimRoam's own converter or a
+    user-supplied script (see |vimroam-option-custom_wiki2html|).
 
-*:Vimwiki2HTMLBrowse*
+*:VimRoam2HTMLBrowse*
     Convert current wiki page to HTML and open it in the webbrowser.
 
-*:VimwikiAll2HTML[!]*
+*:VimRoamAll2HTML[!]*
     Convert all wiki pages to HTML.
     Default CSS file (style.css) is created if there is no one.
 
@@ -844,24 +844,24 @@ Vimwiki file.
     converted or have been modified since their last conversion. With !,
     convert all pages, regardless of whether or not they are out-of-date.
 
-*:VimwikiRss*
+*:VimRoamRss*
     Generate an RSS feed for the latest diary entries.
 
-*:VimwikiToggleListItem*
+*:VimRoamToggleListItem*
     Toggle checkbox of a list item on/off.
-    See |vimwiki-todo-lists|.
+    See |vimroam-todo-lists|.
 
-*:VimwikiToggleRejectedListItem*
+*:VimRoamToggleRejectedListItem*
     Toggle checkbox of a list item disabled/off.
-    See |vimwiki-todo-lists|.
+    See |vimroam-todo-lists|.
 
-*:VimwikiListChangeLvl* CMD
+*:VimRoamListChangeLvl* CMD
     Change the nesting level, or symbol, for a single-line list item.
     CMD may be ">>" or "<<" to change the indentation of the item, or
     one of the syntax-specific bullets: "*", "#", "1.", "-".
-    See |vimwiki-todo-lists|.
+    See |vimroam-todo-lists|.
 
-*:VimwikiSearch* /pattern/
+*:VimRoamSearch* /pattern/
 *:VWS* /pattern/
     Search for /pattern/ in all files of current wiki.
     To display all matches use |:lopen| command.
@@ -873,7 +873,7 @@ Vimwiki file.
     For example, to perform a case-insensitive search, use >
     :VWS /\cpattern/
 
-*:VimwikiBacklinks*
+*:VimRoamBacklinks*
 *:VWB*
     Search for wikilinks to the current wiki page in all files of current
     wiki.
@@ -882,17 +882,17 @@ Vimwiki file.
     To display previous match use |:lprevious| command.
 
 
-*:VimwikiTable*
+*:VimRoamTable*
     Create a table with 5 cols and 2 rows.
 
-    :VimwikiTable cols rows
+    :VimRoamTable cols rows
     Create a table with the given cols and rows
 
-    :VimwikiTable cols
+    :VimRoamTable cols
     Create a table with the given cols and 2 rows
 
 
-*:VimwikiTableMoveColumnLeft* , *:VimwikiTableMoveColumnRight*
+*:VimRoamTableMoveColumnLeft* , *:VimRoamTableMoveColumnRight*
     Move current column to the left or to the right:
     Example: >
 
@@ -902,14 +902,14 @@ Vimwiki file.
 
 
     Cursor is on 'head1'.
-    :VimwikiTableMoveColumnRight
+    :VimRoamTableMoveColumnRight
 
     | head2  | head1  | head3  | head4  | head5  |
     |--------|--------|--------|--------|--------|
     | value2 | value1 | value3 | value4 | value5 |
 
     Cursor is on 'head3'.
-    :VimwikiTableMoveColumnLeft
+    :VimRoamTableMoveColumnLeft
 
     | head2  | head3  | head1  | head4  | head5  |
     |--------|--------|--------|--------|--------|
@@ -919,27 +919,27 @@ Vimwiki file.
     Commands are mapped to <A-Left> and <A-Right> respectively.
 
 
-*:VimwikiGenerateLinks* [pattern]
+*:VimRoamGenerateLinks* [pattern]
     Insert a list of links to all available wiki files into the current buffer.
     If an optional 'pattern' is given as argument, the files will be searched
     in the wiki root folder according to the 'pattern' as |globpath|
 
-*:VimwikiDiaryGenerateLinks*
+*:VimRoamDiaryGenerateLinks*
     Delete old, insert new diary section into diary index file.
 
-*:VimwikiDiaryNextDay*
+*:VimRoamDiaryNextDay*
     Open next day diary link if available.
     Mapped to <C-Down>.
 
-*:VimwikiDiaryPrevDay*
+*:VimRoamDiaryPrevDay*
     Open previous day diary link if available.
     Mapped to <C-Up>.
 
-*:VimwikiTOC*
+*:VimRoamTOC*
     Create or update the Table of Contents for the current wiki file.
-    See |vimwiki-toc|.
+    See |vimroam-toc|.
 
-*:VimwikiCheckLinks*
+*:VimRoamCheckLinks*
     Search through all wiki files and check if the targets of all wiki links
     and links to external files actually exist.  Check also if all wiki files
     are reachable from the index file.  The results are shown in the quickfix
@@ -947,27 +947,27 @@ Vimwiki file.
     With range: the wiki number, by default current wiki
 
 
-*:VimwikiRebuildTags*
+*:VimRoamRebuildTags*
     Rebuilds the tags metadata file for all wiki files newer than the metadata
     file.
-    Necessary for all tags related commands: |vimwiki-syntax-tags|.
+    Necessary for all tags related commands: |vimroam-syntax-tags|.
 
-    :VimwikiRebuildTags! does the same for all files.
+    :VimRoamRebuildTags! does the same for all files.
 
-*:VimwikiSearchTags*
+*:VimRoamSearchTags*
     Searches over the pages in current wiki and finds all locations of a given
     tag.  Supports |cmdline-completion|.
 
-*:VimwikiGenerateTagLinks* tagname1 tagname2 ...
+*:VimRoamGenerateTagLinks* tagname1 tagname2 ...
     Creates or updates an overview on all tags of the wiki with links to all
     their instances.  Supports |cmdline-completion|.  If no arguments (tags)
     are specified, outputs all tags.  To make this command work properly, make
-    sure the tags have been built (see |vimwiki-build-tags|).
+    sure the tags have been built (see |vimroam-build-tags|).
 
-*:VimwikiColorize* red
+*:VimRoamColorize* red
     Colorize current line with the color given in argument. The possible
-    colors are configured by |vimwiki-option-color_dic| and the format of the
-    surrounding color tags by |vimwiki-option-color_tag_template|
+    colors are configured by |vimroam-option-color_dic| and the format of the
+    surrounding color tags by |vimroam-option-color_tag_template|
     TODO
     Currently only the current line is colorized, a support for the selection
     will come. Maybe some mapping and color completion in popup (See
@@ -975,29 +975,29 @@ Vimwiki file.
 
 
 ==============================================================================
-5. Wiki syntax                                                *vimwiki-syntax*
+5. Wiki syntax                                                *vimroam-syntax*
 
 
 There are a lot of different wikis out there. Most of them have their own
-syntax and Vimwiki is not an exception here.
+syntax and VimRoam is not an exception here.
 
-Vimwiki has evolved its own syntax that closely resembles Google's wiki
+VimRoam has evolved its own syntax that closely resembles Google's wiki
 markup.  This syntax is described in detail below.
 
-Vimwiki also supports alternative syntaxes, like Markdown and MediaWiki, to
-varying degrees; see |vimwiki-option-syntax|.  Static elements like headers,
-quotations, and lists are customized in syntax/vimwiki_xxx.vim, where xxx
+VimRoam also supports alternative syntaxes, like Markdown and MediaWiki, to
+varying degrees; see |vimroam-option-syntax|.  Static elements like headers,
+quotations, and lists are customized in syntax/vimroam_xxx.vim, where xxx
 stands for the chosen syntax.
 
-Interactive elements such as links and Vimwiki commands are supported by
-definitions and routines in syntax/vimwiki_xxx_custom.vim and
-autoload/vimwiki/xxx_base.vim.  Currently, only Markdown includes this level
+Interactive elements such as links and VimRoam commands are supported by
+definitions and routines in syntax/vimroam_xxx_custom.vim and
+autoload/vimroam/xxx_base.vim.  Currently, only Markdown includes this level
 of support.
 
-Vimwiki2HTML is currently functional only for the default syntax.
+VimRoam2HTML is currently functional only for the default syntax.
 
 ------------------------------------------------------------------------------
-5.1. Typefaces                                      *vimwiki-syntax-typefaces*
+5.1. Typefaces                                      *vimroam-syntax-typefaces*
 
 There are a few typefaces that give you a bit of control over how your text
 is decorated: >
@@ -1019,7 +1019,7 @@ For Markdown syntax these variations are used: >
 
 Furthermore, there are a number of words which are highlighted extra flashy:
 TODO, DONE, STARTED, FIXME, FIXED, XXX (customisable, see
-vimwiki-option-rx_todo).
+vimroam-option-rx_todo).
 
 When rendered as HTML, code blocks containing only a hash prefixed 6 digit hex
 number will be colored as themselves.  For example >
@@ -1028,7 +1028,7 @@ Becomes >
  <code style='background-color:#ffe119;color:black;'>#ffe119</code>
 
 ------------------------------------------------------------------------------
-5.2. Links                                              *vimwiki-syntax-links*
+5.2. Links                                              *vimroam-syntax-links*
 
 Wikilinks~
 
@@ -1060,14 +1060,14 @@ For example: >
 Links to subdirectories inside the wiki directory are also supported. They
 end with a "/": >
   [[a subdirectory/|Other files]]
-Use |g:vimwiki_dir_link| to control the behavior when opening directories.
+Use |g:vimroam_dir_link| to control the behavior when opening directories.
 
 Typing wikilinks can be simplified by using Vim's omni completion (see
 |compl-omni|) like so: >
   [[ind<C-X><C-O>
 which opens up a popup menu with all the wiki files starting with "ind".
 
-When |vimwiki-option-maxhi| equals 1, a distinct highlighting style is used to
+When |vimroam-option-maxhi| equals 1, a distinct highlighting style is used to
 identify wikilinks whose targets are not found.
 
 Interwiki~
@@ -1079,14 +1079,14 @@ or: >
   [[wiki1:This is a link source|Description of the link]]
 
 The number behind "wiki" is in the range 0..N-1 and identifies the destination
-wiki in |g:vimwiki_list|.
+wiki in |g:vimroam_list|.
 
 Named interwiki links are also supported in the format "wn.name:link" >
   [[wn.My Name:This is a link]]
 or: >
   [[wn.MyWiki:This is a link source|Description of the link]]
 
-See |vimwiki-option-name| to set a per wiki name.
+See |vimroam-option-name| to set a per wiki name.
 
 Diary~
 
@@ -1102,12 +1102,12 @@ of an anchor.  When opening a link, the cursor jumps to the anchor. >
 To jump inside the current wiki file you can omit the file: >
   [[#Tomorrow]]
 
-See |vimwiki-anchors| for how to set an anchor.
+See |vimroam-anchors| for how to set an anchor.
 
 Raw URLs~
 
 Raw URLs are also supported: >
-  https://github.com/vimwiki/vimwiki.git
+  https://github.com/jeffmm/vimroam.git
   mailto:habamax@gmail.com
   ftp://vim.org
 
@@ -1124,14 +1124,14 @@ resources using absolute or relative paths: >
 
 These links are opened with the system command, i.e. !xdg-open (Linux), !open
 (Mac), or !start (Windows).  To customize this behavior, see
-|VimwikiLinkHandler|.
+|VimRoamLinkHandler|.
 
 In Vim, "file:" and "local:" behave the same, i.e. you can use them with both
 relative and absolute links. When converted to HTML, however, "file:" links
 will become absolute links, while "local:" links become relative to the HTML
 output directory. The latter can be useful if you copy your HTML files to
 another computer.
-To customize the HTML conversion of links, see |VimwikiLinkConverter|.
+To customize the HTML conversion of links, see |VimRoamLinkConverter|.
 
 Transclusion (Wiki-Include) Links~
 
@@ -1144,30 +1144,30 @@ relative, and need not end with an extension.
 The primary purpose for wiki-include links is to include images.
 
 Transclude from a local URL: >
-  {{file:../../images/vimwiki_logo.png}}
+  {{file:../../images/vimroam_logo.png}}
 or from a universal URL: >
-  {{http://vimwiki.googlecode.com/hg/images/vimwiki_logo.png}}
+  {{http://vimroam.googlecode.com/hg/images/vimroam_logo.png}}
 
 Transclude image with alternate text: >
-  {{http://vimwiki.googlecode.com/hg/images/vimwiki_logo.png|Vimwiki}}
+  {{http://vimroam.googlecode.com/hg/images/vimroam_logo.png|VimRoam}}
 in HTML: >
-  <img src="http://vimwiki.googlecode.com/hg/images/vimwiki_logo.png"
-  alt="Vimwiki"/>
+  <img src="http://vimroam.googlecode.com/hg/images/vimroam_logo.png"
+  alt="VimRoam"/>
 
 Transclude image with alternate text and some style: >
-  {{http://.../vimwiki_logo.png|cool stuff|style="width:150px;height:120px;"}}
+  {{http://.../vimroam_logo.png|cool stuff|style="width:150px;height:120px;"}}
 in HTML: >
-  <img src="http://vimwiki.googlecode.com/hg/images/vimwiki_logo.png"
+  <img src="http://vimroam.googlecode.com/hg/images/vimroam_logo.png"
   alt="cool stuff" style="width:150px; height:120px"/>
 
 Transclude image _without_ alternate text and with a CSS class: >
-  {{http://.../vimwiki_logo.png||class="center flow blabla"}}
+  {{http://.../vimroam_logo.png||class="center flow blabla"}}
 in HTML: >
-  <img src="http://vimwiki.googlecode.com/hg/images/vimwiki_logo.png"
+  <img src="http://vimroam.googlecode.com/hg/images/vimroam_logo.png"
   alt="" class="center flow blabla"/>
 
 A trial feature allows you to supply your own handler for wiki-include links.
-See |VimwikiWikiIncludeHandler|.
+See |VimRoamWikiIncludeHandler|.
 
 Thumbnail links~
 >
@@ -1197,17 +1197,17 @@ Reference style links must always include two consecutive pairs of
 [-brackets, and field entries can not use "[" or "]".
 
 
-NOTE: (in Vimwiki's current implementation) Reference-style links are a hybrid
-of Vimwiki's default "Wikilink" and the tradition reference-style link.
+NOTE: (in VimRoam's current implementation) Reference-style links are a hybrid
+of VimRoam's default "Wikilink" and the tradition reference-style link.
 
 If the Id is defined elsewhere in the source, as per the Markdown standard: >
   [Id]: URL
 
-then the URL is opened with the system default handler.  Otherwise, Vimwiki
+then the URL is opened with the system default handler.  Otherwise, VimRoam
 treats the reference-style link as a Wikilink, interpreting the Id field as a
 wiki page name.
 
-Highlighting of existing links when |vimwiki-option-maxhi| is activated
+Highlighting of existing links when |vimroam-option-maxhi| is activated
 identifies links whose Id field is not defined, either as a reference-link or
 as a wiki page.
 
@@ -1217,7 +1217,7 @@ re-open the page ":e<CR>".
 Extract title from external links~
 
 It is possible to automagically extract the title of a web page to create a
-link. The function #vimwiki#base#linkify() will get the URL under the cursor
+link. The function #vimroam#base#linkify() will get the URL under the cursor
 and replace the url with a markdown link.
 
 If the URL cannot be retrieved, nothing is changed.
@@ -1225,22 +1225,22 @@ If the <title> html tag cannot be extracted, the url is used as the link
 title.
 
 Suggested mapping: >
-  nnoremap <silent> <leader>uu :call vimwiki#base#linkify()<cr>
+  nnoremap <silent> <leader>uu :call vimroam#base#linkify()<cr>
 
 ------------------------------------------------------------------------------
-5.3. Headers                                          *vimwiki-syntax-headers*
+5.3. Headers                                          *vimroam-syntax-headers*
 
 = Header level 1 =~
 By default all headers are highlighted using |hl-Title| highlight group.
 
 == Header level 2 ==~
 You can set up different colors for each header level: >
-  :hi VimwikiHeader1 guifg=#FF0000
-  :hi VimwikiHeader2 guifg=#00FF00
-  :hi VimwikiHeader3 guifg=#0000FF
-  :hi VimwikiHeader4 guifg=#FF00FF
-  :hi VimwikiHeader5 guifg=#00FFFF
-  :hi VimwikiHeader6 guifg=#FFFF00
+  :hi VimRoamHeader1 guifg=#FF0000
+  :hi VimRoamHeader2 guifg=#00FF00
+  :hi VimRoamHeader3 guifg=#0000FF
+  :hi VimRoamHeader4 guifg=#FF00FF
+  :hi VimRoamHeader5 guifg=#00FFFF
+  :hi VimRoamHeader6 guifg=#FFFF00
 Set up colors for all 6 header levels or none at all.
 
 === Header level 3 ===~
@@ -1254,7 +1254,7 @@ You can center your headers in HTML by placing spaces before the first '=':
 
 
 ------------------------------------------------------------------------------
-5.4. Paragraphs                                    *vimwiki-syntax-paragraphs*
+5.4. Paragraphs                                    *vimroam-syntax-paragraphs*
 
 A paragraph is a group of lines starting in column 1 (no indentation).
 Paragraphs are separated by a blank line:
@@ -1267,7 +1267,7 @@ two lines.
 
 
 ------------------------------------------------------------------------------
-5.5. Lists                                              *vimwiki-syntax-lists*
+5.5. Lists                                              *vimroam-syntax-lists*
 
 Unordered lists: >
   - Bulleted list item 1
@@ -1342,7 +1342,7 @@ Definition lists: >
 
 
 ------------------------------------------------------------------------------
-5.6. Tables                                            *vimwiki-syntax-tables*
+5.6. Tables                                            *vimroam-syntax-tables*
 
 Tables are created by entering the content of each cell separated by |
 delimiters. You can insert other inline wiki syntax in table cells, including
@@ -1376,11 +1376,11 @@ For example: >
  | h  | >  | > | > |
 >
 
-See |vimwiki-tables| for more details on how to manage tables.
+See |vimroam-tables| for more details on how to manage tables.
 
 
 ------------------------------------------------------------------------------
-5.7. Preformatted text                           *vimwiki-syntax-preformatted*
+5.7. Preformatted text                           *vimroam-syntax-preformatted*
 
 Use {{{ and }}} to define a block of preformatted text:
 {{{ >
@@ -1412,13 +1412,13 @@ Result of HTML export: >
 This might be useful for coloring program code with external JS tools
 such as Google's syntax highlighter.
 
-You can setup Vimwiki to highlight code snippets in preformatted text.
-See |vimwiki-option-nested_syntaxes| and
-|vimwiki-option-automatic_nested_syntaxes|.
+You can setup VimRoam to highlight code snippets in preformatted text.
+See |vimroam-option-nested_syntaxes| and
+|vimroam-option-automatic_nested_syntaxes|.
 
 
 ------------------------------------------------------------------------------
-5.8. Mathematical formulae                              *vimwiki-syntax-math*
+5.8. Mathematical formulae                              *vimroam-syntax-math*
 
 Mathematical formulae are highlighted, and can be rendered in HTML using the
 powerful open source display engine MathJax (http://www.mathjax.org/).
@@ -1484,11 +1484,11 @@ Add to your HTML template the following lines:
 
 
 ------------------------------------------------------------------------------
-5.9. Blockquotes                                  *vimwiki-syntax-blockquotes*
+5.9. Blockquotes                                  *vimroam-syntax-blockquotes*
 
 Text which starts with 4 or more spaces is a blockquote.
 
-    This would be a blockquote in Vimwiki. It is not highlighted in Vim but
+    This would be a blockquote in VimRoam. It is not highlighted in Vim but
     could be styled by CSS in HTML. Blockquotes are usually used to quote a
     long piece of text from another source.
 
@@ -1502,14 +1502,14 @@ that the > syntax allow empty lines to signal multiple paragraphs.
 
 
 ------------------------------------------------------------------------------
-5.10. Comments                                       *vimwiki-syntax-comments*
+5.10. Comments                                       *vimroam-syntax-comments*
 
 A line that starts with %% is a comment.
 E.g.: >
  %% this text would not be in HTML
 
 The default commentstring can be changed or disabled with
-|g:vimwiki_commentstring| so an alternative commentstring can be set, e.g.:
+|g:vimroam_commentstring| so an alternative commentstring can be set, e.g.:
   <!-- This may be a comment too -->
 
 A multi-line comment is one that starts with %%+ and ends with +%%. This can
@@ -1523,18 +1523,18 @@ E.g.:
  %%+ not included +%% is included %%+ also not included +%%
 
 ------------------------------------------------------------------------------
-5.11. Horizontal line                                      *vimwiki-syntax-hr*
+5.11. Horizontal line                                      *vimroam-syntax-hr*
 
 4 or more dashes at the start of the line is a horizontal line (<hr />): >
  ----
 <
 
 ------------------------------------------------------------------------------
-5.12. Tags                                               *vimwiki-syntax-tags*
+5.12. Tags                                               *vimroam-syntax-tags*
 
 You can tag a wiki file, a header or an arbitrary place in a wiki file. Then,
 you can use Vim's built-in tag search functionality (see |tagsrch.txt|) or
-Vimwiki's tag related commands to quickly jump to all occurrences of the tag.
+VimRoam's tag related commands to quickly jump to all occurrences of the tag.
 
 A tag is a sequence of non-space characters between two colons: >
         :tag-example:
@@ -1554,34 +1554,34 @@ Typing tags can be simplified by using Vim's omni completion (see
 which opens up a popup menu with all tags defined in the wiki starting with
 "ind".
 
-Tags are also treated as |vimwiki-anchors| (similar to bold text).
+Tags are also treated as |vimroam-anchors| (similar to bold text).
 
-                                                          *vimwiki-build-tags*
+                                                          *vimroam-build-tags*
 Note that the tag search/jump/completion commands need certain metadata saved
 in the wiki folder.  This metadata file can be manually updated by running
-|:VimwikiRebuildTags|.  When the option |vimwiki-option-auto_tags| is enabled,
+|:VimRoamRebuildTags|.  When the option |vimroam-option-auto_tags| is enabled,
 the tags metadata will be auto-updated on each page save.
 
 
 Tags-related commands and options:
-   * |:VimwikiRebuildTags|
-   * |:VimwikiGenerateTagLinks|
-   * |:VimwikiSearchTags|
-   * |vimwiki-option-auto_tags|
+   * |:VimRoamRebuildTags|
+   * |:VimRoamGenerateTagLinks|
+   * |:VimRoamSearchTags|
+   * |vimroam-option-auto_tags|
 
 
 ==============================================================================
-6. Folding/Outline                                           *vimwiki-folding*
+6. Folding/Outline                                           *vimroam-folding*
 
-Vimwiki allows you to use Vim's folding methods and options so you can fold
+VimRoam allows you to use Vim's folding methods and options so you can fold
 your outline to make it less distracting and easier to navigate. You can use
-Vimwiki's built-in folding methods or supply custom methods for folding.  You
-control how folds behave with by setting the |g:vimwiki_folding| variable to
+VimRoam's built-in folding methods or supply custom methods for folding.  You
+control how folds behave with by setting the |g:vimroam_folding| variable to
 the desired value in your configuration file: >
 
-  let g:vimwiki_folding = 'value'
+  let g:vimroam_folding = 'value'
 
-Here's an example of how folds work with |g:vimwiki_folding| set to 'list':
+Here's an example of how folds work with |g:vimroam_folding| set to 'list':
 
 = My current task =
 * [ ] Do stuff 1
@@ -1619,17 +1619,17 @@ Hit |zr| one more time :
 * [ ] Do stuff 2
 * [ ] Do stuff 3
 
-Note: If you use the default Vimwiki syntax, folding on list items will work
+Note: If you use the default VimRoam syntax, folding on list items will work
 properly only if all of them are indented using the current 'shiftwidth'.
 For Markdown and MediaWiki syntax, * or # should be in the first column.
 
-For maximum control over folds, set |g:vimwiki_folding| to 'custom' so you can
+For maximum control over folds, set |g:vimroam_folding| to 'custom' so you can
 allow other plugins or your vim configuration file to control how folding is
 performed. For example, let's say you are using markdown syntax and prefer to
 fold so that the last blank line before a header is not folded, you can add
 this function to your configuration file: >
 
-  function! VimwikiFoldLevelCustom(lnum)
+  function! VimRoamFoldLevelCustom(lnum)
     let pounds = strlen(matchstr(getline(a:lnum), '^#\+'))
     if (pounds)
       return '>' . pounds  " start a fold level
@@ -1646,17 +1646,17 @@ Note that you will also need to add the following vim options to your configurat
 
   augroup VimrcAuGroup
     autocmd!
-    autocmd FileType vimwiki setlocal foldmethod=expr |
-      \ setlocal foldenable | set foldexpr=VimwikiFoldLevelCustom(v:lnum)
+    autocmd FileType vimroam setlocal foldmethod=expr |
+      \ setlocal foldenable | set foldexpr=VimRoamFoldLevelCustom(v:lnum)
   augroup END
 
-See the |g:vimwiki_folding| documentation for more details.
+See the |g:vimroam_folding| documentation for more details.
 
 ==============================================================================
-7. Placeholders                                         *vimwiki-placeholders*
+7. Placeholders                                         *vimroam-placeholders*
 
 ------------------------------------------------------------------------------
-%title Title of the page                                       *vimwiki-title*
+%title Title of the page                                       *vimroam-title*
 
 When you htmlize your wiki page, the default title is the filename of the
 page. Place >
@@ -1667,7 +1667,7 @@ into your wiki page if you want another title.
 
 
 ------------------------------------------------------------------------------
-%nohtml                                                       *vimwiki-nohtml*
+%nohtml                                                       *vimroam-nohtml*
 
 If you do not want a wiki page to be converted to HTML, place:
 
@@ -1677,7 +1677,7 @@ into it. This will also prevent inclusion in the RSS feed.
 
 
 ------------------------------------------------------------------------------
-%template                                                   *vimwiki-template*
+%template                                                   *vimroam-template*
 
 To apply a concrete HTML template to a wiki page, place:
 
@@ -1685,13 +1685,13 @@ To apply a concrete HTML template to a wiki page, place:
 
 into it.
 
-See |vimwiki-option-template_path| for details.
+See |vimroam-option-template_path| for details.
 
 ------------------------------------------------------------------------------
-%date                                                           *vimwiki-date*
+%date                                                           *vimroam-date*
 
 The date of the wiki page. The value can be used in the HTML template, see
-|vimwiki-option-template_path| for details.
+|vimroam-option-template_path| for details.
 
 %date 2017-07-08
 %date
@@ -1701,12 +1701,12 @@ used.
 
 
 ==============================================================================
-8. Lists                                                       *vimwiki-lists*
+8. Lists                                                       *vimroam-lists*
 
 While writing lists, the keys <CR>, o and O insert new bullets or numbers as
 you would expect it. A new bullet/number is inserted if and only if the cursor
 is in a list item. If you use hard line wraps within your lists then you will
-need to remap `<CR>` to `VimwikiReturn 3 5`, use <S-CR>, or press <CR> and
+need to remap `<CR>` to `VimRoamReturn 3 5`, use <S-CR>, or press <CR> and
 <C-L><C-M>.
 
 Note that the mapping <S-CR> is not available in all terminals.
@@ -1715,18 +1715,18 @@ Furthermore, <CR> and <S-CR> behave differently when the cursor is behind an
 empty list item. See the table below.
 
 To customize the behavior you should use an autocmd or place the mappings in
-`~/.vim/after/ftplugin/vimwiki.vim`. This is necessary to avoid an error that
-the command `VimwikiReturn` doesn't exist when editing non Vimwiki files.: >
+`~/.vim/after/ftplugin/vimroam.vim`. This is necessary to avoid an error that
+the command `VimRoamReturn` doesn't exist when editing non VimRoam files.: >
 
-  autocmd FileType vimwiki inoremap <silent><buffer> <CR>
-              \ <C-]><Esc>:VimwikiReturn 3 5<CR>
-  autocmd FileType vimwiki inoremap <silent><buffer> <S-CR>
-              \ <Esc>:VimwikiReturn 2 2<CR>
+  autocmd FileType vimroam inoremap <silent><buffer> <CR>
+              \ <C-]><Esc>:VimRoamReturn 3 5<CR>
+  autocmd FileType vimroam inoremap <silent><buffer> <S-CR>
+              \ <Esc>:VimRoamReturn 2 2<CR>
 
 Note: Prefixing the mapping with `<C-]>` expands iabbrev definitions and
 requires Vim > 7.3.489.
 
-The first argument of the command :VimwikiReturn is a number that specifies
+The first argument of the command :VimRoamReturn is a number that specifies
 when to insert a new bullet/number and when not, depending on whether the
 cursor is in a list item or in a normal line: >
 
@@ -1787,7 +1787,7 @@ possibilities:
 <
 
 
-                                                   *vimwiki-list-manipulation*
+                                                   *vimroam-list-manipulation*
 The level of a list item is determined by its indentation (default and
 Markdown syntax) or by the number of list symbols (MediaWiki syntax).
 
@@ -1798,8 +1798,8 @@ list items of lower level below it, that is, all child items.
 
 Use <C-T> and <C-D> to change the level of a list item in insert mode.
 
-See |vimwiki_gll|, |vimwiki_gLl|, |vimwiki_glh|, |vimwiki_gLh|,
-|vimwiki_i_<C-T>|, |vimwiki_i_<C-D>|
+See |vimroam_gll|, |vimroam_gLl|, |vimroam_glh|, |vimroam_gLh|,
+|vimroam_i_<C-T>|, |vimroam_i_<C-D>|
 
 
 Use gl followed by the desired symbol to change the symbol of a list item or
@@ -1836,20 +1836,20 @@ Roman numerals go up to MMMM) and numbers up to 2147483647. or
 
 Also, note that you can, of course, mix different list symbols in one list, but
 if you have the strange idea of putting a list with Roman numerals right after
-a list using letters or vice versa, Vimwiki will get confused because it
+a list using letters or vice versa, VimRoam will get confused because it
 cannot distinguish which is which (at least if the types are both upper case
 or both lower case).
 
-See |vimwiki_glstar|, |vimwiki_gl#| |vimwiki_gl-|, |vimwiki_gl-|,
-|vimwiki_gl1|, |vimwiki_gla|, |vimwiki_glA|, |vimwiki_gli|, |vimwiki_glI|
+See |vimroam_glstar|, |vimroam_gl#| |vimroam_gl-|, |vimroam_gl-|,
+|vimroam_gl1|, |vimroam_gla|, |vimroam_glA|, |vimroam_gli|, |vimroam_glI|
 
 
 Use glr and gLr if the numbers of a numbered list are mixed up. See
-|vimwiki_glr| and |vimwiki_gLr|.
+|vimroam_glr| and |vimroam_gLr|.
 
 
 ------------------------------------------------------------------------------
-Todo lists                                                *vimwiki-todo-lists*
+Todo lists                                                *vimroam-todo-lists*
 
 You can have todo lists -- lists of items you can check/uncheck.
 
@@ -1889,16 +1889,16 @@ parent items: >
    * [ ] Add [ ] to the next list item created using o, O or <CR>.
 
 Parent items should change when their child items change unless disabled via
-|vimwiki-option-listsyms_propagate|. If not, use |vimwiki_glr|. The symbol
+|vimroam-option-listsyms_propagate|. If not, use |vimroam_glr|. The symbol
 between [ ] depends on the percentage of toggled child items (see also
-|vimwiki-option-listsyms|): >
+|vimroam-option-listsyms|): >
     [ ] -- 0%
     [.] -- 1-33%
     [o] -- 34-66%
     [O] -- 67-99%
     [X] -- 100%
 
-You can use |vimwiki_gln| and |vimwiki_glp| to change the "done" status of a
+You can use |vimroam_gln| and |vimroam_glp| to change the "done" status of a
 checkbox without a childitem.
 
 It is possible to toggle several list items using visual mode. But note that
@@ -1906,18 +1906,18 @@ instead of toggling every item individually, all items get checked if the
 first item was unchecked and all items get unchecked if the first item was
 checked.
 
-Use gl<Space> (see |vimwiki_gl<Space>|) to remove a single checkbox and
-gL<Space> (see |vimwiki_gL<Space>|) to remove all checkboxes of the list the
+Use gl<Space> (see |vimroam_gl<Space>|) to remove a single checkbox and
+gL<Space> (see |vimroam_gL<Space>|) to remove all checkboxes of the list the
 cursor is in.
 
 You can mark an item as rejected ("won't do") with
-|vimwiki_glx|. A rejected item will not influence the status of its parents.
+|vimroam_glx|. A rejected item will not influence the status of its parents.
 
 
 ==============================================================================
-9. Tables                                                     *vimwiki-tables*
+9. Tables                                                     *vimroam-tables*
 
-Use the  :VimwikiTable command to create a default table with 5 columns and 2
+Use the  :VimRoamTable command to create a default table with 5 columns and 2
 rows: >
 
  |   |   |   |   |   |
@@ -1961,14 +1961,14 @@ using the ':' character. The default is left-align.  >
 <
 
 ==============================================================================
-10. Diary                                                      *vimwiki-diary*
+10. Diary                                                      *vimroam-diary*
 
 The diary helps you make daily notes. You can easily add information into
-Vimwiki that should be sorted out later. Just hit <Leader>w<Leader>w to create
+VimRoam that should be sorted out later. Just hit <Leader>w<Leader>w to create
 a new note for today with a name based on the current date.
 
 To generate the diary section with all available links one can use
-|:VimwikiDiaryGenerateLinks| or <Leader>w<Leader>i .
+|:VimRoamDiaryGenerateLinks| or <Leader>w<Leader>i .
 
 Note: it works only for diary index file.
 
@@ -1984,10 +1984,10 @@ Example of diary section: >
 The diary can be used with a frequency other than daily. See the appropriate
 per-wiki options.
 
-See |g:vimwiki_diary_months| if you would like to rename months.
+See |g:vimroam_diary_months| if you would like to rename months.
 
 ------------------------------------------------------------------------------
-Calendar integration                                        *vimwiki-calendar*
+Calendar integration                                        *vimroam-calendar*
 
 If you have Calendar.vim installed you can use it to create diary notes.
 Just open calendar with :Calendar and tap <Enter> on the date. A wiki file
@@ -1995,21 +1995,21 @@ will be created in the default wiki's diary.
 
 Get it from http://www.vim.org/scripts/script.php?script_id=52
 
-See |g:vimwiki_use_calendar| option to turn it off/on.
+See |g:vimroam_use_calendar| option to turn it off/on.
 
 
 ------------------------------------------------------------------------------
 Markdown export
 
 If you use markdown as the syntax for your wiki, there is a rubygem available
-at https://github.com/patrickdavey/vimwiki_markdown which you can use to
+at https://github.com/patrickdavey/vimroam_markdown which you can use to
 convert the wiki markdown files into html.
 
-Also, See |vimwiki-option-html_filename_parameterization| for supporting
+Also, See |vimroam-option-html_filename_parameterization| for supporting
 functionality.
 
 ==============================================================================
-11. Anchors                                                  *vimwiki-anchors*
+11. Anchors                                                  *vimroam-anchors*
 
 Every header, tag, and bold text can be used as an anchor.  To jump to it, use
 a wikilink of the form >
@@ -2048,91 +2048,91 @@ For jumping inside a single file, you can omit the file in the link: >
 
 
 ------------------------------------------------------------------------------
-Table of Contents                    *vimwiki-toc* *vimwiki-table-of-contents*
+Table of Contents                    *vimroam-toc* *vimroam-table-of-contents*
 
 You can create a "table of contents" at the top of your wiki file.
-The command |:VimwikiTOC| creates the magic header >
+The command |:VimRoamTOC| creates the magic header >
   = Contents =
 in the current file and below it a list of all the headers in this file as
 links, so you can directly jump to specific parts of the file.
 
-For the indentation of the list, the value of |vimwiki-option-list_margin| is
+For the indentation of the list, the value of |vimroam-option-list_margin| is
 used.
 
 If you don't want the TOC to sit in the very first line, e.g. because you have
 a modeline there, put the magic header in the second or third line and run
-:VimwikiTOC to update the TOC.
+:VimRoamTOC to update the TOC.
 
 If English is not your preferred language, set the option
-|g:vimwiki_toc_header| to your favorite translation.
+|g:vimroam_toc_header| to your favorite translation.
 
 If you want to keep the TOC up to date automatically, use the option
-|vimwiki-option-auto_toc|.
+|vimroam-option-auto_toc|.
 
 
 ------------------------------------------------------------------------------
-Tagbar integration                                            *vimwiki-tagbar*
+Tagbar integration                                            *vimroam-tagbar*
 
 As an alternative to the Table of Contents, you can use the Tagbar plugin
 (http://majutsushi.github.io/tagbar/) to show the headers of your wiki files
 in a side pane.
 Download the Python script from
-https://raw.githubusercontent.com/vimwiki/utils/master/vwtags.py and follow
+https://raw.githubusercontent.com/vimroam/utils/master/vwtags.py and follow
 the instructions in it.
 
 
 ==============================================================================
-12. Options                                                  *vimwiki-options*
+12. Options                                                  *vimroam-options*
 
 There are global options and local (per-wiki) options available to tune
-Vimwiki.
+VimRoam.
 
 Global options are configured via global variables.  For a complete list of
-them, see |vimwiki-global-options|.
+them, see |vimroam-global-options|.
 
 Local options for multiple independent wikis are stored in a single global
-variable |g:vimwiki_list|.  The per-wiki options can be registered in advance,
-as described in |vimwiki-register-wiki|, or may be registered on the fly as
-described in |vimwiki-temporary-wiki|.  For a list of per-wiki options, see
-|vimwiki-local-options|.
+variable |g:vimroam_list|.  The per-wiki options can be registered in advance,
+as described in |vimroam-register-wiki|, or may be registered on the fly as
+described in |vimroam-temporary-wiki|.  For a list of per-wiki options, see
+|vimroam-local-options|.
 
 A note for Vim power users:
 If you have an elaborated Vim setup, where you e.g. load plugins
-conditionally, make sure the settings are set before Vimwiki loads (that is,
-before plugin/vimwiki.vim is sourced). If this is not possible, try this
-command after the Vimwiki settings are (re-) set: >
-  :call vimwiki#vars#init()
+conditionally, make sure the settings are set before VimRoam loads (that is,
+before plugin/vimroam.vim is sourced). If this is not possible, try this
+command after the VimRoam settings are (re-) set: >
+  :call vimroam#vars#init()
 If you also want to reload syntax variables, prefix the last command by: >
-  :unlet g:vimwiki_syntaxlocal_vars
+  :unlet g:vimroam_syntaxlocal_vars
 
 ------------------------------------------------------------------------------
-12.1 Registered Wiki                  *g:vimwiki_list* *vimwiki-register-wiki*
+12.1 Registered Wiki                  *g:vimroam_list* *vimroam-register-wiki*
 
-One or more wikis can be registered using the |g:vimwiki_list| variable.
+One or more wikis can be registered using the |g:vimroam_list| variable.
 
-Each item in |g:vimwiki_list| is a |Dictionary| that holds all customizations
+Each item in |g:vimroam_list| is a |Dictionary| that holds all customizations
 available for a distinct wiki. The options dictionary has the form: >
   {'option1': 'value1', 'option2': 'value2', ...}
 
 Consider the following: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'path_html': '~/public_html/'}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'path_html': '~/public_html/'}]
 
 This defines one wiki located at ~/my_site/. When converted to HTML, the
 produced HTML files go to ~/public_html/ .
 
 Another example: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'path_html': '~/public_html/'},
+  let g:vimroam_list = [{'path': '~/my_site/', 'path_html': '~/public_html/'},
             \ {'path': '~/my_docs/', 'ext': '.mdox'}]
 
 defines two wikis: the first as before, and the second one located in
 ~/my_docs/, with files that have the .mdox extension.
 
-An empty |Dictionary| in g:vimwiki_list is the wiki with default options: >
-  let g:vimwiki_list = [{},
+An empty |Dictionary| in g:vimroam_list is the wiki with default options: >
+  let g:vimroam_list = [{},
             \ {'path': '~/my_docs/', 'ext': '.mdox'}]
 
 For clarity, in your .vimrc file you can define wiki options using separate
-|Dictionary| variables and subsequently compose them into |g:vimwiki_list|. >
+|Dictionary| variables and subsequently compose them into |g:vimroam_list|. >
     let wiki_1 = {}
     let wiki_1.path = '~/my_docs/'
     let wiki_1.html_template = '~/public_html/template.tpl'
@@ -2142,86 +2142,86 @@ For clarity, in your .vimrc file you can define wiki options using separate
     let wiki_2.path = '~/project_docs/'
     let wiki_2.index = 'main'
 
-    let g:vimwiki_list = [wiki_1, wiki_2]
+    let g:vimroam_list = [wiki_1, wiki_2]
 <
 
 
 ------------------------------------------------------------------------------
-12.2 Temporary Wiki                                   *vimwiki-temporary-wiki*
+12.2 Temporary Wiki                                   *vimroam-temporary-wiki*
 
 
 The creation of temporary wikis allows you to create a wiki on the fly.
 
-If a file with a registered wiki extension (see |vimwiki-register-extension|)
-is opened in a directory that: 1) is not listed in |g:vimwiki_list|, and 2) is
+If a file with a registered wiki extension (see |vimroam-register-extension|)
+is opened in a directory that: 1) is not listed in |g:vimroam_list|, and 2) is
 not a subdirectory of any such directory, then a temporary wiki is created and
-appended to the list of configured wikis in |g:vimwiki_list|.
+appended to the list of configured wikis in |g:vimroam_list|.
 
-In addition to Vimwiki's editing functionality, the temporary wiki enables: 1)
+In addition to VimRoam's editing functionality, the temporary wiki enables: 1)
 wiki-linking to other files in the same subtree, 2) highlighting of existing
-wiki pages when |vimwiki-option-maxhi| is activated, and 3) HTML generation to
-|vimwiki-option-path_html|.
+wiki pages when |vimroam-option-maxhi| is activated, and 3) HTML generation to
+|vimroam-option-path_html|.
 
-Temporary wikis are configured using default |vimwiki-local-options|, except
+Temporary wikis are configured using default |vimroam-local-options|, except
 for the path, extension, and syntax options.  The path and extension are set
-using the file's location and extension.  The syntax is set to Vimwiki's
-default unless another syntax is registered via |vimwiki-register-extension|.
+using the file's location and extension.  The syntax is set to VimRoam's
+default unless another syntax is registered via |vimroam-register-extension|.
 
-Use |g:vimwiki_global_ext| to turn off creation of temporary wikis.
+Use |g:vimroam_global_ext| to turn off creation of temporary wikis.
 
-NOTE: Vimwiki assumes that the locations of distinct wikis do not overlap.
+NOTE: VimRoam assumes that the locations of distinct wikis do not overlap.
 
 
 ------------------------------------------------------------------------------
-12.3 Per-Wiki Options                                  *vimwiki-local-options*
+12.3 Per-Wiki Options                                  *vimroam-local-options*
 
 
-*vimwiki-option-path*
+*vimroam-option-path*
 ------------------------------------------------------------------------------
 Key             Default value~
-path            ~/vimwiki/
+path            ~/vimroam/
 
 Description~
 Wiki files location: >
-  let g:vimwiki_list = [{'path': '~/my_site/'}]
+  let g:vimroam_list = [{'path': '~/my_site/'}]
 <
 
-*vimwiki-option-path_html*
+*vimroam-option-path_html*
 ------------------------------------------------------------------------------
 Key             Default value~
 path_html       ''
 
 Description~
 Location of HTML files converted from wiki files: >
-  let g:vimwiki_list = [{'path': '~/my_site/',
+  let g:vimroam_list = [{'path': '~/my_site/',
                        \ 'path_html': '~/html_site/'}]
 
 If path_html is an empty string, the location is derived from
-|vimwiki-option-path| by adding '_html'; i.e. for: >
-  let g:vimwiki_list = [{'path': '~/okidoki/'}]
+|vimroam-option-path| by adding '_html'; i.e. for: >
+  let g:vimroam_list = [{'path': '~/okidoki/'}]
 
 path_html will be set to '~/okidoki_html/'.
 
 
-*vimwiki-option-name*
+*vimroam-option-name*
 ------------------------------------------------------------------------------
 Key             Default value~
 name            ''
 
 Description~
 A name that can be used to create interwiki links: >
-  let g:vimwiki_list = [{'path': '~/my_site/',
+  let g:vimroam_list = [{'path': '~/my_site/',
                        \ 'name': 'My Wiki'}]
 
 Valid names can contain letters, numbers, spaces, underscores, and dashes.
 If duplicate names are used the interwiki link will jump to the first wiki
-with a matching name in |g:vimwiki_list|.
+with a matching name in |g:vimroam_list|.
 
 The assigned wiki name will also be shown in the menu entries in GVim.
-See the option |g:vimwiki_menu|.
+See the option |g:vimroam_menu|.
 
 
-*vimwiki-option-auto_export*
+*vimroam-option-auto_export*
 ------------------------------------------------------------------------------
 Key             Default value     Values~
 auto_export     0                 0, 1
@@ -2229,12 +2229,12 @@ auto_export     0                 0, 1
 Description~
 Set this option to 1 to automatically generate the HTML file when the
 corresponding wiki page is saved: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'auto_export': 1}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'auto_export': 1}]
 
 This will keep your HTML files up to date.
 
 
-*vimwiki-option-auto_toc*
+*vimroam-option-auto_toc*
 ------------------------------------------------------------------------------
 Key             Default value     Values~
 auto_toc        0                 0, 1
@@ -2242,47 +2242,47 @@ auto_toc        0                 0, 1
 Description~
 Set this option to 1 to automatically update the table of contents when the
 current wiki page is saved: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'auto_toc': 1}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'auto_toc': 1}]
 
 
-*vimwiki-option-index*
+*vimroam-option-index*
 ------------------------------------------------------------------------------
 Key             Default value~
 index           index
 
 Description~
 Name of wiki index file: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'index': 'main'}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'index': 'main'}]
 
 NOTE: Do not include the extension.
 
 
-*vimwiki-option-ext*
+*vimroam-option-ext*
 ------------------------------------------------------------------------------
 Key             Default value~
 ext             .wiki
 
 Description~
 Extension of wiki files: >
-  let g:vimwiki_list = [{'path': '~/my_site/',
+  let g:vimroam_list = [{'path': '~/my_site/',
                        \ 'index': 'main', 'ext': '.document'}]
 
 <
-*vimwiki-option-syntax*
+*vimroam-option-syntax*
 ------------------------------------------------------------------------------
 Key             Default value     Values~
 syntax          default           default, markdown, or media
 
 Description~
-Wiki syntax.  You can use different markup languages (currently: Vimwiki's
-default, Markdown, and MediaWiki), but only Vimwiki's default markup will be
+Wiki syntax.  You can use different markup languages (currently: VimRoam's
+default, Markdown, and MediaWiki), but only VimRoam's default markup will be
 converted to HTML at the moment.
 
 To use Markdown's wiki markup: >
-  let g:vimwiki_list = [{'path': '~/my_site/',
+  let g:vimroam_list = [{'path': '~/my_site/',
                        \ 'syntax': 'markdown', 'ext': '.md'}]
 
-*vimwiki-option-links_space_char*
+*vimroam-option-links_space_char*
 ------------------------------------------------------------------------------
 Key                 Default value~
 links_space_char    ' '
@@ -2294,18 +2294,18 @@ the created file would be my_link.wiki. The default behavior does not replace
 spaces.
 
 To set the space replacement character: >
-  let g:vimwiki_list = [{'path': '~/my_site/',
+  let g:vimroam_list = [{'path': '~/my_site/',
                        \ 'links_space_char': '_'}]
 <
 
-*vimwiki-option-template_path*
+*vimroam-option-template_path*
 ------------------------------------------------------------------------------
 Key                 Default value~
-template_path       ~/vimwiki/templates/
+template_path       ~/vimroam/templates/
 
 Description~
 Setup path for HTML templates: >
-  let g:vimwiki_list = [{'path': '~/my_site/',
+  let g:vimroam_list = [{'path': '~/my_site/',
           \ 'template_path': '~/public_html/templates/',
           \ 'template_default': 'def_template',
           \ 'template_ext': '.html'}]
@@ -2333,8 +2333,8 @@ Each template could look like: >
     </html>
 
 where
-  `%title%` is replaced by a wiki page name or by a |vimwiki-title|
-  `%date%` is replaced with the current date or by |vimwiki-date|
+  `%title%` is replaced by a wiki page name or by a |vimroam-title|
+  `%date%` is replaced with the current date or by |vimroam-date|
   `%root_path%` is replaced by a count of ../ for pages buried in subdirs:
     if you have wikilink [[dir1/dir2/dir3/my page in a subdir]] then
     `%root_path%` is replaced by '../../../'.
@@ -2353,7 +2353,7 @@ a template. Consider you have wiki page named 'Maxim.wiki' and you want apply
 to that page.
 
 
-*vimwiki-option-template_default*
+*vimroam-option-template_default*
 ------------------------------------------------------------------------------
 Key                 Default value~
 template_default    default
@@ -2361,10 +2361,10 @@ template_default    default
 Description~
 Setup default template name (without extension).
 
-See |vimwiki-option-template_path| for details.
+See |vimroam-option-template_path| for details.
 
 
-*vimwiki-option-template_ext*
+*vimroam-option-template_ext*
 ------------------------------------------------------------------------------
 Key                 Default value~
 template_ext        .tpl
@@ -2372,27 +2372,27 @@ template_ext        .tpl
 Description~
 Setup template filename extension.
 
-See |vimwiki-option-template_path| for details.
+See |vimroam-option-template_path| for details.
 
 
-*vimwiki-option-css_name*
+*vimroam-option-css_name*
 ------------------------------------------------------------------------------
 Key             Default value~
 css_name        style.css
 
 Description~
 Setup CSS file name: >
-  let g:vimwiki_list = [{'path': '~/my_pages/',
+  let g:vimroam_list = [{'path': '~/my_pages/',
           \ 'css_name': 'main.css'}]
 <
 or even >
-  let g:vimwiki_list = [{'path': '~/my_pages/',
+  let g:vimroam_list = [{'path': '~/my_pages/',
           \ 'css_name': 'css/main.css'}]
 <
-Vimwiki comes with a default CSS file "style.css".
+VimRoam comes with a default CSS file "style.css".
 
 
-*vimwiki-option-maxhi*
+*vimroam-option-maxhi*
 ------------------------------------------------------------------------------
 Key             Default value     Values~
 maxhi           0                 0, 1
@@ -2400,10 +2400,10 @@ maxhi           0                 0, 1
 Description~
 If on, wiki links to non-existent wiki files are highlighted.  However, it can
 be quite slow.  If you still want it, set maxhi to 1: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'maxhi': 1}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'maxhi': 1}]
 
 
-*vimwiki-option-nested_syntaxes*
+*vimroam-option-nested_syntaxes*
 ------------------------------------------------------------------------------
 Key             Default value     Values~
 nested_syntaxes {}                pairs of highlight keyword and Vim filetype
@@ -2415,7 +2415,7 @@ For example the following setup in your vimrc: >
   let wiki = {}
   let wiki.path = '~/my_wiki/'
   let wiki.nested_syntaxes = {'python': 'python', 'c++': 'cpp'}
-  let g:vimwiki_list = [wiki]
+  let g:vimroam_list = [wiki]
 
 would give you Python and C++ highlighting in: >
  {{{class="brush: python"
@@ -2446,13 +2446,13 @@ or in: >
  }}}
 
 
-*vimwiki-option-automatic_nested_syntaxes*
+*vimroam-option-automatic_nested_syntaxes*
 ------------------------------------------------------------------------------
 Key                        Default value~
 automatic_nested_syntaxes  1
 
 Description~
-If set, the nested syntaxes (|vimwiki-option-nested_syntaxes|) are
+If set, the nested syntaxes (|vimroam-option-nested_syntaxes|) are
 automatically derived when opening a buffer.
 Just write your preformatted text in your file like this >
  {{{xxx
@@ -2470,16 +2470,16 @@ opened, it can be slow when you have huge files. In this case, set this option
 to 0.
 
 
-*vimwiki-option-diary_rel_path*
+*vimroam-option-diary_rel_path*
 ------------------------------------------------------------------------------
 Key             Default value~
 diary_rel_path  diary/
 
 Description~
-The path to the diary wiki files, relative to |vimwiki-option-path|.
+The path to the diary wiki files, relative to |vimroam-option-path|.
 
 
-*vimwiki-option-diary_index*
+*vimroam-option-diary_index*
 ------------------------------------------------------------------------------
 Key             Default value~
 diary_index     diary
@@ -2488,17 +2488,17 @@ Description~
 Name of wiki-file that holds all links to dated wiki files.
 
 
-*vimwiki-option-diary_header*
+*vimroam-option-diary_header*
 ------------------------------------------------------------------------------
 Key             Default value~
 diary_header    Diary
 
 Description~
-Name of the header in |vimwiki-option-diary_index| where links to dated
+Name of the header in |vimroam-option-diary_index| where links to dated
 wiki-files are located.
 
 
-*vimwiki-option-diary_sort*
+*vimroam-option-diary_sort*
 ------------------------------------------------------------------------------
 Key             Default value   Values~
 diary_sort      desc            desc, asc
@@ -2507,7 +2507,7 @@ Description~
 Sort links in a diary index page.
 
 
-*vimwiki-option-diary_caption_level*
+*vimroam-option-diary_caption_level*
 ------------------------------------------------------------------------------
 Key                   Default value~
 diary_caption_level   0
@@ -2528,7 +2528,7 @@ When the value is >= 1, the primary caption of each diary page is set to the
 first header read from that page if it is the unique lowest-level header.
 
 
-*vimwiki-option-diary_frequency*
+*vimroam-option-diary_frequency*
 ------------------------------------------------------------------------------
 Key               Default value~
 diary_frequency   daily
@@ -2544,7 +2544,7 @@ monthly:  Create a diary entry dated for the beginning of each month.
  yearly:  Create a diary entry dated for the beginning of each year.
 
 
-*vimwiki-option-diary_start_week_day*
+*vimroam-option-diary_start_week_day*
 ------------------------------------------------------------------------------
 Key                   Default value~
 diary_start_week_day  monday
@@ -2556,14 +2556,14 @@ Possible values:
 monday, tuesday, wednesday, thursday, friday, saturday, sunday
 
 
-*vimwiki-option-custom_wiki2html*
+*vimroam-option-custom_wiki2html*
 ------------------------------------------------------------------------------
 Key               Default value~
 custom_wiki2html  ''
 
 Description~
 The full path to a user-provided script that converts a wiki page to HTML.
-Vimwiki calls the provided |vimwiki-option-custom_wiki2html| script from the
+VimRoam calls the provided |vimroam-option-custom_wiki2html| script from the
 command-line, using |:!| invocation.
 
 The following arguments, in this order, are passed to the script:
@@ -2581,8 +2581,8 @@ The following arguments, in this order, are passed to the script:
     For example, if you have wikilink [[dir1/dir2/dir3/my page in a subdir]]
     then this argument is '../../../'.
 11. custom_args : custom arguments that will be passed to the conversion
-    (can be defined in g:vimwiki_list as 'custom_wiki2html_args' parameter,
-    see |vimwiki-option-custom_wiki2html_args|)
+    (can be defined in g:vimroam_list as 'custom_wiki2html_args' parameter,
+    see |vimroam-option-custom_wiki2html_args|)
     script.
 
 Options 7-11 are experimental and may change in the future.  If any of these
@@ -2590,26 +2590,26 @@ parameters is empty, a hyphen "-" is passed to the script in its place.
 
 For an example and further instructions, refer to the following script:
 
-  $VIMHOME/autoload/vimwiki/customwiki2html.sh
+  $VIMHOME/autoload/vimroam/customwiki2html.sh
 
 An alternative converter was developed by Jason6Anderson, and can
-be located at https://github.com/vimwiki-backup/vimwiki/issues/384
+be located at https://github.com/vimroam-backup/vimroam/issues/384
 
 To use the internal wiki2html converter, use an empty string (the default).
 
 
-*vimwiki-option-custom_wiki2html_args*
+*vimroam-option-custom_wiki2html_args*
 -----------------------------------------------------------------------------
 Key                     Default value~
 custom_wiki2html_args   ''
 
 Description~
-If a custom script is called with |vimwiki-option-custom_wiki2html|, additional
+If a custom script is called with |vimroam-option-custom_wiki2html|, additional
 parameters can be passed using this option: >
-  let g:vimwiki_list = [{'path': '~/path/', 'custom_wiki2html_args': 'stuff'}]
+  let g:vimroam_list = [{'path': '~/path/', 'custom_wiki2html_args': 'stuff'}]
 
 
-*vimwiki-option-list_margin*
+*vimroam-option-list_margin*
 ------------------------------------------------------------------------------
 Key               Default value~
 list_margin       -1 (0 for markdown)
@@ -2617,17 +2617,17 @@ list_margin       -1 (0 for markdown)
 Description~
 Width of left-hand margin for lists.  When negative, the current 'shiftwidth'
 is used.  This affects the appearance of the generated links (see
-|:VimwikiGenerateLinks|), the Table of contents (|vimwiki-toc|) and the
-behavior of the list manipulation commands |:VimwikiListChangeLvl| and the
-local mappings |vimwiki_glstar|, |vimwiki_gl#| |vimwiki_gl-|, |vimwiki_gl-|,
-|vimwiki_gl1|, |vimwiki_gla|, |vimwiki_glA|, |vimwiki_gli|, |vimwiki_glI| and
-|vimwiki_i_<C-L>_<C-M>|.
+|:VimRoamGenerateLinks|), the Table of contents (|vimroam-toc|) and the
+behavior of the list manipulation commands |:VimRoamListChangeLvl| and the
+local mappings |vimroam_glstar|, |vimroam_gl#| |vimroam_gl-|, |vimroam_gl-|,
+|vimroam_gl1|, |vimroam_gla|, |vimroam_glA|, |vimroam_gli|, |vimroam_glI| and
+|vimroam_i_<C-L>_<C-M>|.
 
 Note: if you use Markdown or MediaWiki syntax, you probably would like to set
 this option to 0, because every indented line is considered verbatim text.
 
 
-*vimwiki-option-bullet_types*
+*vimroam-option-bullet_types*
 ------------------------------------------------------------------------------
 Key               Default value~
 bullet_types      ['-', '*', '#'] (default-syntax)
@@ -2639,10 +2639,10 @@ depends on the chosen syntax.
 
 You can set it to include more fancy symbols like this:
 >
-   let g:vimwiki_list = [{'path': '~/path/', 'bullet_types' = ['-', '•', '→']}]
+   let g:vimroam_list = [{'path': '~/path/', 'bullet_types' = ['-', '•', '→']}]
 
 
-*vimwiki-option-cycle_bullets*
+*vimroam-option-cycle_bullets*
 ------------------------------------------------------------------------------
 Key               Default value~
 cycle_bullets     0
@@ -2651,13 +2651,13 @@ If set to 1 (true), cycle through |bullet_types| when changing list element
 identation
 
 
-*vimwiki-option-listsyms*
+*vimroam-option-listsyms*
 ------------------------------------------------------------------------------
 Key               Default value~
 listsyms          ' .oOX'
 
 String of at least two symbols to show the progression of todo list items.
-Default value is ' .oOX'. This overwrites the global |g:vimwiki_listsyms| on a
+Default value is ' .oOX'. This overwrites the global |g:vimroam_listsyms| on a
 per wiki base.
 
 The first char is for 0% done items.
@@ -2665,25 +2665,25 @@ The last is for 100% done items.
 
 You can set it to some more fancy symbols like this:
 >
-   let g:vimwiki_list = [{'path': '~/path/', 'listsyms' = '✗○◐●✓'}]
+   let g:vimroam_list = [{'path': '~/path/', 'listsyms' = '✗○◐●✓'}]
 
 
-*vimwiki-option-listsym_rejected*
+*vimroam-option-listsym_rejected*
 ------------------------------------------------------------------------------
 
 Character that is used to show that an item of a todo list will not be done.
-Default value is '-'. This overwrites the global |g:vimwiki_listsym_rejected| on a
+Default value is '-'. This overwrites the global |g:vimroam_listsym_rejected| on a
 per wiki base.
 
 
-The character used here must not be part of |vimwiki-option-listsyms|.
+The character used here must not be part of |vimroam-option-listsyms|.
 
 You can set it to a more fancy symbol like this:
 >
-   let g:vimwiki_list = [{'path': '~/path/', 'listsym_rejected' = '✗'}]
+   let g:vimroam_list = [{'path': '~/path/', 'listsym_rejected' = '✗'}]
 
 
-*vimwiki-option-listsyms_propagate*
+*vimroam-option-listsyms_propagate*
 ------------------------------------------------------------------------------
 Key                 Default value     Values~
 listsyms_propagate  1                 0, 1
@@ -2693,7 +2693,7 @@ Set this option to 0 to disable propagation of todo list item status to
 parents and children.
 
 
-*vimwiki-option-auto_tags*
+*vimroam-option-auto_tags*
 ------------------------------------------------------------------------------
 Key             Default value     Values~
 auto_tags       0                 0, 1
@@ -2701,21 +2701,21 @@ auto_tags       0                 0, 1
 Description~
 Set this option to 1 to automatically update the tags metadata when the
 current wiki page is saved: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'auto_tags': 1}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'auto_tags': 1}]
 
 
-*vimwiki-option-auto_diary_index*
+*vimroam-option-auto_diary_index*
 ------------------------------------------------------------------------------
 Key               Default value     Values~
 auto_diary_index  0                 0, 1
 
 Description~
 Set this option to 1 to automatically update the diary index when opened.
-See |:VimwikiDiaryGenerateLinks|:  >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'auto_diary_index': 1}]
+See |:VimRoamDiaryGenerateLinks|:  >
+  let g:vimroam_list = [{'path': '~/my_site/', 'auto_diary_index': 1}]
 
 
-*vimwiki-option-auto_generate_links*
+*vimroam-option-auto_generate_links*
 ------------------------------------------------------------------------------
 Key                  Default value     Values~
 auto_generate_links  0                 0, 1
@@ -2723,10 +2723,10 @@ auto_generate_links  0                 0, 1
 Description~
 Set this option to 1 to automatically update generated links when the
 current wiki page is saved: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'auto_generate_links': 1}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'auto_generate_links': 1}]
 
 
-*vimwiki-option-auto_generate_tags*
+*vimroam-option-auto_generate_tags*
 ------------------------------------------------------------------------------
 Key                 Default value     Values~
 auto_generate_tags  0                 0, 1
@@ -2734,10 +2734,10 @@ auto_generate_tags  0                 0, 1
 Description~
 Set this option to 1 to automatically update generated tags when the
 current wiki page is saved: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'auto_generate_tags': 1}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'auto_generate_tags': 1}]
 
 
-*vimwiki-option-exclude_files*
+*vimroam-option-exclude_files*
 ------------------------------------------------------------------------------
 Key             Default value     Values~
 exclude_files   []                list of file patterns to exclude
@@ -2745,24 +2745,24 @@ exclude_files   []                list of file patterns to exclude
 Description~
 Set this option to a list of file patterns to exclude when checking or
 generating links: >
-  let g:vimwiki_list = [{'path': '~/my_site/', 'exclude_files': ['**/README.md']}]
+  let g:vimroam_list = [{'path': '~/my_site/', 'exclude_files': ['**/README.md']}]
 
-*vimwiki-option-html_filename_parameterization*
+*vimroam-option-html_filename_parameterization*
 ------------------------------------------------------------------------------
 Key                             Default value     Values~
 html_filename_parameterization  0                 0, 1
 
 Description~
-This setting is for integration with the vimwiki_markdown gem. If this is set
+This setting is for integration with the vimroam_markdown gem. If this is set
 to 1 it alters the check for generated html filenames to match what
-vimwiki_markdown generates. This means that it prevents unnecessary
+vimroam_markdown generates. This means that it prevents unnecessary
 regeneration of HTML files.
 
 This setting also turns off the automatic deletion of files
 in the site_html directory which don't match existing wiki files.
 
 ------------------------------------------------------------------------------
-*g:vimwiki_list_ignore_newline*
+*g:vimroam_list_ignore_newline*
 
 This is HTML related.
 Convert newlines to <br />s in multiline list items.
@@ -2774,7 +2774,7 @@ Value           Description~
 Default: 1
 
 ------------------------------------------------------------------------------
-*g:vimwiki_text_ignore_newline*
+*g:vimroam_text_ignore_newline*
 
 This is HTML related.
 Convert newlines to <br />s in text.
@@ -2785,18 +2785,18 @@ Value           Description~
 
 Default: 1
 
-*vimwiki-option-rss_name*
+*vimroam-option-rss_name*
 ------------------------------------------------------------------------------
 Key             Default value~
 rss_name        rss.xml
 
 Description~
 Setup RSS file name: >
-  let g:vimwiki_list = [{'path': '~/my_pages/', 'rss_name': 'feed.rss'}]
+  let g:vimroam_list = [{'path': '~/my_pages/', 'rss_name': 'feed.rss'}]
 <
-Vimwiki will generate an RSS feed for the diary in this file.
+VimRoam will generate an RSS feed for the diary in this file.
 
-*vimwiki-option-rss_max_items*
+*vimroam-option-rss_max_items*
 ------------------------------------------------------------------------------
 Key             Default value~
 rss_max_items   10
@@ -2804,38 +2804,38 @@ rss_max_items   10
 Description~
 This setting limits the number of diary entries exported into the RSS feed.
 
-*vimwiki-option-base_url*
+*vimroam-option-base_url*
 ------------------------------------------------------------------------------
 Key             Default value~
 base_url        ''
 
 Description~
-This setting specifies the URL where the generated VimWiki HTML pages can
+This setting specifies the URL where the generated VimRoam HTML pages can
 be reached. It is used for the link to the RSS feed and for links to the
 diary entries inside the feed.
 
 ------------------------------------------------------------------------------
-*g:vimwiki_toc_header*
+*g:vimroam_toc_header*
 
-A string with the magic header that tells Vimwiki where the Table of Contents
-(see |vimwiki-toc|) is located in a file. You can change it to the
+A string with the magic header that tells VimRoam where the Table of Contents
+(see |vimroam-toc|) is located in a file. You can change it to the
 appropriate word in your mother tongue like this: >
-  let g:vimwiki_toc_header = 'Inhalt'
+  let g:vimroam_toc_header = 'Inhalt'
 
 The default is 'Contents'.
 
 ------------------------------------------------------------------------------
-*g:vimwiki_toc_header_level*
+*g:vimroam_toc_header_level*
 
-The header level of the Table of Contents (see |vimwiki-toc|). Valid values
+The header level of the Table of Contents (see |vimroam-toc|). Valid values
 are from 1 to 6.
 
 The default is 1.
 
 ------------------------------------------------------------------------------
-*g:vimwiki_toc_link_format*
+*g:vimroam_toc_link_format*
 
-The format of the links in the Table of Contents (see |vimwiki-toc|).
+The format of the links in the Table of Contents (see |vimroam-toc|).
 
 
 Value           Description~
@@ -2847,20 +2847,20 @@ Value           Description~
 Default: 0
 
 ------------------------------------------------------------------------------
-*vimwiki-option-color_dic*
+*vimroam-option-color_dic*
 
-Dictionary containing the possible html colors for |:VimwikiColorize| the
+Dictionary containing the possible html colors for |:VimRoamColorize| the
 keys are the color names used as argument, the values are a list [foreground,
 backgroud] of the color. For example:
 
 {'red': ['#cc241d', ''], 'bred': ['', '#cc241d']}
 
-Provides two colors to |:VimwikiColorize|: 'red' => red foreground and 'bred'
+Provides two colors to |:VimRoamColorize|: 'red' => red foreground and 'bred'
 => red background.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki-option-rx_todo*
+*g:vimroam-option-rx_todo*
 
 Regular expression used to highlight different TODO words.
 
@@ -2868,18 +2868,18 @@ Default: `\C\<\%(TODO\|DONE\|STARTED\|FIXME\|FIXED\|XXX\)\>`
 
 
 ------------------------------------------------------------------------------
-*vimwiki-option-color_tag_template*
+*vimroam-option-color_tag_template*
 
 Not supposed to be edited already: a regex with __COLORFG__, __COLORBG__ and
 __CONTENT__ placeholders to surround the content with a tag to define its
-color. (See autoload/vimwiki/vars.vim)
+color. (See autoload/vimroam/vars.vim)
 
 ------------------------------------------------------------------------------
-12.4 Syntax Options                                   *vimwiki-syntax-options*
+12.4 Syntax Options                                   *vimroam-syntax-options*
 
 Syntax options are configured using the following pattern: >
 
-    let g:vimwiki_syntax_list['markdown']['bullet_type'] = ['*', '-', '+']
+    let g:vimroam_syntax_list['markdown']['bullet_type'] = ['*', '-', '+']
 
 Where:
 - `markdown` is the syntax name. It can be (`default`, `markdown` or `media`)
@@ -2888,12 +2888,12 @@ Where:
 
 
 ------------------------------------------------------------------------------
-12.5 Global Options                                   *vimwiki-global-options*
+12.5 Global Options                                   *vimroam-global-options*
 
 
 Global options are configured using the following pattern: >
 
-    let g:vimwiki_global_ext = 1
+    let g:vimroam_global_ext = 1
 
 Where:
 - `global_ext` is the option name
@@ -2901,19 +2901,19 @@ Where:
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_hl_headers*
+*g:vimroam_hl_headers*
 
 Highlight headers with =Reddish=, ==Greenish==, ===Blueish=== colors.
 
 Value           Description~
-1               Use VimwikiHeader1 - VimwikiHeader6 group colors to highlight
+1               Use VimRoamHeader1 - VimRoamHeader6 group colors to highlight
                 different header levels.
 0               Use |hl-Title| color for headers.
 Default: 0
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_hl_cb_checked*
+*g:vimroam_hl_cb_checked*
 
 Highlight checked list items with a special color:
 
@@ -2939,40 +2939,40 @@ consider putting >
 in your .vimrc
 
 ------------------------------------------------------------------------------
-*g:vimwiki_global_ext*
+*g:vimroam_global_ext*
 
-Control the creation of |vimwiki-temporary-wiki|s.
+Control the creation of |vimroam-temporary-wiki|s.
 
-If a file with a registered extension (see |vimwiki-register-extension|) is
-opened in a directory that is: 1) not listed in |g:vimwiki_list|, and 2) not a
+If a file with a registered extension (see |vimroam-register-extension|) is
+opened in a directory that is: 1) not listed in |g:vimroam_list|, and 2) not a
 subdirectory of any such directory, then:
 
 Value           Description~
-1               make temporary wiki and append it to |g:vimwiki_list|.
+1               make temporary wiki and append it to |g:vimroam_list|.
 0               don't make temporary wiki in that dir.
 
 If your preferred wiki extension is .txt then you can >
-    let g:vimwiki_global_ext = 0
-to restrict Vimwiki's operation to only those paths listed in g:vimwiki_list.
+    let g:vimroam_global_ext = 0
+to restrict VimRoam's operation to only those paths listed in g:vimroam_list.
 Other text files wouldn't be treated as wiki pages.
 
 Default: 1
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_ext2syntax* *vimwiki-register-extension*
+*g:vimroam_ext2syntax* *vimroam-register-extension*
 
 A many-to-one mapping between file extensions and syntaxes whose purpose is to
-register the extensions with Vimwiki.
+register the extensions with VimRoam.
 
 E.g.: >
-  let g:vimwiki_ext2syntax = {'.md': 'markdown',
+  let g:vimroam_ext2syntax = {'.md': 'markdown',
                   \ '.mkd': 'markdown',
                   \ '.wiki': 'media'}
 
-An extension that is registered with Vimwiki can trigger creation of
-a |vimwiki-temporary-wiki|. File extensions used in |g:vimwiki_list| are
-automatically registered with Vimwiki using the default syntax. Extensions
+An extension that is registered with VimRoam can trigger creation of
+a |vimroam-temporary-wiki|. File extensions used in |g:vimroam_list| are
+automatically registered with VimRoam using the default syntax. Extensions
 mapped with this option will instead use the mapped syntax.
 
 Default: >
@@ -2984,57 +2984,57 @@ Note: setting this option will overwrite the default values so include them if
 desired.
 
 ------------------------------------------------------------------------------
-*g:vimwiki_menu*
+*g:vimroam_menu*
 
 Create a menu in the menu bar of GVim, where you can open the available wikis.
-If the wiki has an assigned name (see |vimwiki-option-name|), the menu entry
-will match the name. Otherwise, the final folder of |vimwiki-option-path| will
+If the wiki has an assigned name (see |vimroam-option-name|), the menu entry
+will match the name. Otherwise, the final folder of |vimroam-option-path| will
 be used for the name. If there are duplicate entries the index number from
-|g:vimwiki_list| will be appended to the name.
+|g:vimroam_list| will be appended to the name.
 
 Value              Description~
 ''                 No menu
-'Vimwiki'          Top level menu "Vimwiki"
-'Plugin.Vimwiki'   "Vimwiki" submenu of top level menu "Plugin"
+'VimRoam'          Top level menu "VimRoam"
+'Plugin.VimRoam'   "VimRoam" submenu of top level menu "Plugin"
 etc.
 
-Default: 'Vimwiki'
+Default: 'VimRoam'
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_listsyms*
+*g:vimroam_listsyms*
 
 String of at least two symbols to show the progression of todo list items.
 Default value is ' .oOX'. You can also set this on a per-wiki level with
-|vimwiki-option-listsyms|.
+|vimroam-option-listsyms|.
 
 The first char is for 0% done items.
 The last is for 100% done items.
 
 You can set it to some more fancy symbols like this:
 >
-   let g:vimwiki_listsyms = '✗○◐●✓'
+   let g:vimroam_listsyms = '✗○◐●✓'
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_listsym_rejected*
+*g:vimroam_listsym_rejected*
 
 Character that is used to show that an item of a todo list will not be done.
 Default value is '-'. You can also set this on a per-wiki level with
-|vimwiki-option-listsym_rejected|.
+|vimroam-option-listsym_rejected|.
 
 
-The character used here must not be part of |g:vimwiki_listsyms|.
+The character used here must not be part of |g:vimroam_listsyms|.
 
 You can set it to a more fancy symbol like this:
 >
-   let g:vimwiki_listsym_rejected = '✗'
+   let g:vimroam_listsym_rejected = '✗'
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_folding*
+*g:vimroam_folding*
 
-Enable/disable Vimwiki's folding (outline) functionality. Folding in Vimwiki
+Enable/disable VimRoam's folding (outline) functionality. Folding in VimRoam
 can use either the 'expr' or the 'syntax' |foldmethod| of Vim.
 
 Value           Description~
@@ -3056,10 +3056,10 @@ The options above can be suffixed with ':quick' (e.g.: 'expr:quick') in order
 to use some workarounds to make folds work faster.
 
 ------------------------------------------------------------------------------
-*g:vimwiki_use_calendar*
+*g:vimroam_use_calendar*
 
 Create new or open existing diary wiki-file for the date selected in Calendar.
-See |vimwiki-calendar|.
+See |vimroam-calendar|.
 
 Value           Description~
 0               Do not use calendar.
@@ -3069,9 +3069,9 @@ Default: 1
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_create_link*
+*g:vimroam_create_link*
 
-Create target wiki page if it does not exist. See |:VimwikiFollowLink|.
+Create target wiki page if it does not exist. See |:VimRoamFollowLink|.
 
 Value           Description~
 0               Do not create target wiki page.
@@ -3081,7 +3081,7 @@ Default: 1
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_markdown_link_ext*
+*g:vimroam_markdown_link_ext*
 
 Append wiki file extension to links in Markdown. This is needed for
 compatibility with other Markdown tools.
@@ -3094,21 +3094,21 @@ Default: 0
 
 
 ------------------------------------------------------------------------------
-*VimwikiLinkHandler*
+*VimRoamLinkHandler*
 
-A customizable link handler can be defined to override Vimwiki's behavior when
+A customizable link handler can be defined to override VimRoam's behavior when
 opening links.  Each recognized link, whether it is a wikilink, wiki-include
-link or a weblink, is first passed to |VimwikiLinkHandler| to see if it can be
+link or a weblink, is first passed to |VimRoamLinkHandler| to see if it can be
 handled. The return value 1 indicates success.
 
-If the link is not handled successfully, the behavior of Vimwiki depends on
+If the link is not handled successfully, the behavior of VimRoam depends on
 the scheme.  "wiki:", "diary:" or schemeless links are opened in Vim.  "file:"
 and "local:" links are opened with a system default handler.
 
-You can redefine the VimwikiLinkHandler function in your .vimrc to do
+You can redefine the VimRoamLinkHandler function in your .vimrc to do
 something else: >
 
-  function! VimwikiLinkHandler(link)
+  function! VimRoamLinkHandler(link)
     try
       let browser = 'C:\Program Files\Firefox\firefox.exe'
       execute '!start "'.browser.'" ' . a:link
@@ -3122,7 +3122,7 @@ something else: >
 A second example handles a new scheme, "vfile:", which behaves similar to
 "file:", but the files are always opened with Vim in a new tab: >
 
-  function! VimwikiLinkHandler(link)
+  function! VimRoamLinkHandler(link)
     " Use Vim to open external files with the 'vfile:' scheme.  E.g.:
     "   1) [[vfile:~/Code/PythonProject/abc123.py]]
     "   2) [[vfile:./|Wiki Home]]
@@ -3132,9 +3132,9 @@ A second example handles a new scheme, "vfile:", which behaves similar to
     else
       return 0
     endif
-    let link_infos = vimwiki#base#resolve_link(link)
+    let link_infos = vimroam#base#resolve_link(link)
     if link_infos.filename == ''
-      echomsg 'Vimwiki Error: Unable to resolve link!'
+      echomsg 'VimRoam Error: Unable to resolve link!'
       return 0
     else
       exe 'tabnew ' . fnameescape(link_infos.filename)
@@ -3143,7 +3143,7 @@ A second example handles a new scheme, "vfile:", which behaves similar to
   endfunction
 
 ------------------------------------------------------------------------------
-*VimwikiLinkConverter*
+*VimRoamLinkConverter*
 
 This function can be overridden in your .vimrc to specify what a link looks
 like when converted to HTML.  The parameters of the function are:
@@ -3159,10 +3159,10 @@ the wiki file, i.e. a link [[local:../document.pdf]] becomes
 <a href="../document.pdf">. Also, this function will copy document.pdf to the
 right place. >
 
-  function! VimwikiLinkConverter(link, source_wiki_file, target_html_file)
+  function! VimRoamLinkConverter(link, source_wiki_file, target_html_file)
     if a:link =~# '^local:'
-      let link_infos = vimwiki#base#resolve_link(a:link)
-      let html_link = vimwiki#path#relpath(
+      let link_infos = vimroam#base#resolve_link(a:link)
+      let html_link = vimroam#path#relpath(
                 \ fnamemodify(a:source_wiki_file, ':h'), link_infos.filename)
       let relative_link =
                 \ fnamemodify(a:target_html_file, ':h') . '/' . html_link
@@ -3174,24 +3174,24 @@ right place. >
   endfunction
 
 ------------------------------------------------------------------------------
-*VimwikiWikiIncludeHandler*
+*VimRoamWikiIncludeHandler*
 
-Vimwiki includes the content of a wiki-include URL as an image by default.
+VimRoam includes the content of a wiki-include URL as an image by default.
 
 A trial feature allows you to supply your own handler for wiki-include links.
 The handler should return the empty string when it does not recognize or
 cannot otherwise convert the link.  A customized handler might look like this: >
 
   " Convert {{URL|#|ID}} -> URL#ID
-  function! VimwikiWikiIncludeHandler(value)
+  function! VimRoamWikiIncludeHandler(value)
     let str = a:value
 
     " complete URL
-    let url_0 = matchstr(str, g:vimwiki_rxWikiInclMatchUrl)
+    let url_0 = matchstr(str, g:vimroam_rxWikiInclMatchUrl)
     " URL parts
-    let link_infos = vimwiki#base#resolve_link(url_0)
-    let arg1 = matchstr(str, VimwikiWikiInclMatchArg(1))
-    let arg2 = matchstr(str, VimwikiWikiInclMatchArg(2))
+    let link_infos = vimroam#base#resolve_link(url_0)
+    let arg1 = matchstr(str, VimRoamWikiInclMatchArg(1))
+    let arg2 = matchstr(str, VimRoamWikiInclMatchArg(2))
 
     if arg1 =~ '#'
       return link_infos.filename.'#'.arg2
@@ -3203,7 +3203,7 @@ cannot otherwise convert the link.  A customized handler might look like this: >
 <
 
 ------------------------------------------------------------------------------
-*g:vimwiki_table_auto_fmt*
+*g:vimroam_table_auto_fmt*
 
 Enable/disable table auto formatting after leaving INSERT mode.
 
@@ -3215,11 +3215,11 @@ Default: 1
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_table_reduce_last_col*
+*g:vimroam_table_reduce_last_col*
 
 If set, the last column separator will not be expanded to fill the cell.  When
 `:set wrap` this option improves how a table is displayed, particularly on
-small screens.  If |g:vimwiki_table_auto_fmt| is set to 0, this option has no
+small screens.  If |g:vimroam_table_auto_fmt| is set to 0, this option has no
 effect.
 
 Value           Description~
@@ -3230,13 +3230,13 @@ Default: 0
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_w32_dir_enc*
+*g:vimroam_w32_dir_enc*
 
-Convert directory name from current 'encoding' into 'g:vimwiki_w32_dir_enc'
+Convert directory name from current 'encoding' into 'g:vimroam_w32_dir_enc'
 before it is created.
 
 If you have 'enc=utf-8' and set up >
-    let g:vimwiki_w32_dir_enc = 'cp1251'
+    let g:vimroam_w32_dir_enc = 'cp1251'
 <
 then following the next link with <CR>: >
     [[привет/мир]]
@@ -3247,7 +3247,7 @@ Default: ''
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_CJK_length*
+*g:vimroam_CJK_length*
 
 Use a special method to calculate the correct length of the strings with
 double-wide characters (to align table cells properly).
@@ -3263,7 +3263,7 @@ date Vim, this option is obsolete.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_dir_link*
+*g:vimroam_dir_link*
 
 This option is about what to do with links to directories, like
 [[directory/]], [[papers/]], etc.
@@ -3278,7 +3278,7 @@ Default: '' (empty string)
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_html_header_numbering*
+*g:vimroam_html_header_numbering*
 
 Set this option if you want headers to be auto-numbered in HTML.
 
@@ -3301,7 +3301,7 @@ Value           Description~
                 header level 2.
 etc.
 
-Example when g:vimwiki_html_header_numbering = 2: >
+Example when g:vimroam_html_header_numbering = 2: >
     Header1
     1 Header2
     2 Header2
@@ -3317,9 +3317,9 @@ Default: 0
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_html_header_numbering_sym*
+*g:vimroam_html_header_numbering_sym*
 
-Ending symbol for |g:vimwiki_html_header_numbering|.
+Ending symbol for |g:vimroam_html_header_numbering|.
 
 Value           Description~
 '.'             Dot will be added after a header's number.
@@ -3327,7 +3327,7 @@ Value           Description~
 etc.
 
 With
-    let g:vimwiki_html_header_numbering_sym = '.'
+    let g:vimroam_html_header_numbering_sym = '.'
 headers would look like: >
     1. Header1
     1.1. Header2
@@ -3343,58 +3343,58 @@ Default: '' (empty)
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_valid_html_tags*
+*g:vimroam_valid_html_tags*
 
 Case-insensitive comma separated list of HTML tags that can be used in
-Vimwiki.  When converting to HTML, these tags are left as they are, while
+VimRoam.  When converting to HTML, these tags are left as they are, while
 every other tag is escaped.
 
 Default: 'b,i,s,u,sub,sup,kbd,br,hr'
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_user_htmls*
+*g:vimroam_user_htmls*
 
 Comma-separated list of HTML files that have no corresponding wiki files and
-should not be deleted after |:VimwikiAll2HTML|.
+should not be deleted after |:VimRoamAll2HTML|.
 
 Default: ''
 
 Example:
-Consider you have 404.html and search.html in your Vimwiki 'path_html'.
+Consider you have 404.html and search.html in your VimRoam 'path_html'.
 With: >
-    let g:vimwiki_user_htmls = '404.html,search.html'
-they would not be deleted after |:VimwikiAll2HTML|.
+    let g:vimroam_user_htmls = '404.html,search.html'
+they would not be deleted after |:VimRoamAll2HTML|.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_conceallevel*
+*g:vimroam_conceallevel*
 
 In Vim 7.3 'conceallevel' is local to the current window, thus if you open a
-Vimwiki buffer in a new tab or window, it would be set to the default value.
+VimRoam buffer in a new tab or window, it would be set to the default value.
 
-Vimwiki sets 'conceallevel' to g:vimwiki_conceallevel every time a Vimwiki
+VimRoam sets 'conceallevel' to g:vimroam_conceallevel every time a VimRoam
 buffer is entered.
 
-With default settings, Vimwiki conceals one-character markers, shortens long
+With default settings, VimRoam conceals one-character markers, shortens long
 URLs and hides markers and URL for links that have a description.
 
 Default: 2
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_conceal_onechar_markers*
+*g:vimroam_conceal_onechar_markers*
 
 Control the concealment of one-character markers.
 
 Setting 'conceal_onechar_markers' to 0 will show the markers, overriding
-whatever value is set in |g:vimwiki_conceallevel|
+whatever value is set in |g:vimroam_conceallevel|
 
 Default: 1
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_conceal_pre*
+*g:vimroam_conceal_pre*
 
 Conceal preformatted text markers. For example,
 >
@@ -3414,7 +3414,7 @@ Default: 0
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_autowriteall*
+*g:vimroam_autowriteall*
 
 Automatically save a modified wiki buffer when switching wiki pages. Has the
 same effect as setting the Vim option 'autowriteall', but it works for wiki
@@ -3431,9 +3431,9 @@ Default: 1
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_url_maxsave*
+*g:vimroam_url_maxsave*
 
-Setting the value of |g:vimwiki_url_maxsave| to 0 will prevent any link
+Setting the value of |g:vimroam_url_maxsave| to 0 will prevent any link
 shortening: you will see the full URL in all types of links, with no parts
 being concealed. This option does not affect the concealing of wiki elements
 such as bold, italic, wikilinks, etc.
@@ -3457,13 +3457,13 @@ Default: 15
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_diary_months*
+*g:vimroam_diary_months*
 
 It is a |Dictionary| with the numbers of months and corresponding names. Diary
 uses it.
 
 Redefine it in your .vimrc to get localized months in your diary:
-let g:vimwiki_diary_months = {
+let g:vimroam_diary_months = {
       \ 1: 'Январь', 2: 'Февраль', 3: 'Март',
       \ 4: 'Апрель', 5: 'Май', 6: 'Июнь',
       \ 7: 'Июль', 8: 'Август', 9: 'Сентябрь',
@@ -3471,7 +3471,7 @@ let g:vimwiki_diary_months = {
       \ }
 
 Default:
-let g:vimwiki_diary_months = {
+let g:vimroam_diary_months = {
       \ 1: 'January', 2: 'February', 3: 'March',
       \ 4: 'April', 5: 'May', 6: 'June',
       \ 7: 'July', 8: 'August', 9: 'September',
@@ -3479,43 +3479,43 @@ let g:vimwiki_diary_months = {
       \ }
 
 ------------------------------------------------------------------------------
-*g:vimwiki_map_prefix*
+*g:vimroam_map_prefix*
 
 A string which specifies the prefix for all global mappings (and some local
 ones).  Use it to avoid conflicts with other plugins.  Note that it must be
 defined before the plugin loads.  >
-  let g:vimwiki_map_prefix = '<Leader>e'
+  let g:vimroam_map_prefix = '<Leader>e'
 
 The default is '<Leader>w'.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_auto_chdir*
+*g:vimroam_auto_chdir*
 
-When set to 1, enables auto-cd feature. Whenever Vimwiki page is opened,
-Vimwiki performs an |:lcd| to the root Vimwiki folder of the page's wiki.
+When set to 1, enables auto-cd feature. Whenever VimRoam page is opened,
+VimRoam performs an |:lcd| to the root VimRoam folder of the page's wiki.
 
 
 Value           Description~
 0               Do not change directory.
-1               Change directory to root Vimwiki folder on opening page.
+1               Change directory to root VimRoam folder on opening page.
 
 Default: 0
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_links_header*
+*g:vimroam_links_header*
 
-A string with the magic header that tells Vimwiki where the generated links
+A string with the magic header that tells VimRoam where the generated links
 are located in a file. You can change it to the appropriate word in your
 mother tongue like this: >
-  let g:vimwiki_links_header = 'Generierte Links'
+  let g:vimroam_links_header = 'Generierte Links'
 
 The default is 'Generated Links'.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_links_header_level*
+*g:vimroam_links_header_level*
 
 The header level of generated links. Valid values are from 1 to 6.
 
@@ -3523,18 +3523,18 @@ The default is 1.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_tags_header*
+*g:vimroam_tags_header*
 
-A string with the magic header that tells Vimwiki where the generated tags
+A string with the magic header that tells VimRoam where the generated tags
 are located in a file. You can change it to the appropriate word in your
 mother tongue like this: >
-  let g:vimwiki_tags_header = 'Generierte Stichworte'
+  let g:vimroam_tags_header = 'Generierte Stichworte'
 
 The default is 'Generated Tags'.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_tags_header_level*
+*g:vimroam_tags_header_level*
 
 The header level of generated tags. Valid values are from 1 to 5.
 
@@ -3542,7 +3542,7 @@ The default is 1.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_markdown_header_style*
+*g:vimroam_markdown_header_style*
 
 The number of newlines to be inserted after a header is generated. Valid
 values are from 0 to 2.
@@ -3551,11 +3551,11 @@ The default is 1.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_auto_header*
+*g:vimroam_auto_header*
 
 Set this option to 1 to automatically generate a level 1 header when creating
 a new wiki page. This option is disabled for the wiki index and the diary
-index. Spaces replaced with |vimwiki-option-links_space_char| are reverted
+index. Spaces replaced with |vimroam-option-links_space_char| are reverted
 back to spaces in the generated header, which will match the filename
 except for the characters that were reverted to spaces.
 
@@ -3567,62 +3567,62 @@ The default is 0.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_key_mappings*
+*g:vimroam_key_mappings*
 
 A dictionary that is used to enable/disable various key mapping groups. To
 disable a specific group set the value for the associated key to 0.
 For example: >
 
-  let g:vimwiki_key_mappings =
+  let g:vimroam_key_mappings =
     \ {
     \ 'headers': 0,
     \ 'text_objs': 0,
     \ }
 
-To disable ALL Vimwiki key mappings use: >
+To disable ALL VimRoam key mappings use: >
 
-    let g:vimwiki_key_mappings = { 'all_maps': 0, }
+    let g:vimroam_key_mappings = { 'all_maps': 0, }
 
 The valid key groups and their associated mappings are shown below.
 
 `all_maps`:
-  Used to disable all Vimwiki key mappings.
+  Used to disable all VimRoam key mappings.
 `global`:
-  |vimwiki-global-mappings| that are defined when Vim starts.
+  |vimroam-global-mappings| that are defined when Vim starts.
 `headers`:
   Mappings for header navigation and manipulation:
-  |vimwiki_=|, |vimwiki_-|, |vimwiki_[[|, |vimwiki_]]|, |vimwiki_[=|
-  |vimwiki_]=|, |vimwiki_]u| , |vimwiki_[u|
+  |vimroam_=|, |vimroam_-|, |vimroam_[[|, |vimroam_]]|, |vimroam_[=|
+  |vimroam_]=|, |vimroam_]u| , |vimroam_[u|
 `text_objs`:
-  |vimwiki-text-objects| mappings.
+  |vimroam-text-objects| mappings.
 `table_format`:
   Mappings used for table formatting.
-  |vimwiki_gqq|, |vimwiki_gww|, |vimwiki_gq1|, |vimwiki_gw1|
-  |vimwiki_<A-Left>|, |vimwiki_<A-Right>|
+  |vimroam_gqq|, |vimroam_gww|, |vimroam_gq1|, |vimroam_gw1|
+  |vimroam_<A-Left>|, |vimroam_<A-Right>|
 `table_mappings`:
     Table mappings for insert mode.
-    |vimwiki_<Tab>|, |vimwiki_<S-Tab>|
+    |vimroam_<Tab>|, |vimroam_<S-Tab>|
 `lists`:
     Mappings for list manipulation.
-    |vimwiki_<C-Space>|, |vimwiki_gl<Space>|, |vimwiki_gL<Space>| |vimwiki_gln|, |vimwiki_glp|
-    |vimwiki_gll|, |vimwiki_gLl|, |vimwiki_glh|, |vimwiki_gLh|, |vimwiki_glr|, |vimwiki_gLr|
-    |vimwiki_glsar|, |vimwiki_gLstar|, |vimwiki_gl#|, |vimwiki_gL#|, |vimwiki_gl-|, |vimwiki_gL-|
-    |vimwiki_gl1|, |vimwiki_gL1|, |vimwiki_gla|, |vimwiki_gLa|, |vimwiki_glA|, |vimwiki_gLA|
-    |vimwiki_gli|, |vimwiki_gLi|, |vimwiki_glI|, |vimwiki_gLI|, |vimwiki_glx|
+    |vimroam_<C-Space>|, |vimroam_gl<Space>|, |vimroam_gL<Space>| |vimroam_gln|, |vimroam_glp|
+    |vimroam_gll|, |vimroam_gLl|, |vimroam_glh|, |vimroam_gLh|, |vimroam_glr|, |vimroam_gLr|
+    |vimroam_glsar|, |vimroam_gLstar|, |vimroam_gl#|, |vimroam_gL#|, |vimroam_gl-|, |vimroam_gL-|
+    |vimroam_gl1|, |vimroam_gL1|, |vimroam_gla|, |vimroam_gLa|, |vimroam_glA|, |vimroam_gLA|
+    |vimroam_gli|, |vimroam_gLi|, |vimroam_glI|, |vimroam_gLI|, |vimroam_glx|
 `links`:
     Mappings for link creation and navigation.
-    |vimwiki_<Leader>w<Leader>i|, |vimwiki_<CR>|, |vimwiki_<S-CR>|, |vimwiki_<C-CR>|
-    |vimwiki_<C-S-CR>|, |vimwiki_<D-CR>|, |vimwiki_<Backspace>|, |vimwiki_<Tab>|
-    |vimwiki_<S-Tab>|, |vimwiki_<Leader>wd|, |vimwiki_<Leader>wr|, |vimwiki_<C-Down>|
-    |vimwiki_<C-Up>|, |vimwiki_+|, |vimwiki_<Backspace>|
+    |vimroam_<Leader>w<Leader>i|, |vimroam_<CR>|, |vimroam_<S-CR>|, |vimroam_<C-CR>|
+    |vimroam_<C-S-CR>|, |vimroam_<D-CR>|, |vimroam_<Backspace>|, |vimroam_<Tab>|
+    |vimroam_<S-Tab>|, |vimroam_<Leader>wd|, |vimroam_<Leader>wr|, |vimroam_<C-Down>|
+    |vimroam_<C-Up>|, |vimroam_+|, |vimroam_<Backspace>|
 `html`:
     Mappings for HTML generation.
-    |vimwiki_<Leader>wh|, |vimwiki_<Leader>whh|
+    |vimroam_<Leader>wh|, |vimroam_<Leader>whh|
 `mouse`:
-    Mouse mappings, see |vimwiki_mouse|. This option is disabled by default.
+    Mouse mappings, see |vimroam_mouse|. This option is disabled by default.
 
 The default is to enable all key mappings except the mouse: >
-  let g:vimwiki_key_mappings =
+  let g:vimroam_key_mappings =
     \ {
     \   'all_maps': 1,
     \   'global': 1,
@@ -3638,46 +3638,46 @@ The default is to enable all key mappings except the mouse: >
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_filetypes*
+*g:vimroam_filetypes*
 
-A list of additional fileypes that should be registered to vimwiki files: >
+A list of additional fileypes that should be registered to vimroam files: >
 
-  let g:vimwiki_filetypes = ['markdown', 'pandoc']
+  let g:vimroam_filetypes = ['markdown', 'pandoc']
 
-Would result in the filetype being set to `vimwiki.markdown.pandoc`. This can
+Would result in the filetype being set to `vimroam.markdown.pandoc`. This can
 be used to enable third party plugins such as custom folding. WARNING: this
-option can allow other plugins to overwrite vimwiki settings and operation so
+option can allow other plugins to overwrite vimroam settings and operation so
 take care when using it. Any plugin that uses a set filetype will be enabled.
 
 The default is `[ ]`
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_commentstring*
+*g:vimroam_commentstring*
 
 An option to change the default commentstring. Use
 
-  let g:vimwiki_commentstring = '<!--%s-->'
+  let g:vimroam_commentstring = '<!--%s-->'
 
 for html-style comments. Use
 
-  let g:vimwiki_commentstring = ""
+  let g:vimroam_commentstring = ""
 
-to not set commentstring by vimwiki.
+to not set commentstring by vimroam.
 
 The default is %%%s.
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_emoji_enable*
+*g:vimroam_emoji_enable*
 
 Bitfield: Enable/disable emoji conceal and complete
 Note that the |completefunc| is only set if it does not exists already to keep
 other plugin works by default. It can be set it manualy with: >
-  set completefunc=vimwiki#emoji#complete
+  set completefunc=vimroam#emoji#complete
 
 To replace emoji alias (like :cat:) by their value (like 🐱) in current file: >
-  %s/:\([^:]\+\):/\=get(vimwiki#emoji#get_dic(), submatch(1), submatch(0))/g
+  %s/:\([^:]\+\):/\=get(vimroam#emoji#get_dic(), submatch(1), submatch(0))/g
 
 Emoji features hard copied from https://github.com/junegunn/vim-emoji
 
@@ -3691,9 +3691,9 @@ Default: 3
 
 
 ------------------------------------------------------------------------------
-*g:vimwiki_tag_format*
+*g:vimroam_tag_format*
 
-Dictionary to describe the format of the tags vimwiki uses to highlight,
+Dictionary to describe the format of the tags vimroam uses to highlight,
 generate and follow_link
 
 | Key       | Default  | Description
@@ -3715,44 +3715,44 @@ is only necessary to provide the values to change. For Example, to use a:
 - Tag like: >
   <<tag1|tag2>>
 - Set: >
-  let g:vimwiki_tag_format = {'pre_mark': '<<', 'post_mark': '>>', 'sep': '|'}
+  let g:vimroam_tag_format = {'pre_mark': '<<', 'post_mark': '>>', 'sep': '|'}
 - Tag like: >
   tags: @tag1 @tag2
 - Set: >
-  let g:vimwiki_tag_format = {'pre': '\(^[ -]*tags\s*: .*\)\@<=',
+  let g:vimroam_tag_format = {'pre': '\(^[ -]*tags\s*: .*\)\@<=',
         \ 'pre_mark': '@', 'post_mark': '', 'sep': '>><<'}
 
 
 ==============================================================================
-13. Getting help                                                *vimwiki-help*
+13. Getting help                                                *vimroam-help*
 
 For questions, discussions, praise or rants there is a mailing list:
-https://groups.google.com/forum/#!forum/vimwiki
+https://groups.google.com/forum/#!forum/vimroam
 
-Also, there is the IRC channel #vimwiki on Freenode which can be accessed via
-webchat: https://webchat.freenode.net/?channels=#vimwiki
+Also, there is the IRC channel #vimroam on Freenode which can be accessed via
+webchat: https://webchat.freenode.net/?channels=#vimroam
 
 ==============================================================================
-14. Contributing & Bug reports                          *vimwiki-contributing*
+14. Contributing & Bug reports                          *vimroam-contributing*
 
-Your help in making Vimwiki better is really appreciated!
+Your help in making VimRoam better is really appreciated!
 Any help, whether it is a spelling correction or a code snippet to patch --
 everything is welcomed.
 
 See CONTRIBUTING.md for info about how to file bugs etc.
 
 ==============================================================================
-15. Development                                          *vimwiki-development*
+15. Development                                          *vimroam-development*
 
-Homepage: http://vimwiki.github.io/
-Github: https://github.com/vimwiki/vimwiki/
+Homepage: http://vimroam.github.io/
+Github: https://github.com/jeffmm/vimroam/
 Vim plugins: http://www.vim.org/scripts/script.php?script_id=2226
-Old homepage: http://code.google.com/p/vimwiki/
+Old homepage: http://code.google.com/p/vimroam/
 
 Contributors and their Github usernames in roughly chronological order:
 
     - Maxim Kim (@habamax) <habamax@gmail.com> as original author
-    - the people here: http://code.google.com/p/vimwiki/people/list
+    - the people here: http://code.google.com/p/vimroam/people/list
     - Stuart Andrews (@tub78)
     - Tomas Pospichal
     - Daniel Schemala (@EinfachToll) as current maintainer
@@ -3863,53 +3863,53 @@ Contributors and their Github usernames in roughly chronological order:
     - Amit Beka (@amitbeka)
 
 ==============================================================================
-16. Changelog                                              *vimwiki-changelog*
+16. Changelog                                              *vimroam-changelog*
 
 
 Issue numbers starting with '#' are issues from
-https://github.com/vimwiki/vimwiki/issues/, all others from
-http://code.google.com/p/vimwiki/issues/list. They may be accessible from
-https://github.com/vimwiki-backup/vimwiki/issues.
+https://github.com/jeffmm/vimroam/issues/, all others from
+http://code.google.com/p/vimroam/issues/list. They may be accessible from
+https://github.com/vimroam-backup/vimroam/issues.
 
 New:~
     * Feature: enable re-mapping insert mode table mappings
     * Feature: configure expression for Todo words
-    * Feature: #954 #1041: Add option |vimwiki-option-listsyms_propagate| to
+    * Feature: #954 #1041: Add option |vimroam-option-listsyms_propagate| to
       disable todo propagation to parents/children
-    * Issue #1009: |foldmethod| syntax works for markdown (|g:vimwiki_folding|)
-      Also the VimwikiHeader1Folding (1..60 regions support end-of-file `/\%$`
+    * Issue #1009: |foldmethod| syntax works for markdown (|g:vimroam_folding|)
+      Also the VimRoamHeader1Folding (1..60 regions support end-of-file `/\%$`
       as end maker
     * Issue #990: Feature request: highlight multiline selection
-      Add :VimwikiColorize with only  support to clorize the current line
+      Add :VimRoamColorize with only  support to clorize the current line
     * PR #919: Fix duplicate helptag
-    * Feature: PR #988: Command VimwikiVar to list, get and set variables
+    * Feature: PR #988: Command VimRoamVar to list, get and set variables
     * Feature: #837 extract web page <title> from URL under cursor and create
       a nice wiki link
-    * Feature: #922 #928: g:vimwiki_tag_format to change the tag format
+    * Feature: #922 #928: g:vimroam_tag_format to change the tag format
     * Feature: Support Emoji (Conceal and Complete)
     * Issue #209: Feature: Markdown: Support SetExt Heading
     * Issue #847 #640: Feature: Markdown anchor
-      normalize and unormalize: better follow_link and |VimwikiTOC|
+      normalize and unormalize: better follow_link and |VimRoamTOC|
     * Commit 5408d74b3: Syntax: Html support nested, concealable tag
       and faster start syntax region for typeface
-    * Issue #926: Feature: VimwikiRenameFile 1/ to other dir
+    * Issue #926: Feature: VimRoamRenameFile 1/ to other dir
       2/ take argument (completable)
     * Test: travis run vint in an parallel jobs => faster
     * Issue #915: Feature: blockquote (`> `) better joining (`J`) and wrap
-    * Issue #913: Allow |VimwikiGoto| completion after <CR>
+    * Issue #913: Allow |VimRoamGoto| completion after <CR>
     * PR #967: Add multiline comment support via %%+ and +%%
-    * PR #946: Add option |g:vimwiki_commentstring| to customize commentstring
+    * PR #946: Add option |g:vimroam_commentstring| to customize commentstring
     * Issue #940: Render table header inside thead element and rest under
       tbody element if table header specified in wiki
-    * PR #811: Feature: Added handling of absolute path to vimwiki (with //)
-    * PR #906: Add |VimwikiRemoveDone| to remove all todo items that are done
+    * PR #811: Feature: Added handling of absolute path to vimroam (with //)
+    * PR #906: Add |VimRoamRemoveDone| to remove all todo items that are done
     * PR #907: Cycle bullets
     * PR #901: adds multiparagraph blockquotes using email style syntax
-    * PR #934: RSS feed generation for diary with :VimwikiRss.
+    * PR #934: RSS feed generation for diary with :VimRoamRss.
 
 Changed:~
-    * PR #1047: Allow to replace default mapping of VimwikiToggleListItem
-    * VimwikiCheckLinks work on current wiki or on range
+    * PR #1047: Allow to replace default mapping of VimRoamToggleListItem
+    * VimRoamCheckLinks work on current wiki or on range
 
 Removed:~
 
@@ -3917,13 +3917,13 @@ Fixed:~
     * Enable strikethrough for Neovim
     * Issue #1029: Fix: error loading plugin when lang uses comma instead of
       dot as decimal separator
-    * Issue #886: :VimwikiGenerateLinks not working on Windows
+    * Issue #886: :VimRoamGenerateLinks not working on Windows
     * Issue #55: Newlines in blockquotes are not honored
     * Issue #55: BlockQuote restarts list numbering
-    * Issue #979: Fix: Accessing other filetypes within vimwiki
-    * Issue #886: VimwikiGenerateLinks crash with single quote in filename
-    * Issue #910: Fix: VimwikiTOC removes next non-empty line
-    * Issue #182: VimwikiTOC support headers with link
+    * Issue #979: Fix: Accessing other filetypes within vimroam
+    * Issue #886: VimRoamGenerateLinks crash with single quote in filename
+    * Issue #910: Fix: VimRoamTOC removes next non-empty line
+    * Issue #182: VimRoamTOC support headers with link
     * Issue #813: iMap <Cr> interfere with completion (pum)
     * Issue #709: Support inline code spans inside emphasis
       Refactoring code, del, eq, sup, sub as regions
@@ -3933,12 +3933,12 @@ Fixed:~
     * PR #902: Doc: Darken logo text
     * PR #895: Fix: File extension for markdown -> syntax wide
       __FileExtention__ keyword appears
-    * PR #963: Doc: Replace VimwikiListChangeLevel references in doc with
-      VimwikiListChangeLvl as defined by command
-    * PR #900: conceallevel is now setted locally for vimwiki buffers
+    * PR #963: Doc: Replace VimRoamListChangeLevel references in doc with
+      VimRoamListChangeLvl as defined by command
+    * PR #900: conceallevel is now setted locally for vimroam buffers
     * Issue #942: Fixing wrong html link conversion in windows
     * PR #919: Fix duplicate helptag
-    * PR #959: Fix :VimwikiNextTask
+    * PR #959: Fix :VimRoamNextTask
     * PR #986: Fix typo in help file
     * PR #1030: Allow overwriting insert mode mappings
 
@@ -3946,68 +3946,68 @@ Fixed:~
 2.5 (2020-05-26)~
 
 New:~
-    * PR #787: |:VimwikiRenameFile| works for all directories: even
+    * PR #787: |:VimRoamRenameFile| works for all directories: even
       wiki_root/diary/2019-12-11.md if current file is wiki_root/dir1/file.md.
     * Issue #764: fenced code blocks are properly supported for markdown
       syntax i.e. more than 3 backticks, adds tilde support.
-    * PR #785: |:VimwikiGoto| completion works with part of filename and
+    * PR #785: |:VimRoamGoto| completion works with part of filename and
       nested directories
     * Add test framework (vader, vint, vim-testbed)
-    * Issue #769: Set default values for |g:vimwiki_ext2syntax|.
+    * Issue #769: Set default values for |g:vimroam_ext2syntax|.
     * PR #735: Make list-toggling work properly even when code blocks are
       embedded within the list in Markdown mode.
-    * PR #711: Allow forcing VimwikiAll2HTML with !
+    * PR #711: Allow forcing VimRoamAll2HTML with !
     * PR #702: Make remapping documentation more accessible to newer vim users
-    * PR #673: Add :VimwikiGoto key mapping.
-    * PR #689: Allow |vimwiki-option-diary_rel_path| to be an empty string.
+    * PR #673: Add :VimRoamGoto key mapping.
+    * PR #689: Allow |vimroam-option-diary_rel_path| to be an empty string.
     * PR #683: Improve layout and format of key binding documentation in
       README and include note about key bindings that may not work.
     * PR #681: Prevent sticky type checking errors for old vim versions.
-    * PR #686: New option |g:vimwiki_key_mappings| that allow key mappings to
+    * PR #686: New option |g:vimroam_key_mappings| that allow key mappings to
       be enabled/disabled by groups. Key mappings are also no longer
       overwritten if they are already defined.
-    * PR #675: Add option |vimwiki-option-name| to assign a per wiki name.
-    * PR #661: Add option |g:vimwiki_auto_header| to automatically generate
+    * PR #675: Add option |vimroam-option-name| to assign a per wiki name.
+    * PR #661: Add option |g:vimroam_auto_header| to automatically generate
       a level 1 header for new wiki pages.
-    * PR #665: Integration with vimwiki_markdown gem
-      https://github.com/patrickdavey/vimwiki_markdown
-      This provides the |vimwiki-option-html_filename_parameterization|
+    * PR #665: Integration with vimroam_markdown gem
+      https://github.com/patrickdavey/vimroam_markdown
+      This provides the |vimroam-option-html_filename_parameterization|
       which alters the filenames vimiwiki checks against when running the
       html conversion. It also disables the deleting of html files which
       no longer match against a wiki file.
-    * PR #663: New option |g:vimwiki_conceal_onechar_markers| to control
+    * PR #663: New option |g:vimroam_conceal_onechar_markers| to control
       whether to show or hide single-character format markers.
-    * PR #636: Wiki local option |vimwiki-option-exclude_files| which is
+    * PR #636: Wiki local option |vimroam-option-exclude_files| which is
       a list of patterns to exclude when checking or generating links.
     * PR #644: Key mapping gnt to jump to the next open task.
-    * PR #643: Option |g:vimwiki_toc_link_format| to change how links are
+    * PR #643: Option |g:vimroam_toc_link_format| to change how links are
       formatted in the TOC.
-    * PR #641: Option |g:vimwiki_conceal_code_blocks| to conceal preformatted
+    * PR #641: Option |g:vimroam_conceal_code_blocks| to conceal preformatted
       text markers.
-    * PR #634: New options |g:vimwiki_links_header| and
-      |g:vimwiki_tags_header| to customize the title string of generated
-      sections. New option |g:vimwiki_links_header_level| and
-      |g:vimwiki_tags_header_level| which allow the header level (1-6) of the
-      generated links to be set. New option |g:vimwiki_markdown_header_style|
+    * PR #634: New options |g:vimroam_links_header| and
+      |g:vimroam_tags_header| to customize the title string of generated
+      sections. New option |g:vimroam_links_header_level| and
+      |g:vimroam_tags_header_level| which allow the header level (1-6) of the
+      generated links to be set. New option |g:vimroam_markdown_header_style|
       which specifies the nuber of newlines after the created header for
       generated sections.
-    * PR #635: Wiki local options |vimwiki-option-auto_generate_links| and
-      |vimwiki-option-auto_generate_tags|.
-    * Wiki local option |vimwiki-option-links_space_char| to replace spaces
+    * PR #635: Wiki local options |vimroam-option-auto_generate_links| and
+      |vimroam-option-auto_generate_tags|.
+    * Wiki local option |vimroam-option-links_space_char| to replace spaces
       with a different character when creating a link.
     * Allow increase/decrease header level to take a count.
-    * PR #637: Option |g:vimwiki_table_reduce_last_col| to not autoformat last
+    * PR #637: Option |g:vimroam_table_reduce_last_col| to not autoformat last
       column of a table.
-    * PR #629: New option |g:vimwiki_toc_header_level| to set the desired
+    * PR #629: New option |g:vimroam_toc_header_level| to set the desired
       header level for the TOC.
     * PR #616: Hex color codes are colored in HTML output.
     * PR #573: Add HTML template variable %wiki_path% which outputs the path
       of the current file being converted to HTML.
-    * PR #529: Option |g:vimwiki_markdown_link_ext| to include the extension
+    * PR #529: Option |g:vimroam_markdown_link_ext| to include the extension
       .md in generated links.
-    * PR #528: Add option |g:vimwiki_create_link| to prevent link creation
+    * PR #528: Add option |g:vimroam_create_link| to prevent link creation
       with <CR>.
-    * PR #498: Option |vimwiki-option-diary_caption_level| which adds captions
+    * PR #498: Option |vimroam-option-diary_caption_level| which adds captions
       to the diary index based on headers.
     * PR #377: Add horizontal alignment to tables.
     * PR #202: Don't override or display errors for existing keymappings.
@@ -4017,32 +4017,32 @@ New:~
     * PR #884: Configure diary frequency (daily, weekly, monthly, yearly)
 
 Changed:~
-    * Issue #796: Rename |:VimwikiGenerateTags| to |:VimwikiGenerateTagLinks|
-    * Issue #638: Rename |:VimwikiDeleteLink| to |:VimwikiDeleteFile|
-    * Issue #638: Rename |:VimwikiRenameLink| to |:VimwikiRenameFile|
+    * Issue #796: Rename |:VimRoamGenerateTags| to |:VimRoamGenerateTagLinks|
+    * Issue #638: Rename |:VimRoamDeleteLink| to |:VimRoamDeleteFile|
+    * Issue #638: Rename |:VimRoamRenameLink| to |:VimRoamRenameFile|
     * For all three above the old commands still works but is deprecated and
     * will be removed in later versions.
-    * Set default |vimwiki-option-list_margin| = 0 for markdown syntax.
+    * Set default |vimroam-option-list_margin| = 0 for markdown syntax.
     * Modify horizontal rule (thematic-breaks) syntax for markdown.
 
 Removed:~
     * PR #698: Remove awa check triggering silent file edits.
-    * Options g:vimwiki_use_mouse and g:vimwiki_table_mappings. These are
+    * Options g:vimroam_use_mouse and g:vimroam_table_mappings. These are
       still present in the code for backwards compatibility but have been
       removed from the documentation and will be fully removed at a later
       point.
 
 Fixed:~
-    * Issue #90: |:VimwikiRenameFile| doesn't update links in diary.
+    * Issue #90: |:VimRoamRenameFile| doesn't update links in diary.
     * Issue #790: Allow tags before a header with markdown syntax.
-    * Issue #779: Vimwiki tags file meets ctags standard.
+    * Issue #779: VimRoam tags file meets ctags standard.
     * Issue #781: Compatablity fixes for older versions of Vim.
-    * Issue #691: Allow |:VimwikiGoBackLink| to go back multiple times.
+    * Issue #691: Allow |:VimRoamGoBackLink| to go back multiple times.
     * Update MathJax CDN loading instructions.
     * Issue #212: Don't treat comment characters within code blocks as
       headers.
-    * Issue #420: Add error handling to |:VimwikiSearch|
-    * PR #744: Fix typo in vimwiki_list_manipulation
+    * Issue #420: Add error handling to |:VimRoamSearch|
+    * PR #744: Fix typo in vimroam_list_manipulation
     * Issue #715: s:clean_url is compatible with vim pre 7.4.1546 (sticky type
       checking)
     * Issue #729: Normalize links uses relative paths in diary pages for
@@ -4054,17 +4054,17 @@ Fixed:~
     * Issue #240: Fix regex pattern for markdown '[]()' links
     * Issue #685: Error message for invalid user options fixed.
     * Issue #481: Allow surrounding URLs with '<' '>'
-    * Issue #237: |:VimwikiRenameFile| now works for Markdown syntax
+    * Issue #237: |:VimRoamRenameFile| now works for Markdown syntax
     * Issue #612: GVim menu displayed duplicate names.
     * Issue #456: Omnicompletion of wikilinks under Windows. Note: this should
       be considered a temporary fix until #478 is closed.
-    * Issue #654: Fix |:VimwikiShowVersion| command.
+    * Issue #654: Fix |:VimRoamShowVersion| command.
     * PR #634: Removed extra newlines that were inserted before/after
       generated links.
     * Issue #543: Allow commands related to opening index files or diary pages
       to take a count, modify keymapping behavior, and fix discrepancies in
       the documentation.
-    * Issue #539: The option |g:vimwiki_url_maxsave| now only affects raw
+    * Issue #539: The option |g:vimroam_url_maxsave| now only affects raw
       URLs (wiki links are excluded).
     * Issue #438: Fix creation of visually selected links on diary pages.
     * Issue #404: Don't conceal strikethrough character in tables.
@@ -4072,67 +4072,67 @@ Fixed:~
       rendered correctly.
     * Issue #835: Pressing enter on the dash of a markdown list causes an error.
     * Issue #876: E684: list index out of range: 0, when creating a link containing a `.`.
-    * Issue #803: |:VimwikiGenerateLinks| for subdirectory only
-    * Issue #776: Command [count]o can't repeat in vimwiki
+    * Issue #803: |:VimRoamGenerateLinks| for subdirectory only
+    * Issue #776: Command [count]o can't repeat in vimroam
 
 
 2.4.1 (2019-02-20)~
 Fixed:
-    * Fix VimwikiShowVersion function.
+    * Fix VimRoamShowVersion function.
     * strikethrough `~` characters were not hidden within tables
     * Update and format README.md and update screen shots
 
 2.4 (2019-03-24)~
 
 New:~
-    * Add the option |g:vimwiki_text_ignore_newline|.
-    * |g:vimwiki_listsyms| can have fewer or more than 5 symbols.
-    * glx on a list item marks a checkbox as won't do, see |vimwiki_glx|.
-    * Add the option |g:vimwiki_listsym_rejected| to set the character used
+    * Add the option |g:vimroam_text_ignore_newline|.
+    * |g:vimroam_listsyms| can have fewer or more than 5 symbols.
+    * glx on a list item marks a checkbox as won't do, see |vimroam_glx|.
+    * Add the option |g:vimroam_listsym_rejected| to set the character used
       for won't-do list items.
-    * The effect of |g:vimwiki_listsyms| and |g:vimwiki_listsym_rejected| can
-      be set on a per wiki level, see |vimwiki-option-listsyms| and
+    * The effect of |g:vimroam_listsyms| and |g:vimroam_listsym_rejected| can
+      be set on a per wiki level, see |vimroam-option-listsyms| and
       |vimwili-option-listsym_rejected|
-    * gln and glp change the "done" status of a checkbox, see |vimwiki_gln|.
-    * |:VimwikiSplitLink| and |:VimwikiVSplitLink| can now reuse an existing
+    * gln and glp change the "done" status of a checkbox, see |vimroam_gln|.
+    * |:VimRoamSplitLink| and |:VimRoamVSplitLink| can now reuse an existing
       split window and not move the cursor.
-    * Add 'aH' and 'iH' text objects, see |vimwiki-text-objects|.
-    * Add the keys |vimwiki_[[|, |vimwiki_]]|, |vimwiki_[=|, |vimwiki_]=| and
-      |vimwiki_]u| for navigating between headers.
-    * Add the command |:VimwikiMakeTomorrowDiaryNote|.
-    * |g:vimwiki_folding| has a new option 'custom'.
-    * Add the ':quick' option for faster folding, see |g:vimwiki_folding|.
-    * Add the %date placeholder, see |vimwiki-date|.
-    * Add the option |vimwiki-option-custom_wiki2html_args|.
+    * Add 'aH' and 'iH' text objects, see |vimroam-text-objects|.
+    * Add the keys |vimroam_[[|, |vimroam_]]|, |vimroam_[=|, |vimroam_]=| and
+      |vimroam_]u| for navigating between headers.
+    * Add the command |:VimRoamMakeTomorrowDiaryNote|.
+    * |g:vimroam_folding| has a new option 'custom'.
+    * Add the ':quick' option for faster folding, see |g:vimroam_folding|.
+    * Add the %date placeholder, see |vimroam-date|.
+    * Add the option |vimroam-option-custom_wiki2html_args|.
     * Add support for HTML-style comments when using markdown syntax.
     * Made headings link to themselves in HTML output.
-    * Add |:VimwikiShowVersion| to check the version
+    * Add |:VimRoamShowVersion| to check the version
 
 Removed:~
-    * Remove the undocumented and buggy command :VimwikiReadLocalOptions
-      which allowed to store Vimwiki related settings in a local file.
-    * Remove the undocumented command :VimwikiPrintWikiState.
-    * For complicated reasons, Vimwiki doesn't clean up its settings anymore
+    * Remove the undocumented and buggy command :VimRoamReadLocalOptions
+      which allowed to store VimRoam related settings in a local file.
+    * Remove the undocumented command :VimRoamPrintWikiState.
+    * For complicated reasons, VimRoam doesn't clean up its settings anymore
       if you change the filetype of a wiki buffer.
 
 Fixed:~
-    * Make |vimwiki-option-automatic_nested_syntaxes| work also for markdown.
+    * Make |vimroam-option-automatic_nested_syntaxes| work also for markdown.
     * Issue #236: Highlight math blocks as TeX math, not TeX.
     * Issue #264: Don't overwrite mappings to i_<CR> from other plugins.
     * Fix an error where <BS> sometimes didn't work under Windows.
-    * Issue #302: |:VimwikiDiaryGenerateLinks| had issues with markdown.
+    * Issue #302: |:VimRoamDiaryGenerateLinks| had issues with markdown.
     * Issue #445: Better handling of |'autowriteall'| and |'hidden'|.
-    * Improve 'ah' and 'ih' text objects, see |vimwiki-text-objects|.
+    * Improve 'ah' and 'ih' text objects, see |vimroam-text-objects|.
     * Allow opening of links using Powershell.
-    * Allow any visual mode to be used with |vimwiki_+|.
-    * Markdown syntax for |vimwiki-toc| is used, when appropriate.
+    * Allow any visual mode to be used with |vimroam_+|.
+    * Markdown syntax for |vimroam-toc| is used, when appropriate.
     * Wikis can now be in subfolders of other wikis.
-    * Issue #482: |:VimwikiMakeDiaryNote| now uses the diary of the current wiki.
+    * Issue #482: |:VimRoamMakeDiaryNote| now uses the diary of the current wiki.
     * Opening the diary and wikis from the menu works correctly now.
-    * Issue #497: Make |:VimwikiMakeDiaryNote| work outside a wiki buffer.
+    * Issue #497: Make |:VimRoamMakeDiaryNote| work outside a wiki buffer.
     * Use markdown syntax in the diary when appropriate.
     * Improve handling of errors on opening files.
-    * Update links when renaming a page with |:VimwikiRenameLink|.
+    * Update links when renaming a page with |:VimRoamRenameLink|.
     * Fix losing the highlighting in various situations.
     * Improved link normalisation.
     * Various other minor fixes.
@@ -4141,9 +4141,9 @@ Fixed:~
 2.3 (2016-03-31)~
 
 New:~
-    * Add |:VimwikiMakeYesterdayDiaryNote| command
-    * Issue #128: add option |vimwiki-option-automatic_nested_syntaxes|
-    * Issue #192: Sort links in the list generated by |:VimwikiGenerateTags|
+    * Add |:VimRoamMakeYesterdayDiaryNote| command
+    * Issue #128: add option |vimroam-option-automatic_nested_syntaxes|
+    * Issue #192: Sort links in the list generated by |:VimRoamGenerateTags|
 
 Fixed:~
     * Issue #176: Fix issue when the wiki path contains spaces
@@ -4153,14 +4153,14 @@ Fixed:~
     * Issue #64: create correct Markdown links when pressing CR on a word
     * Issue #191: ignore headers inside preformatted text when creating the TOC
     * Create the standard CSS file also if only one file is converted to HTML
-    * Fix #188: |vimwiki_+| on a raw url surrounds it with brackets
+    * Fix #188: |vimroam_+| on a raw url surrounds it with brackets
     * various minor fixes
 
 
 2.2.1 (2015-12-10)~
 
 Removed:~
-    * Removed the option g:vimwiki_debug, which probably nobody used. If you
+    * Removed the option g:vimroam_debug, which probably nobody used. If you
       want it back, file an issue at Github.
 
 Fixed:~
@@ -4174,53 +4174,53 @@ Fixed:~
 2.2 (2015-11-25)~
 
 New:~
-    * Support for anchors, see |vimwiki-anchors|
-        * in this context, add support for TOC, see |vimwiki-toc|
+    * Support for anchors, see |vimroam-anchors|
+        * in this context, add support for TOC, see |vimroam-toc|
         * add omni completion of wiki links (files and anchors)
-        * new local option |vimwiki-option-auto_toc|
-        * new global option |g:vimwiki_toc_header|
-    * Support for tags, see |vimwiki-syntax-tags|
-    * List editing capabilities, see |vimwiki-lists|:
+        * new local option |vimroam-option-auto_toc|
+        * new global option |g:vimroam_toc_header|
+    * Support for tags, see |vimroam-syntax-tags|
+    * List editing capabilities, see |vimroam-lists|:
         * support for auto incrementing numbered lists
-        * more key maps for list manipulation, see |vimwiki-list-manipulation|
+        * more key maps for list manipulation, see |vimroam-list-manipulation|
         * improved automatic adjustment of checkboxes
-        * text objects for list items, see |vimwiki-text-objects|
-    * New command |:VimwikiCheckLinks| to check for broken links
-    * New global option |g:vimwiki_auto_chdir|
-    * New global option |g:vimwiki_map_prefix|
+        * text objects for list items, see |vimroam-text-objects|
+    * New command |:VimRoamCheckLinks| to check for broken links
+    * New global option |g:vimroam_auto_chdir|
+    * New global option |g:vimroam_map_prefix|
     * Support for wiki links absolute to the wiki root
-    * Added the |VimwikiLinkConverter| function
+    * Added the |VimRoamLinkConverter| function
     * Issue #24: Basic support for remote directories via netrw
     * Issue #50: in HTML, tables can now be embedded in lists
     * When converting to HTML, show a message with the output directory
-    * Add auto completion for |:VimwikiGoto|
+    * Add auto completion for |:VimRoamGoto|
     * Add Chinese Readme file
 
 Changed:~
     * Wiki files must not contain # anymore, because # is used to separate the
       file from an anchor in a link.
-    * replace the function vimwiki#base#resolve_scheme() by
-      vimwiki#base#resolve_link() (relevant if you have a custom
-      |VimwikiLinkHandler| which used this function)
+    * replace the function vimroam#base#resolve_scheme() by
+      vimroam#base#resolve_link() (relevant if you have a custom
+      |VimRoamLinkHandler| which used this function)
     * The semantic of "file:" and "local:" links changed slightly, see
-      |vimwiki-syntax-links| for what they mean now
+      |vimroam-syntax-links| for what they mean now
     * The meaning of a link like [[/some/directory/]] changed. It used to be
       a link to the actual directory /some/directory/, now it's relative to
       the root of the current wiki. Use [[file:/some/directory/]] for the old
       behavior.
 
 Removed:~
-    * the %toc placeholder is now useless, use |vimwiki-toc| instead
-    * the global option g:vimwiki_auto_checkbox is now useless and removed
+    * the %toc placeholder is now useless, use |vimroam-toc| instead
+    * the global option g:vimroam_auto_checkbox is now useless and removed
 
 Fixed:~
-    * Issue 415: Disable folding if g:vimwiki_folding is set to ''
+    * Issue 415: Disable folding if g:vimroam_folding is set to ''
     * Fix slowdown in Vim 7.4
     * Issue #12: Separate diaries from different wikis
-    * Issue #13: Fix :VimwikiRenameLink on links containing a dot
+    * Issue #13: Fix :VimRoamRenameLink on links containing a dot
     * Always jump to previous link on <S-Tab>, not to beginning of link
     * Issue #27: Fix <CR> on a visual selection sometimes not working
-    * |VimwikiBackLinks| now recognizes much more valid links
+    * |VimRoamBackLinks| now recognizes much more valid links
     * Issue 424: make external links with #, % work under Linux
     * Issue #39: don't htmlize stuff inside pre tags
     * Issue #44: faster formatting of large tables
@@ -4229,12 +4229,12 @@ Fixed:~
     * Issue #81: Don't get stuck when converting a read-only file
     * Issue #66: Better normalizing of links in diary
     * Fix the menu in GVim, which was sometimes not shown correctly
-    * |VimwikiGenerateLinks| now also generates links for subdirectories
+    * |VimRoamGenerateLinks| now also generates links for subdirectories
     * Issue #93: Don't process placeholders inside preformatted text
     * Issue #102: Add default values to some options like the doc says
     * Issue #144: Fix bug with folds shortening on multibyte characters
     * Issue #158: Detect the OS correctly
-    * |VimwikiGenerateLinks| now replaces a potentially existing old list
+    * |VimRoamGenerateLinks| now replaces a potentially existing old list
     * Fix uneven indentation of list items with checkboxes in HTML
     * Various small fixes
     * Corrected website links in documentation. code.google is dead, long live
@@ -4242,14 +4242,14 @@ Fixed:~
 
 2.1~
 
-    * Concealing of links can be turned off - set |g:vimwiki_url_maxsave| to 0.
-      The option g:vimwiki_url_mingain was removed
-    * |g:vimwiki_folding| also accepts value 'list'; with 'expr' both sections
-      and code blocks folded, g:vimwiki_fold_lists option was removed
-    * Issue 261: Syntax folding is back. |g:vimwiki_folding| values are
+    * Concealing of links can be turned off - set |g:vimroam_url_maxsave| to 0.
+      The option g:vimroam_url_mingain was removed
+    * |g:vimroam_folding| also accepts value 'list'; with 'expr' both sections
+      and code blocks folded, g:vimroam_fold_lists option was removed
+    * Issue 261: Syntax folding is back. |g:vimroam_folding| values are
       changed to '', 'expr', 'syntax'.
-    * Issue 372: Ignore case in g:vimwiki_valid_html_tags
-    * Issue 374: Make autowriteall local to vimwiki. It is not 100% local
+    * Issue 372: Ignore case in g:vimroam_valid_html_tags
+    * Issue 374: Make autowriteall local to vimroam. It is not 100% local
       though.
     * Issue 384: Custom_wiki2html script now receives templating arguments
     * Issue 393: Custom_wiki2html script path can contain tilde character
@@ -4271,7 +4271,7 @@ Summary ~
     * Quick page-link creation.
     * Redesign of link syntaxes (!)
         * No more CamelCase links. Check the ways to convert them
-          https://groups.google.com/forum/?fromgroups#!topic/vimwiki/NdS9OBG2dys
+          https://groups.google.com/forum/?fromgroups#!topic/vimroam/NdS9OBG2dys
         * No more [[link][desc]] links.
         * No more [http://link description] links.
         * No more plain image links. Use transclusions.
@@ -4279,59 +4279,59 @@ Summary ~
     * Interwiki links
     * More link schemes
     * Transclusions
-    * Normalize link command. See |vimwiki_+|.
-    * Improved diary organization and generation. See |vimwiki-diary|.
-    * List manipulation. See |vimwiki-list-manipulation|.
+    * Normalize link command. See |vimroam_+|.
+    * Improved diary organization and generation. See |vimroam-diary|.
+    * List manipulation. See |vimroam-list-manipulation|.
     * Markdown support.
-    * Mathjax support. See |vimwiki-syntax-math|.
+    * Mathjax support. See |vimroam-syntax-math|.
     * Improved handling of special characters and punctuation in filenames and
       urls.
     * Back links command: list links referring to the current page.
     * Highlighting nonexisted links are off by default.
     * Table syntax change. Row separator uses | instead of +.
     * Fold multilined list items.
-    * Custom wiki to HTML converters. See |vimwiki-option-custom_wiki2html|.
-    * Conceal long weblinks. See g:vimwiki_url_mingain.
-    * Option to disable table mappings. See |g:vimwiki_table_mappings|.
+    * Custom wiki to HTML converters. See |vimroam-option-custom_wiki2html|.
+    * Conceal long weblinks. See g:vimroam_url_mingain.
+    * Option to disable table mappings. See |g:vimroam_table_mappings|.
 
 For detailed information see issues list on
-http://code.google.com/p/vimwiki/issues/list
+http://code.google.com/p/vimroam/issues/list
 
 
 1.2~
     * Issue 70: Table spanning cell support.
-    * Issue 72: Do not convert again for unchanged file. |:VimwikiAll2HTML|
+    * Issue 72: Do not convert again for unchanged file. |:VimRoamAll2HTML|
       converts only changed wiki files.
-    * Issue 117: |:VimwikiDiaryIndex| command that opens diary index wiki page.
-    * Issue 120: Links in headers are not highlighted in vimwiki but are
+    * Issue 117: |:VimRoamDiaryIndex| command that opens diary index wiki page.
+    * Issue 120: Links in headers are not highlighted in vimroam but are
       highlighted in HTML.
     * Issue 138: Added possibility to remap table-column move bindings. See
-      |:VimwikiTableMoveColumnLeft| and |:VimwikiTableMoveColumnRight|
-      commands. For remap instructions see |vimwiki_<A-Left>|
-      and |vimwiki_<A-Right>|.
+      |:VimRoamTableMoveColumnLeft| and |:VimRoamTableMoveColumnRight|
+      commands. For remap instructions see |vimroam_<A-Left>|
+      and |vimroam_<A-Right>|.
     * Issue 125: Problem with 'o' command given while at the of the file.
     * Issue 131: FileType is not set up when GUIEnter autocommand is used in
-      vimrc. Use 'nested' in 'au GUIEnter * nested VimwikiIndex'
-    * Issue 132: Link to perl (or any non-wiki) file in vimwiki subdirectory
+      vimrc. Use 'nested' in 'au GUIEnter * nested VimRoamIndex'
+    * Issue 132: Link to perl (or any non-wiki) file in vimroam subdirectory
       doesn't work as intended.
     * Issue 135: %title and %toc used together cause TOC to appear in an
       unexpected place in HTML.
-    * Issue 139: |:VimwikiTabnewLink| command is added.
-    * Fix of g:vimwiki_stripsym = '' (i.e. an empty string) -- it removes bad
+    * Issue 139: |:VimRoamTabnewLink| command is added.
+    * Fix of g:vimroam_stripsym = '' (i.e. an empty string) -- it removes bad
       symbols from filenames.
-    * Issue 145: With modeline 'set ft=vimwiki' links are not correctly
+    * Issue 145: With modeline 'set ft=vimroam' links are not correctly
       highlighted when open wiki files.
-    * Issue 146: Filetype difficulty with ".txt" as a vimwiki extension.
+    * Issue 146: Filetype difficulty with ".txt" as a vimroam extension.
     * Issue 148: There are no mailto links.
-    * Issue 151: Use location list instead of quickfix list for |:VimwikiSearch|
+    * Issue 151: Use location list instead of quickfix list for |:VimRoamSearch|
       command result. Use :lopen instead of :copen, :lnext instead of :cnext
       etc.
     * Issue 152: Add the list of HTML files that would not be deleted after
-      |:VimwikiAll2HTML|.
+      |:VimRoamAll2HTML|.
     * Issue 153: Delete HTML files that has no corresponding wiki ones with
-      |:VimwikiAll2HTML|.
+      |:VimRoamAll2HTML|.
     * Issue 156: Add multiple HTML templates. See
-      |vimwiki-option-template_path|. Options html_header and html_footer are
+      |vimroam-option-template_path|. Options html_header and html_footer are
       no longer exist.
     * Issue 173: When virtualedit=all option is enabled the 'o' command behave
       strange.
@@ -4350,15 +4350,15 @@ http://code.google.com/p/vimwiki/issues/list
       block {{{ ... }}} is removed. Use `...` instead.
     * Issue 208: Default highlight colors are problematic in many
       colorschemes. Headers are highlighted as |hl-Title| by default, use
-      |g:vimwiki_hl_headers| to restore previous default Red, Green, Blue or
+      |g:vimroam_hl_headers| to restore previous default Red, Green, Blue or
       custom header colors. Some other changes in highlighting.
     * Issue 209: Wild comments slow down html generation. Comments are
       changed, use %% to comment out entire line.
     * Issue 210: HTML: para enclose header.
     * Issue 214: External links containing Chinese characters get trimmed.
     * Issue 218: Command to generate HTML file and open it in webbrowser. See
-      |:Vimwiki2HTMLBrowse|(bind to <Leader>whh)
-    * NEW: Added <Leader>wh mapping to call |:Vimwiki2HTML|
+      |:VimRoam2HTMLBrowse|(bind to <Leader>whh)
+    * NEW: Added <Leader>wh mapping to call |:VimRoam2HTML|
 
 
 ...
@@ -4371,7 +4371,7 @@ http://code.google.com/p/vimwiki/issues/list
     * First public version.
 
 ==============================================================================
-17. License                                                  *vimwiki-license*
+17. License                                                  *vimroam-license*
 
 The MIT License
 http://www.opensource.org/licenses/mit-license.php

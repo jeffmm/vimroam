@@ -1,13 +1,13 @@
 " vim:tabstop=2:shiftwidth=2:expandtab:textwidth=99
-" Vimwiki autoload plugin file
+" VimRoam autoload plugin file
 " Description: Everything concerning lists and checkboxes
-" Home: https://github.com/vimwiki/vimwiki/
+" Home: https://github.com/jeffmm/vimroam/
 
 
-if exists('g:loaded_vimwiki_list_auto') || &compatible
+if exists('g:loaded_vimroam_list_auto') || &compatible
   finish
 endif
-let g:loaded_vimwiki_list_auto = 1
+let g:loaded_vimroam_list_auto = 1
 
 
 " ---------------------------------------------------------
@@ -99,7 +99,7 @@ endfunction
 
 
 function! s:substitute_string_in_line(lnum, old_string, new_string) abort
-  call s:substitute_rx_in_line(a:lnum, vimwiki#u#escape(a:old_string), a:new_string)
+  call s:substitute_rx_in_line(a:lnum, vimroam#u#escape(a:old_string), a:new_string)
 endfunction
 
 
@@ -119,13 +119,13 @@ else
 endif
 
 
-function! vimwiki#lst#default_symbol() abort
-  return vimwiki#vars#get_syntaxlocal('list_markers')[0]
+function! vimroam#lst#default_symbol() abort
+  return vimroam#vars#get_syntaxlocal('list_markers')[0]
 endfunction
 
 
-function! vimwiki#lst#get_list_margin() abort
-  let list_margin = vimwiki#vars#get_wikilocal('list_margin')
+function! vimroam#lst#get_list_margin() abort
+  let list_margin = vimroam#vars#get_wikilocal('list_margin')
   if list_margin < 0
     return &shiftwidth
   else
@@ -137,7 +137,7 @@ endfunction
 "Returns: the column where the text of a line starts (possible list item
 "markers and checkboxes are skipped)
 function! s:text_begin(lnum) abort
-  return s:string_length(matchstr(getline(a:lnum), vimwiki#vars#get_wikilocal('rxListItem')))
+  return s:string_length(matchstr(getline(a:lnum), vimroam#vars#get_wikilocal('rxListItem')))
 endfunction
 
 
@@ -145,9 +145,9 @@ endfunction
 " 1 for a marker and no text
 " 0 for no marker at all (empty line or only text)
 function! s:line_has_marker(lnum) abort
-  if getline(a:lnum) =~# vimwiki#vars#get_wikilocal('rxListItem').'\s*$'
+  if getline(a:lnum) =~# vimroam#vars#get_wikilocal('rxListItem').'\s*$'
     return 1
-  elseif getline(a:lnum) =~# vimwiki#vars#get_wikilocal('rxListItem').'\s*\S'
+  elseif getline(a:lnum) =~# vimroam#vars#get_wikilocal('rxListItem').'\s*\S'
     return 2
   else
     return 0
@@ -196,7 +196,7 @@ function! s:get_item(lnum) abort
   endif
 
   " Search for list on current line
-  let matches = matchlist(getline(a:lnum), vimwiki#vars#get_wikilocal('rxListItem'))
+  let matches = matchlist(getline(a:lnum), vimroam#vars#get_wikilocal('rxListItem'))
   " Clause: If not on a list line => do not work
   if matches == [] ||
         \ (matches[1] ==? '' && matches[2] ==? '') ||
@@ -230,11 +230,11 @@ function! s:get_level(lnum) abort
   if getline(a:lnum) =~# '^\s*$'
     return 0
   endif
-  if !vimwiki#vars#get_syntaxlocal('recurring_bullets')
+  if !vimroam#vars#get_syntaxlocal('recurring_bullets')
     let level = indent(a:lnum)
   else
     let level = s:string_length(matchstr(getline(a:lnum),
-          \ vimwiki#vars#get_wikilocal('rx_bullet_chars')))-1
+          \ vimroam#vars#get_wikilocal('rx_bullet_chars')))-1
     if level < 0
       let level = (indent(a:lnum) == 0) ? 0 : 9999
     endif
@@ -251,7 +251,7 @@ function! s:guess_kind_of_numbered_item(item) abort
   let number_chars = a:item.mrkr[:-2]
   let divisor = a:item.mrkr[-1:]
 
-  let number_kinds = vimwiki#vars#get_syntaxlocal('number_kinds')
+  let number_kinds = vimroam#vars#get_syntaxlocal('number_kinds')
 
   if number_chars =~# '\d\+'
     return '1'
@@ -309,13 +309,13 @@ endfunction
 
 function! s:regexp_of_marker(item) abort
   if a:item.type == 1
-    return vimwiki#u#escape(a:item.mrkr)
+    return vimroam#u#escape(a:item.mrkr)
   elseif a:item.type == 2
-    let number_divisors = vimwiki#vars#get_syntaxlocal('number_divisors')
+    let number_divisors = vimroam#vars#get_syntaxlocal('number_divisors')
     for ki in ['d', 'u', 'l']
       let match = matchstr(a:item.mrkr, '\'.ki.'\+['.number_divisors.']')
       if match !=? ''
-        return '\'.ki.'\+'.vimwiki#u#escape(match[-1:])
+        return '\'.ki.'\+'.vimroam#u#escape(match[-1:])
       endif
     endfor
   else
@@ -327,8 +327,8 @@ endfunction
 " Returns: Whether or not the checkbox of a list item is [X] or [-]
 function! s:is_closed(item) abort
   let state = a:item.cb
-  return state ==# vimwiki#vars#get_wikilocal('listsyms_list')[-1]
-        \ || state ==# vimwiki#vars#get_global('listsym_rejected')
+  return state ==# vimroam#vars#get_wikilocal('listsyms_list')[-1]
+        \ || state ==# vimroam#vars#get_global('listsym_rejected')
 endfunction
 
 " ---------------------------------------------------------
@@ -439,9 +439,9 @@ endfunction
 "If there is no second argument, 0 is returned at a header, otherwise the
 "header is skipped
 function! s:get_next_line(lnum, ...) abort
-  if getline(a:lnum) =~# vimwiki#vars#get_syntaxlocal('rxPreStart')
+  if getline(a:lnum) =~# vimroam#vars#get_syntaxlocal('rxPreStart')
     let cur_ln = a:lnum + 1
-    while cur_ln <= line('$') && getline(cur_ln) !~# vimwiki#vars#get_syntaxlocal('rxPreEnd')
+    while cur_ln <= line('$') && getline(cur_ln) !~# vimroam#vars#get_syntaxlocal('rxPreEnd')
       let cur_ln += 1
     endwhile
     let next_line = cur_ln + 1
@@ -451,12 +451,12 @@ function! s:get_next_line(lnum, ...) abort
 
   let next_line = nextnonblank(next_line)
 
-  if a:0 > 0 && getline(next_line) =~# vimwiki#vars#get_syntaxlocal('rxHeader')
+  if a:0 > 0 && getline(next_line) =~# vimroam#vars#get_syntaxlocal('rxHeader')
     let next_line = s:get_next_line(next_line, 1)
   endif
 
   if next_line < 0 || next_line > line('$') ||
-        \ (getline(next_line) =~# vimwiki#vars#get_syntaxlocal('rxHeader') && a:0 == 0)
+        \ (getline(next_line) =~# vimroam#vars#get_syntaxlocal('rxHeader') && a:0 == 0)
     return 0
   endif
 
@@ -469,9 +469,9 @@ endfunction
 function! s:get_prev_line(lnum) abort
   let cur_ln = a:lnum - 1
 
-  if getline(cur_ln) =~# vimwiki#vars#get_syntaxlocal('rxPreEnd')
+  if getline(cur_ln) =~# vimroam#vars#get_syntaxlocal('rxPreEnd')
     while 1
-      if cur_ln == 0 || getline(cur_ln) =~# vimwiki#vars#get_syntaxlocal('rxPreStart')
+      if cur_ln == 0 || getline(cur_ln) =~# vimroam#vars#get_syntaxlocal('rxPreStart')
         break
       endif
       let cur_ln -= 1
@@ -481,7 +481,7 @@ function! s:get_prev_line(lnum) abort
   let prev_line = prevnonblank(cur_ln)
 
   if prev_line < 0 || prev_line > line('$') ||
-        \ getline(prev_line) =~# vimwiki#vars#get_syntaxlocal('rxHeader')
+        \ getline(prev_line) =~# vimroam#vars#get_syntaxlocal('rxHeader')
     return 0
   endif
 
@@ -733,7 +733,7 @@ endfunction
 
 "Renumbers the list the cursor is in
 "also update its parents checkbox state
-function! vimwiki#lst#adjust_numbered_list() abort
+function! vimroam#lst#adjust_numbered_list() abort
   let cur_item = s:get_corresponding_item(line('.'))
   if cur_item.type == 0 | return | endif
   call s:adjust_numbered_list(cur_item, 1, 0)
@@ -743,7 +743,7 @@ endfunction
 
 "Renumbers all lists of the buffer
 "of course, this might take some seconds
-function! vimwiki#lst#adjust_whole_buffer() abort
+function! vimroam#lst#adjust_whole_buffer() abort
   let cur_ln = 1
   while 1
     let cur_item = s:get_item(cur_ln)
@@ -768,11 +768,11 @@ function! s:get_rate(item) abort
     return -1
   endif
   let state = a:item.cb
-  if state == vimwiki#vars#get_global('listsym_rejected')
+  if state == vimroam#vars#get_global('listsym_rejected')
     return -1
   endif
-  let n = len(vimwiki#vars#get_wikilocal('listsyms_list'))
-  return index(vimwiki#vars#get_wikilocal('listsyms_list'), state) * 100/(n-1)
+  let n = len(vimroam#vars#get_wikilocal('listsyms_list'))
+  return index(vimroam#vars#get_wikilocal('listsyms_list'), state) * 100/(n-1)
 endfunction
 
 
@@ -800,7 +800,7 @@ function! s:set_state_plus_children(item, new_rate, ...) abort
     call s:set_state(a:item, a:new_rate)
   endif
 
-  if vimwiki#vars#get_wikilocal('listsyms_propagate') == 0
+  if vimroam#vars#get_wikilocal('listsyms_propagate') == 0
     return
   endif
 
@@ -812,10 +812,10 @@ function! s:set_state_plus_children(item, new_rate, ...) abort
     if child_item.type == 0
       break
     endif
-    if child_item.cb != vimwiki#vars#get_global('listsym_rejected')
+    if child_item.cb != vimroam#vars#get_global('listsym_rejected')
       let all_children_are_rejected = 0
     endif
-    if child_item.cb != vimwiki#vars#get_wikilocal('listsyms_list')[-1]
+    if child_item.cb != vimroam#vars#get_wikilocal('listsyms_list')[-1]
       let all_children_are_done = 0
     endif
     if !all_children_are_done && !all_children_are_rejected
@@ -851,7 +851,7 @@ endfunction
 
 "Returns: the appropriate symbol for a given percent rate
 function! s:rate_to_state(rate) abort
-  let listsyms_list = vimwiki#vars#get_wikilocal('listsyms_list')
+  let listsyms_list = vimroam#vars#get_wikilocal('listsyms_list')
   let state = ''
   let n = len(listsyms_list)
   if a:rate == 100
@@ -859,7 +859,7 @@ function! s:rate_to_state(rate) abort
   elseif a:rate == 0
     let state = listsyms_list[0]
   elseif a:rate == -1
-    let state = vimwiki#vars#get_global('listsym_rejected')
+    let state = vimroam#vars#get_global('listsym_rejected')
   else
     let index = float2nr(ceil(a:rate/100.0*(n-2)))
     let state = listsyms_list[index]
@@ -871,7 +871,7 @@ endfunction
 "updates the symbol of a checkboxed item according to the symbols of its
 "children
 function! s:update_state(item) abort
-  if a:item.type == 0 || a:item.cb ==? '' || vimwiki#vars#get_wikilocal('listsyms_propagate') == 0
+  if a:item.type == 0 || a:item.cb ==? '' || vimroam#vars#get_wikilocal('listsyms_propagate') == 0
     return
   endif
 
@@ -933,7 +933,7 @@ function! s:create_cb(item, start_rate) abort
   let new_item = a:item
   let new_item.cb = s:rate_to_state(a:start_rate)
   call s:substitute_rx_in_line(new_item.lnum,
-        \ vimwiki#u#escape(new_item.mrkr) . '\zs\ze', ' [' . new_item.cb . ']')
+        \ vimroam#u#escape(new_item.mrkr) . '\zs\ze', ' [' . new_item.cb . ']')
 
   call s:update_state(new_item)
   return 1
@@ -1020,7 +1020,7 @@ endfunction
 
 "Decrement checkbox between [ ] and [X]
 "in the lines of the given range
-function! vimwiki#lst#decrement_cb(from_line, to_line) abort
+function! vimroam#lst#decrement_cb(from_line, to_line) abort
   let from_item = s:get_corresponding_item(a:from_line)
   if from_item.type == 0
     return
@@ -1028,7 +1028,7 @@ function! vimwiki#lst#decrement_cb(from_line, to_line) abort
 
   "if from_line has CB, decrement it and set all siblings to the same new state
   let rate_first_line = s:get_rate(from_item)
-  let n = len(vimwiki#vars#get_wikilocal('listsyms_list'))
+  let n = len(vimroam#vars#get_wikilocal('listsyms_list'))
   let new_rate = max([rate_first_line - 100/(n-1)-1, 0])
 
   call s:change_cb(a:from_line, a:to_line, new_rate)
@@ -1038,7 +1038,7 @@ endfunction
 
 "Increment checkbox between [ ] and [X]
 "in the lines of the given range
-function! vimwiki#lst#increment_cb(from_line, to_line) abort
+function! vimroam#lst#increment_cb(from_line, to_line) abort
   let from_item = s:get_corresponding_item(a:from_line)
   if from_item.type == 0
     return
@@ -1046,7 +1046,7 @@ function! vimwiki#lst#increment_cb(from_line, to_line) abort
 
   "if from_line has CB, increment it and set all siblings to the same new state
   let rate_first_line = s:get_rate(from_item)
-  let n = len(vimwiki#vars#get_wikilocal('listsyms_list'))
+  let n = len(vimroam#vars#get_wikilocal('listsyms_list'))
   let new_rate = min([rate_first_line + 100/(n-1)+1, 100])
 
   call s:change_cb(a:from_line, a:to_line, new_rate)
@@ -1056,19 +1056,19 @@ endfunction
 
 "Toggles checkbox between [ ] and [X] or creates one
 "in the lines of the given range
-function! vimwiki#lst#toggle_cb(from_line, to_line) abort
+function! vimroam#lst#toggle_cb(from_line, to_line) abort
   return s:toggle_create_cb(a:from_line, a:to_line, 100, 0, 0)
 endfunction
 
 
 "Toggles checkbox between [ ] and [-] or creates one
 "in the lines of the given range
-function! vimwiki#lst#toggle_rejected_cb(from_line, to_line) abort
+function! vimroam#lst#toggle_rejected_cb(from_line, to_line) abort
   return s:toggle_create_cb(a:from_line, a:to_line, -1, 0, -1)
 endfunction
 
 
-function! vimwiki#lst#remove_cb(first_line, last_line) abort
+function! vimroam#lst#remove_cb(first_line, last_line) abort
   let first_item = s:get_corresponding_item(a:first_line)
   let last_item = s:get_corresponding_item(a:last_line)
 
@@ -1096,7 +1096,7 @@ function! vimwiki#lst#remove_cb(first_line, last_line) abort
 endfunction
 
 
-function! vimwiki#lst#remove_cb_in_list() abort
+function! vimroam#lst#remove_cb_in_list() abort
   let first_item = s:get_first_item_in_list(s:get_corresponding_item(line('.')), 0)
 
   let cur_item = first_item
@@ -1154,14 +1154,14 @@ endfunction
 " Iterate over the list that the cursor is positioned in
 " and remove all lines of task that are done.
 " If recursive is true, child items will be checked too
-function! vimwiki#lst#remove_done_in_current_list(recursive) abort
+function! vimroam#lst#remove_done_in_current_list(recursive) abort
   let item = s:get_corresponding_item(line('.'))
   call s:remove_done_in_list(item, a:recursive)
 endfunction
 
 
 " Remove selected lines if they contain a task that is done
-function! vimwiki#lst#remove_done_in_range(first_line, last_line) abort
+function! vimroam#lst#remove_done_in_range(first_line, last_line) abort
   let first_item = s:get_corresponding_item(a:first_line)
   let last_item = s:get_corresponding_item(a:last_line)
 
@@ -1200,16 +1200,16 @@ endfunction
 " the function has been called with a range. For older versions we use remove_done_in_range if
 " first and last line are identical, which means there was either no range or the range was within
 " one line.
-function! vimwiki#lst#remove_done(recursive, range, first_line, last_line) abort
+function! vimroam#lst#remove_done(recursive, range, first_line, last_line) abort
   if a:range ==# '<range>'
     let range = a:first_line != a:last_line
   else
     let range = a:range > 0
   endif
   if range
-    call vimwiki#lst#remove_done_in_range(a:first_line, a:last_line)
+    call vimroam#lst#remove_done_in_range(a:first_line, a:last_line)
   else
-    call vimwiki#lst#remove_done_in_current_list(a:recursive)
+    call vimroam#lst#remove_done_in_current_list(a:recursive)
   endif
 endfunction
 
@@ -1230,8 +1230,8 @@ endfunction
 
 function! s:decrease_level(item, by) abort
   let removed_indent = 0
-  if vimwiki#vars#get_syntaxlocal('recurring_bullets') && a:item.type == 1 &&
-        \ index(vimwiki#vars#get_wikilocal('multiple_bullet_chars'),
+  if vimroam#vars#get_syntaxlocal('recurring_bullets') && a:item.type == 1 &&
+        \ index(vimroam#vars#get_wikilocal('multiple_bullet_chars'),
         \ s:first_char(a:item.mrkr)) > -1
     if s:string_length(a:item.mrkr) >= 2
       call s:substitute_string_in_line(a:item.lnum, s:first_char(a:item.mrkr), '')
@@ -1239,9 +1239,9 @@ function! s:decrease_level(item, by) abort
   else
     let old_indent = indent(a:item.lnum)
     if &shiftround
-      let new_indent = (old_indent - 1) / vimwiki#u#sw() * vimwiki#u#sw()
+      let new_indent = (old_indent - 1) / vimroam#u#sw() * vimroam#u#sw()
     else
-      let new_indent = old_indent - vimwiki#u#sw()
+      let new_indent = old_indent - vimroam#u#sw()
     endif
     call s:set_indent(a:item.lnum, a:by * new_indent)
   endif
@@ -1251,17 +1251,17 @@ endfunction
 
 function! s:increase_level(item, by) abort
   let additional_indent = 0
-  if vimwiki#vars#get_syntaxlocal('recurring_bullets') && a:item.type == 1 &&
-        \ index(vimwiki#vars#get_wikilocal('multiple_bullet_chars'),
+  if vimroam#vars#get_syntaxlocal('recurring_bullets') && a:item.type == 1 &&
+        \ index(vimroam#vars#get_wikilocal('multiple_bullet_chars'),
         \ s:first_char(a:item.mrkr)) > -1
     call s:substitute_string_in_line(a:item.lnum, a:item.mrkr, a:item.mrkr .
           \ s:first_char(a:item.mrkr))
   else
     let old_indent = indent(a:item.lnum)
     if &shiftround
-      let new_indent = (old_indent / vimwiki#u#sw() + 1) * vimwiki#u#sw()
+      let new_indent = (old_indent / vimroam#u#sw() + 1) * vimroam#u#sw()
     else
-      let new_indent = old_indent + vimwiki#u#sw()
+      let new_indent = old_indent + vimroam#u#sw()
     endif
     call s:set_indent(a:item.lnum, a:by * new_indent)
   endif
@@ -1275,15 +1275,15 @@ endfunction
 " up if we can make them operate on arbitrary lists of characters
 function! s:indent_cycle_bullets(item, indent_by) abort
   " Clause: Check if should work
-  if !vimwiki#vars#get_syntaxlocal('cycle_bullets') || a:item.type != 1
+  if !vimroam#vars#get_syntaxlocal('cycle_bullets') || a:item.type != 1
     return
   endif
-  let bullets = vimwiki#vars#get_syntaxlocal('bullet_types')
+  let bullets = vimroam#vars#get_syntaxlocal('bullet_types')
   let i = index(bullets, s:first_char(a:item.mrkr)) + a:indent_by
   " Calculate the index in a way that wraps around the end of the list
   " ... making it behave like a ring buffer
   let new_mrkr = bullets[((i % len(bullets) + len(bullets)) % len(bullets))]
-  call vimwiki#lst#change_marker(a:item.lnum, a:item.lnum, new_mrkr, 'n')
+  call vimroam#lst#change_marker(a:item.lnum, a:item.lnum, new_mrkr, 'n')
 endfunction
 
 
@@ -1370,7 +1370,7 @@ function! s:change_level(from_line, to_line, direction, plus_children) abort
   endif
 
   if more_than_one_level_concerned
-    call vimwiki#lst#adjust_whole_buffer()
+    call vimroam#lst#adjust_whole_buffer()
   else
     call s:adjust_numbered_list(from_item, 0, 0)
     call s:adjust_numbered_list(to_be_adjusted, 0, 0)
@@ -1378,7 +1378,7 @@ function! s:change_level(from_line, to_line, direction, plus_children) abort
 endfunction
 
 
-function! vimwiki#lst#change_level(from_line, to_line, direction, plus_children) abort
+function! vimroam#lst#change_level(from_line, to_line, direction, plus_children) abort
   let cur_col = col('$') - col('.')
   call s:change_level(a:from_line, a:to_line, a:direction, a:plus_children)
   call cursor('.', col('$') - cur_col)
@@ -1397,20 +1397,20 @@ endfunction
 " change markers of list items
 " ---------------------------------------------------------
 
-"Returns: the position of a marker in g:vimwiki_list_markers
+"Returns: the position of a marker in g:vimroam_list_markers
 function! s:get_idx_list_markers(item) abort
   if a:item.type == 1
     let m = s:first_char(a:item.mrkr)
   else
     let m = s:guess_kind_of_numbered_item(a:item) . a:item.mrkr[-1:]
   endif
-  return index(vimwiki#vars#get_syntaxlocal('list_markers'), m)
+  return index(vimroam#vars#get_syntaxlocal('list_markers'), m)
 endfunction
 
 
-"changes the marker of the given item to the next in g:vimwiki_list_markers
+"changes the marker of the given item to the next in g:vimroam_list_markers
 function! s:get_next_mrkr(item) abort
-  let markers = vimwiki#vars#get_syntaxlocal('list_markers')
+  let markers = vimroam#vars#get_syntaxlocal('list_markers')
   if a:item.type == 0
     let new_mrkr = markers[0]
   else
@@ -1421,9 +1421,9 @@ function! s:get_next_mrkr(item) abort
 endfunction
 
 
-"changes the marker of the given item to the previous in g:vimwiki_list_markers
+"changes the marker of the given item to the previous in g:vimroam_list_markers
 function! s:get_prev_mrkr(item) abort
-  let markers = vimwiki#vars#get_syntaxlocal('list_markers')
+  let markers = vimroam#vars#get_syntaxlocal('list_markers')
   if a:item.type == 0
     return markers[-1]
   endif
@@ -1439,8 +1439,8 @@ endfunction
 function! s:set_new_mrkr(item, new_mrkr) abort
   if a:item.type == 0
     call s:substitute_rx_in_line(a:item.lnum, '^\s*\zs\ze', a:new_mrkr.' ')
-    if indent(a:item.lnum) == 0 && !vimwiki#vars#get_syntaxlocal('recurring_bullets')
-      call s:set_indent(a:item.lnum, vimwiki#lst#get_list_margin())
+    if indent(a:item.lnum) == 0 && !vimroam#vars#get_syntaxlocal('recurring_bullets')
+      call s:set_indent(a:item.lnum, vimroam#lst#get_list_margin())
     endif
   else
     call s:substitute_string_in_line(a:item.lnum, a:item.mrkr, a:new_mrkr)
@@ -1448,7 +1448,7 @@ function! s:set_new_mrkr(item, new_mrkr) abort
 endfunction
 
 
-function! vimwiki#lst#change_marker(from_line, to_line, new_mrkr, mode) abort
+function! vimroam#lst#change_marker(from_line, to_line, new_mrkr, mode) abort
   let cur_col_from_eol = col('$') - (a:mode ==# 'i' ? col("'^") : col('.'))
   let new_mrkr = a:new_mrkr
   let cur_ln = a:from_line
@@ -1462,7 +1462,7 @@ function! vimwiki#lst#change_marker(from_line, to_line, new_mrkr, mode) abort
     endif
 
     "handle markers like ***
-    if index(vimwiki#vars#get_wikilocal('multiple_bullet_chars'), s:first_char(new_mrkr)) > -1
+    if index(vimroam#vars#get_wikilocal('multiple_bullet_chars'), s:first_char(new_mrkr)) > -1
       "use *** if the item above has *** too
       let item_above = s:get_prev_list_item(cur_item, 1)
       if item_above.type == 1 && s:first_char(item_above.mrkr) ==# s:first_char(new_mrkr)
@@ -1475,7 +1475,7 @@ function! vimwiki#lst#change_marker(from_line, to_line, new_mrkr, mode) abort
         else
           "if the old is ### and the new is * use ***
           if cur_item.type == 1 &&
-                \ index(vimwiki#vars#get_syntaxlocal('multiple_bullet_chars'),
+                \ index(vimroam#vars#get_syntaxlocal('multiple_bullet_chars'),
                 \ s:first_char(cur_item.mrkr))>-1
             let new_mrkr = repeat(new_mrkr, s:string_length(cur_item.mrkr))
           else
@@ -1502,7 +1502,7 @@ function! vimwiki#lst#change_marker(from_line, to_line, new_mrkr, mode) abort
 endfunction
 
 
-function! vimwiki#lst#change_marker_in_list(new_mrkr) abort
+function! vimroam#lst#change_marker_in_list(new_mrkr) abort
   let cur_item = s:get_corresponding_item(line('.'))
   let first_item = s:get_first_item_in_list(cur_item, 0)
   let last_item = s:get_last_item_in_list(cur_item, 0)
@@ -1521,7 +1521,7 @@ endfunction
 
 "sets kind of the item depending on neighbor items and the parent item
 function! s:adjust_mrkr(item) abort
-  if a:item.type == 0 || vimwiki#vars#get_syntaxlocal('recurring_bullets')
+  if a:item.type == 0 || vimroam#vars#get_syntaxlocal('recurring_bullets')
     return
   endif
 
@@ -1533,7 +1533,7 @@ function! s:adjust_mrkr(item) abort
 
   "if possible, set e.g. *** if parent has ** as marker
   if neighbor_item.type == 0 && a:item.type == 1 &&
-        \ index(vimwiki#vars#get_wikilocal('multiple_bullet_chars'),
+        \ index(vimroam#vars#get_wikilocal('multiple_bullet_chars'),
         \ s:first_char(a:item.mrkr)) > -1
     let parent_item = s:get_parent(a:item)
     if parent_item.type == 1 && s:first_char(parent_item.mrkr) ==# s:first_char(a:item.mrkr)
@@ -1551,7 +1551,7 @@ function! s:clone_marker_from_to(from, to) abort
   if item_from.type == 0 | return | endif
   let new_mrkr = item_from.mrkr . ' '
   call s:substitute_rx_in_line(a:to, '^\s*', new_mrkr)
-  let new_indent = ( vimwiki#vars#get_syntaxlocal('recurring_bullets') ? 0 : indent(a:from) )
+  let new_indent = ( vimroam#vars#get_syntaxlocal('recurring_bullets') ? 0 : indent(a:from) )
   call s:set_indent(a:to, new_indent)
   if item_from.cb !=? ''
     call s:create_cb(s:get_item(a:to), 0)
@@ -1572,7 +1572,7 @@ function! s:remove_mrkr(item) abort
   else
     let parent_item = s:empty_item()
   endif
-  call s:substitute_rx_in_line(item.lnum, vimwiki#u#escape(item.mrkr).'\s*', '')
+  call s:substitute_rx_in_line(item.lnum, vimroam#u#escape(item.mrkr).'\s*', '')
   call remove(item, 'mrkr')
   call remove(item, 'cb')
   let item.type = 0
@@ -1590,7 +1590,7 @@ function! s:create_marker(lnum) abort
     call s:clone_marker_from_to(new_sibling.lnum, a:lnum)
   else
     let cur_item = s:get_item(a:lnum)
-    call s:set_new_mrkr(cur_item, vimwiki#vars#get_syntaxlocal('list_markers')[0])
+    call s:set_new_mrkr(cur_item, vimroam#vars#get_syntaxlocal('list_markers')[0])
     call s:adjust_numbered_list(cur_item, 0, 0)
   endif
 endfunction
@@ -1600,7 +1600,7 @@ endfunction
 " handle keys
 " ---------------------------------------------------------
 
-function! vimwiki#lst#kbd_o() abort
+function! vimroam#lst#kbd_o() abort
   let fold_end = foldclosedend('.')
   let lnum = (fold_end == -1) ? line('.') : fold_end
   let cur_item = s:get_item(lnum)
@@ -1608,7 +1608,7 @@ function! vimwiki#lst#kbd_o() abort
   "inserting and deleting the x is necessary
   "because otherwise the indent is lost
   exe 'normal!' "ox\<C-H>"
-  if !vimwiki#u#is_codeblock(lnum)
+  if !vimroam#u#is_codeblock(lnum)
     if parent.type != 0
       call s:clone_marker_from_to(parent.lnum, cur_item.lnum+1)
     else
@@ -1619,10 +1619,10 @@ function! vimwiki#lst#kbd_o() abort
 endfunction
 
 
-function! vimwiki#lst#kbd_O() abort
+function! vimroam#lst#kbd_O() abort
   exe 'normal!' "Ox\<C-H>"
   let cur_ln = line('.')
-  if !vimwiki#u#is_codeblock(cur_ln)
+  if !vimroam#u#is_codeblock(cur_ln)
     if getline(cur_ln+1) !~# '^\s*$'
       call s:clone_marker_from_to(cur_ln+1, cur_ln)
     else
@@ -1697,7 +1697,7 @@ function! s:cr_on_empty_line(lnum, behavior) abort
   exe 'normal!' "gi\<CR>x\<C-H>\<ESC>"
 
   if a:behavior == 2 || a:behavior == 3
-    if lst.type == 0 || vimwiki#u#is_codeblock(a:lnum)
+    if lst.type == 0 || vimroam#u#is_codeblock(a:lnum)
       " don't insert new bullet if not part of a list
       return
     else
@@ -1726,7 +1726,7 @@ function! s:cr_on_list_item(lnum, insert_new_marker, not_at_eol) abort
 endfunction
 
 
-function! vimwiki#lst#kbd_cr(normal, just_mrkr) abort
+function! vimroam#lst#kbd_cr(normal, just_mrkr) abort
   let lnum = line('.')
   let has_bp = s:line_has_marker(lnum)
 
@@ -1776,7 +1776,7 @@ endfunction
 
 
 "creates a list item in the current line or removes it
-function! vimwiki#lst#toggle_list_item() abort
+function! vimroam#lst#toggle_list_item() abort
   let cur_col_from_eol = col('$') - col("'^")
   let cur_item = s:get_item(line('.'))
 
@@ -1812,7 +1812,7 @@ endfunction
 " misc stuff
 " ---------------------------------------------------------
 
-function! vimwiki#lst#TO_list_item(inner, visual) abort
+function! vimroam#lst#TO_list_item(inner, visual) abort
   let lnum = prevnonblank('.')
   let item = s:get_corresponding_item(lnum)
   if item.type == 0
@@ -1831,7 +1831,7 @@ function! vimwiki#lst#TO_list_item(inner, visual) abort
 endfunction
 
 
-function! vimwiki#lst#fold_level(lnum) abort
+function! vimroam#lst#fold_level(lnum) abort
   let cur_item = s:get_item(a:lnum)
   if cur_item.type != 0
     let parent_item = s:get_parent(cur_item)

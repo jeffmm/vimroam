@@ -1,13 +1,13 @@
 " vim:tabstop=2:shiftwidth=2:expandtab:textwidth=99
-" Vimwiki autoload plugin file
+" VimRoam autoload plugin file
 " Description: HTML export
-" Home: https://github.com/vimwiki/vimwiki/
+" Home: https://github.com/jeffmm/vimroam/
 
 
-if exists('g:loaded_vimwiki_html_auto') || &compatible
+if exists('g:loaded_vimroam_html_auto') || &compatible
   finish
 endif
-let g:loaded_vimwiki_html_auto = 1
+let g:loaded_vimroam_html_auto = 1
 
 " FIXME: Magics: Why not use the current syntax highlight
 " This is due to historical copy paste and lazyness of markdown user
@@ -49,7 +49,7 @@ endfunction
 
 
 function! s:syntax_supported() abort
-  return vimwiki#vars#get_wikilocal('syntax') ==? 'default'
+  return vimroam#vars#get_wikilocal('syntax') ==? 'default'
 endfunction
 
 
@@ -86,7 +86,7 @@ endfunction
 
 function! s:find_autoload_file(name) abort
   for path in split(&runtimepath, ',')
-    let fname = path.'/autoload/vimwiki/'.a:name
+    let fname = path.'/autoload/vimroam/'.a:name
     if glob(fname) !=? ''
       return fname
     endif
@@ -97,7 +97,7 @@ endfunction
 
 function! s:default_CSS_full_name(path) abort
   let path = expand(a:path)
-  let css_full_name = path . vimwiki#vars#get_wikilocal('css_name')
+  let css_full_name = path . vimroam#vars#get_wikilocal('css_name')
   return css_full_name
 endfunction
 
@@ -105,7 +105,7 @@ endfunction
 function! s:create_default_CSS(path) abort
   let css_full_name = s:default_CSS_full_name(a:path)
   if glob(css_full_name) ==? ''
-    call vimwiki#path#mkdir(fnamemodify(css_full_name, ':p:h'))
+    call vimroam#path#mkdir(fnamemodify(css_full_name, ':p:h'))
     let default_css = s:find_autoload_file('style.css')
     if default_css !=? ''
       let lines = readfile(default_css)
@@ -119,13 +119,13 @@ endfunction
 
 function! s:template_full_name(name) abort
   if a:name ==? ''
-    let name = vimwiki#vars#get_wikilocal('template_default')
+    let name = vimroam#vars#get_wikilocal('template_default')
   else
     let name = a:name
   endif
 
-  let fname = expand(vimwiki#vars#get_wikilocal('template_path').
-        \ name . vimwiki#vars#get_wikilocal('template_ext'))
+  let fname = expand(vimroam#vars#get_wikilocal('template_path').
+        \ name . vimroam#vars#get_wikilocal('template_ext'))
 
   if filereadable(fname)
     return fname
@@ -145,7 +145,7 @@ function! s:get_html_template(template) abort
       let lines = readfile(template_name)
       return lines
     catch /E484/
-      call vimwiki#u#echo('HTML template '.template_name. ' does not exist!')
+      call vimroam#u#echo('HTML template '.template_name. ' does not exist!')
     endtry
   endif
 
@@ -174,8 +174,8 @@ endfunction
 
 function! s:safe_html_line(line) abort
   " escape & < > when producing HTML text
-  " s:lt_pattern, s:gt_pattern depend on g:vimwiki_valid_html_tags
-  " and are set in vimwiki#html#Wiki2HTML()
+  " s:lt_pattern, s:gt_pattern depend on g:vimroam_valid_html_tags
+  " and are set in vimroam#html#Wiki2HTML()
   let line = substitute(a:line, '&', '\&amp;', 'g')
   let line = substitute(line,s:lt_pattern,'\&lt;', 'g')
   let line = substitute(line,s:gt_pattern,'\&gt;', 'g')
@@ -188,14 +188,14 @@ function! s:delete_html_files(path) abort
   let htmlfiles = split(glob(a:path.'**/*.html'), '\n')
   for fname in htmlfiles
     " ignore user html files, e.g. search.html,404.html
-    if stridx(vimwiki#vars#get_global('user_htmls'), fnamemodify(fname, ':t')) >= 0
+    if stridx(vimroam#vars#get_global('user_htmls'), fnamemodify(fname, ':t')) >= 0
       continue
     endif
 
     " delete if there is no corresponding wiki file
-    let subdir = vimwiki#base#subdir(vimwiki#vars#get_wikilocal('path_html'), fname)
-    let wikifile = vimwiki#vars#get_wikilocal('path').subdir.
-          \fnamemodify(fname, ':t:r').vimwiki#vars#get_wikilocal('ext')
+    let subdir = vimroam#base#subdir(vimroam#vars#get_wikilocal('path_html'), fname)
+    let wikifile = vimroam#vars#get_wikilocal('path').subdir.
+          \fnamemodify(fname, ':t:r').vimroam#vars#get_wikilocal('ext')
     if filereadable(wikifile)
       continue
     endif
@@ -203,7 +203,7 @@ function! s:delete_html_files(path) abort
     try
       call delete(fname)
     catch
-      call vimwiki#u#error('Cannot delete '.fname)
+      call vimroam#u#error('Cannot delete '.fname)
     endtry
   endfor
 endfunction
@@ -273,13 +273,13 @@ function! s:is_html_uptodate(wikifile) abort
 
   let wikifile = fnamemodify(a:wikifile, ':p')
 
-  if vimwiki#vars#get_wikilocal('html_filename_parameterization')
+  if vimroam#vars#get_wikilocal('html_filename_parameterization')
     let parameterized_wikiname = s:parameterized_wikiname(wikifile)
-    let htmlfile = expand(vimwiki#vars#get_wikilocal('path_html') .
-          \ vimwiki#vars#get_bufferlocal('subdir') . parameterized_wikiname)
+    let htmlfile = expand(vimroam#vars#get_wikilocal('path_html') .
+          \ vimroam#vars#get_bufferlocal('subdir') . parameterized_wikiname)
   else
-    let htmlfile = expand(vimwiki#vars#get_wikilocal('path_html') .
-          \ vimwiki#vars#get_bufferlocal('subdir') . fnamemodify(wikifile, ':t:r').'.html')
+    let htmlfile = expand(vimroam#vars#get_wikilocal('path_html') .
+          \ vimroam#vars#get_bufferlocal('subdir') . fnamemodify(wikifile, ':t:r').'.html')
   endif
 
   if getftime(wikifile) <= getftime(htmlfile) && tpl_time <= getftime(htmlfile)
@@ -420,24 +420,24 @@ endfunction
 "   match n-th ARG within {{URL[|ARG1|ARG2|...]}}
 " *c,d,e),...
 function! s:incl_match_arg(nn_index) abort
-  let rx = vimwiki#vars#get_global('rxWikiInclPrefix'). vimwiki#vars#get_global('rxWikiInclUrl')
-  let rx = rx . repeat(vimwiki#vars#get_global('rxWikiInclSeparator') .
-        \ vimwiki#vars#get_global('rxWikiInclArg'), a:nn_index-1)
+  let rx = vimroam#vars#get_global('rxWikiInclPrefix'). vimroam#vars#get_global('rxWikiInclUrl')
+  let rx = rx . repeat(vimroam#vars#get_global('rxWikiInclSeparator') .
+        \ vimroam#vars#get_global('rxWikiInclArg'), a:nn_index-1)
   if a:nn_index > 0
-    let rx = rx. vimwiki#vars#get_global('rxWikiInclSeparator'). '\zs' .
-          \ vimwiki#vars#get_global('rxWikiInclArg') . '\ze'
+    let rx = rx. vimroam#vars#get_global('rxWikiInclSeparator'). '\zs' .
+          \ vimroam#vars#get_global('rxWikiInclArg') . '\ze'
   endif
-  let rx = rx . vimwiki#vars#get_global('rxWikiInclArgs') .
-        \ vimwiki#vars#get_global('rxWikiInclSuffix')
+  let rx = rx . vimroam#vars#get_global('rxWikiInclArgs') .
+        \ vimroam#vars#get_global('rxWikiInclSuffix')
   return rx
 endfunction
 
 
 function! s:linkify_link(src, descr) abort
   let src_str = ' href="'.s:escape_html_attribute(a:src).'"'
-  let descr = vimwiki#u#trim(a:descr)
+  let descr = vimroam#u#trim(a:descr)
   let descr = (descr ==? '' ? a:src : descr)
-  let descr_str = (descr =~# vimwiki#vars#get_global('rxWikiIncl')
+  let descr_str = (descr =~# vimroam#vars#get_global('rxWikiIncl')
         \ ? s:tag_wikiincl(descr)
         \ : descr)
   return '<a'.src_str.'>'.descr_str.'</a>'
@@ -455,8 +455,8 @@ endfunction
 function! s:tag_weblink(value) abort
   " Weblink Template -> <a href="url">descr</a>
   let str = a:value
-  let url = matchstr(str, vimwiki#vars#get_syntaxlocal('rxWeblinkMatchUrl'))
-  let descr = matchstr(str, vimwiki#vars#get_syntaxlocal('rxWeblinkMatchDescr'))
+  let url = matchstr(str, vimroam#vars#get_syntaxlocal('rxWeblinkMatchUrl'))
+  let descr = matchstr(str, vimroam#vars#get_syntaxlocal('rxWeblinkMatchDescr'))
   let line = s:linkify_link(url, descr)
   return line
 endfunction
@@ -469,17 +469,17 @@ function! s:tag_wikiincl(value) abort
   " {{imgurl|descr|class="B"}} -> <img src="imgurl" alt="descr" class="B" />
   let str = a:value
   " custom transclusions
-  let line = VimwikiWikiIncludeHandler(str)
+  let line = VimRoamWikiIncludeHandler(str)
   " otherwise, assume image transclusion
   if line ==? ''
-    let url_0 = matchstr(str, vimwiki#vars#get_global('rxWikiInclMatchUrl'))
+    let url_0 = matchstr(str, vimroam#vars#get_global('rxWikiInclMatchUrl'))
     let descr = matchstr(str, s:incl_match_arg(1))
     let verbatim_str = matchstr(str, s:incl_match_arg(2))
 
-    let link_infos = vimwiki#base#resolve_link(url_0)
+    let link_infos = vimroam#base#resolve_link(url_0)
 
     if link_infos.scheme =~# '\mlocal\|wiki\d\+\|diary'
-      let url = vimwiki#path#relpath(fnamemodify(s:current_html_file, ':h'), link_infos.filename)
+      let url = vimroam#path#relpath(fnamemodify(s:current_html_file, ':h'), link_infos.filename)
       " strip the .html extension when we have wiki links, so that the user can
       " simply write {{image.png}} to include an image from the wiki directory
       if link_infos.scheme =~# '\mwiki\d\+\|diary'
@@ -505,24 +505,24 @@ function! s:tag_wikilink(value) abort
   " [[url#a1#a2]]             -> <a href="url.html#a1-a2">url#a1#a2</a>
   " [[#a1#a2]]                -> <a href="#a1-a2">#a1#a2</a>
   let str = a:value
-  let url = matchstr(str, vimwiki#vars#get_syntaxlocal('rxWikiLinkMatchUrl'))
-  let descr = matchstr(str, vimwiki#vars#get_syntaxlocal('rxWikiLinkMatchDescr'))
-  let descr = vimwiki#u#trim(descr)
+  let url = matchstr(str, vimroam#vars#get_syntaxlocal('rxWikiLinkMatchUrl'))
+  let descr = matchstr(str, vimroam#vars#get_syntaxlocal('rxWikiLinkMatchDescr'))
+  let descr = vimroam#u#trim(descr)
   let descr = (descr !=? '' ? descr : url)
 
-  let line = VimwikiLinkConverter(url, s:current_wiki_file, s:current_html_file)
+  let line = VimRoamLinkConverter(url, s:current_wiki_file, s:current_html_file)
   if line ==? ''
-    let link_infos = vimwiki#base#resolve_link(url, s:current_wiki_file)
+    let link_infos = vimroam#base#resolve_link(url, s:current_wiki_file)
 
     if link_infos.scheme ==# 'file'
       " external file links are always absolute
       let html_link = link_infos.filename
     elseif link_infos.scheme ==# 'local'
-      let html_link = vimwiki#path#relpath(fnamemodify(s:current_html_file, ':h'),
+      let html_link = vimroam#path#relpath(fnamemodify(s:current_html_file, ':h'),
             \ link_infos.filename)
     elseif link_infos.scheme =~# '\mwiki\d\+\|diary'
       " wiki links are always relative to the current file
-      let html_link = vimwiki#path#relpath(
+      let html_link = vimroam#path#relpath(
             \ fnamemodify(s:current_wiki_file, ':h'),
             \ fnamemodify(link_infos.filename, ':r'))
       if html_link !~? '\m/$'
@@ -596,8 +596,8 @@ function! s:make_tag(line, regexp, func, ...) abort
   " Exclude preformatted text and href links.
   " FIXME
   let patt_splitter = '\(`[^`]\+`\)\|'.
-                    \ '\('.vimwiki#vars#get_syntaxlocal('rxPreStart').'.\+'.
-                    \ vimwiki#vars#get_syntaxlocal('rxPreEnd').'\)\|'.
+                    \ '\('.vimroam#vars#get_syntaxlocal('rxPreStart').'.\+'.
+                    \ vimroam#vars#get_syntaxlocal('rxPreEnd').'\)\|'.
                     \ '\(<a href.\{-}</a>\)\|'.
                     \ '\(<img src.\{-}/>\)\|'.
                     \ '\(<pre.\{-}</pre>\)\|'.
@@ -645,22 +645,22 @@ function! s:process_tags_typefaces(line, header_ids) abort
   " Convert line tag by tag
   let line = s:make_tag(line, s:rxItalic, 's:tag_em')
   let line = s:make_tag(line, s:rxBold, 's:tag_strong', a:header_ids)
-  let line = s:make_tag(line, vimwiki#vars#get_wikilocal('rx_todo'), 's:tag_todo')
+  let line = s:make_tag(line, vimroam#vars#get_wikilocal('rx_todo'), 's:tag_todo')
   let line = s:make_tag(line, s:rxDelText, 's:tag_strike')
   let line = s:make_tag(line, s:rxSuperScript, 's:tag_super')
   let line = s:make_tag(line, s:rxSubScript, 's:tag_sub')
   let line = s:make_tag(line, s:rxCode, 's:tag_code')
   let line = s:make_tag(line, s:rxEqIn, 's:tag_eqin')
-  let line = s:make_tag(line, vimwiki#vars#get_syntaxlocal('rxTags'), 's:tag_tags', a:header_ids)
+  let line = s:make_tag(line, vimroam#vars#get_syntaxlocal('rxTags'), 's:tag_tags', a:header_ids)
   return line
 endfunction
 
 
 function! s:process_tags_links(line) abort
   let line = a:line
-  let line = s:make_tag(line, vimwiki#vars#get_syntaxlocal('rxWikiLink'), 's:tag_wikilink')
-  let line = s:make_tag(line, vimwiki#vars#get_global('rxWikiIncl'), 's:tag_wikiincl')
-  let line = s:make_tag(line, vimwiki#vars#get_syntaxlocal('rxWeblink'), 's:tag_weblink')
+  let line = s:make_tag(line, vimroam#vars#get_syntaxlocal('rxWikiLink'), 's:tag_wikilink')
+  let line = s:make_tag(line, vimroam#vars#get_global('rxWikiIncl'), 's:tag_wikiincl')
+  let line = s:make_tag(line, vimroam#vars#get_syntaxlocal('rxWeblink'), 's:tag_weblink')
   return line
 endfunction
 
@@ -1010,11 +1010,11 @@ function! s:process_tag_list(line, lists, lstLeadingSpaces) abort
     let st_tag = '<li>'
     let chk = matchlist(a:line, a:rx_list)
     if !empty(chk) && len(chk[1]) > 0
-      let completion = index(vimwiki#vars#get_wikilocal('listsyms_list'), chk[1])
-      let n = len(vimwiki#vars#get_wikilocal('listsyms_list'))
+      let completion = index(vimroam#vars#get_wikilocal('listsyms_list'), chk[1])
+      let n = len(vimroam#vars#get_wikilocal('listsyms_list'))
       if completion == 0
         let st_tag = '<li class="done0">'
-      elseif completion == -1 && chk[1] == vimwiki#vars#get_global('listsym_rejected')
+      elseif completion == -1 && chk[1] == vimroam#vars#get_global('listsym_rejected')
         let st_tag = '<li class="rejected">'
       elseif completion > 0 && completion < n
         let completion = float2nr(round(completion / (n-1.0) * 3.0 + 0.5 ))
@@ -1120,7 +1120,7 @@ function! s:process_tag_list(line, lists, lstLeadingSpaces) abort
     let processed = 1
 
   elseif in_list && a:line =~# '^\s\+\S\+'
-    if vimwiki#vars#get_wikilocal('list_ignore_newline')
+    if vimroam#vars#get_wikilocal('list_ignore_newline')
       call add(lines, a:line)
     else
       call add(lines, '<br />'.a:line)
@@ -1171,7 +1171,7 @@ function! s:process_tag_para(line, para) abort
       let para = 1
     endif
     let processed = 1
-    if vimwiki#vars#get_wikilocal('text_ignore_newline')
+    if vimroam#vars#get_wikilocal('text_ignore_newline')
       call add(lines, a:line)
     else
       call add(lines, a:line.'<br />')
@@ -1191,18 +1191,18 @@ function! s:process_tag_h(line, id) abort
   let h_text = ''
   let h_id = ''
 
-  if a:line =~# vimwiki#vars#get_syntaxlocal('rxHeader')
-    let h_level = vimwiki#u#count_first_sym(a:line)
+  if a:line =~# vimroam#vars#get_syntaxlocal('rxHeader')
+    let h_level = vimroam#u#count_first_sym(a:line)
   endif
   if h_level > 0
 
-    let h_text = vimwiki#u#trim(matchstr(line, vimwiki#vars#get_syntaxlocal('rxHeader')))
+    let h_text = vimroam#u#trim(matchstr(line, vimroam#vars#get_syntaxlocal('rxHeader')))
     let h_number = ''
     let h_complete_id = ''
     let h_id = s:escape_html_attribute(h_text)
     let centered = (a:line =~# '^\s')
 
-    if h_text !=# vimwiki#vars#get_wikilocal('toc_header')
+    if h_text !=# vimroam#vars#get_wikilocal('toc_header')
 
       let a:id[h_level-1] = [h_text, a:id[h_level-1][1]+1]
 
@@ -1220,11 +1220,11 @@ function! s:process_tag_h(line, id) abort
       let h_number .= a:id[h_level-1][1]
       let h_complete_id .= a:id[h_level-1][0]
 
-      if vimwiki#vars#get_global('html_header_numbering')
+      if vimroam#vars#get_global('html_header_numbering')
         let num = matchstr(h_number,
-              \ '^\(\d.\)\{'.(vimwiki#vars#get_global('html_header_numbering')-1).'}\zs.*')
+              \ '^\(\d.\)\{'.(vimroam#vars#get_global('html_header_numbering')-1).'}\zs.*')
         if !empty(num)
-          let num .= vimwiki#vars#get_global('html_header_numbering_sym')
+          let num .= vimroam#vars#get_global('html_header_numbering_sym')
         endif
         let h_text = num.' '.h_text
       endif
@@ -1308,15 +1308,15 @@ function! s:process_tag_table(line, table, header_ids) abort
   let lines = []
   let processed = 0
 
-  if vimwiki#tbl#is_separator(a:line)
+  if vimroam#tbl#is_separator(a:line)
     call extend(table, s:table_add_row(a:table, a:line))
     let processed = 1
-  elseif vimwiki#tbl#is_table(a:line)
+  elseif vimroam#tbl#is_table(a:line)
     call extend(table, s:table_add_row(a:table, a:line))
 
     let processed = 1
-    " let cells = split(a:line, vimwiki#tbl#cell_splitter(), 1)[1: -2]
-    let cells = vimwiki#tbl#get_cells(a:line)
+    " let cells = split(a:line, vimroam#tbl#cell_splitter(), 1)[1: -2]
+    let cells = vimroam#tbl#get_cells(a:line)
     call map(cells, 's:table_empty_cell(v:val)')
     call extend(table[-1], cells)
   else
@@ -1349,7 +1349,7 @@ function! s:parse_line(line, state) abort
   " current line while not marking as processed in the scenario where some
   " text remains that needs to go through additional processing
   if !processed
-    let mc_format = vimwiki#vars#get_syntaxlocal('multiline_comment_format')
+    let mc_format = vimroam#vars#get_syntaxlocal('multiline_comment_format')
     let mc_start = mc_format.pre_mark
     let mc_end = mc_format.post_mark
 
@@ -1450,7 +1450,7 @@ function! s:parse_line(line, state) abort
   endif
 
   if !processed
-    if line =~# vimwiki#vars#get_syntaxlocal('comment_regex')
+    if line =~# vimroam#vars#get_syntaxlocal('comment_regex')
       let processed = 1
     endif
   endif
@@ -1668,34 +1668,34 @@ endfunction
 
 
 function! s:use_custom_wiki2html() abort
-  let custom_wiki2html = vimwiki#vars#get_wikilocal('custom_wiki2html')
+  let custom_wiki2html = vimroam#vars#get_wikilocal('custom_wiki2html')
   return !empty(custom_wiki2html) &&
         \ (s:file_exists(custom_wiki2html) || s:binary_exists(custom_wiki2html))
 endfunction
 
 
-function! vimwiki#html#CustomWiki2HTML(path, wikifile, force) abort
-  call vimwiki#path#mkdir(a:path)
-  let output = system(vimwiki#vars#get_wikilocal('custom_wiki2html'). ' '.
+function! vimroam#html#CustomWiki2HTML(path, wikifile, force) abort
+  call vimroam#path#mkdir(a:path)
+  let output = system(vimroam#vars#get_wikilocal('custom_wiki2html'). ' '.
       \ a:force. ' '.
-      \ vimwiki#vars#get_wikilocal('syntax'). ' '.
-      \ strpart(vimwiki#vars#get_wikilocal('ext'), 1). ' '.
+      \ vimroam#vars#get_wikilocal('syntax'). ' '.
+      \ strpart(vimroam#vars#get_wikilocal('ext'), 1). ' '.
       \ shellescape(a:path). ' '.
       \ shellescape(a:wikifile). ' '.
       \ shellescape(s:default_CSS_full_name(a:path)). ' '.
-      \ (len(vimwiki#vars#get_wikilocal('template_path')) > 1 ?
-      \     shellescape(expand(vimwiki#vars#get_wikilocal('template_path'))) : '-'). ' '.
-      \ (len(vimwiki#vars#get_wikilocal('template_default')) > 0 ?
-      \     vimwiki#vars#get_wikilocal('template_default') : '-'). ' '.
-      \ (len(vimwiki#vars#get_wikilocal('template_ext')) > 0 ?
-      \     vimwiki#vars#get_wikilocal('template_ext') : '-'). ' '.
-      \ (len(vimwiki#vars#get_bufferlocal('subdir')) > 0 ?
-      \     shellescape(s:root_path(vimwiki#vars#get_bufferlocal('subdir'))) : '-'). ' '.
-      \ (len(vimwiki#vars#get_wikilocal('custom_wiki2html_args')) > 0 ?
-      \     vimwiki#vars#get_wikilocal('custom_wiki2html_args') : '-'))
+      \ (len(vimroam#vars#get_wikilocal('template_path')) > 1 ?
+      \     shellescape(expand(vimroam#vars#get_wikilocal('template_path'))) : '-'). ' '.
+      \ (len(vimroam#vars#get_wikilocal('template_default')) > 0 ?
+      \     vimroam#vars#get_wikilocal('template_default') : '-'). ' '.
+      \ (len(vimroam#vars#get_wikilocal('template_ext')) > 0 ?
+      \     vimroam#vars#get_wikilocal('template_ext') : '-'). ' '.
+      \ (len(vimroam#vars#get_bufferlocal('subdir')) > 0 ?
+      \     shellescape(s:root_path(vimroam#vars#get_bufferlocal('subdir'))) : '-'). ' '.
+      \ (len(vimroam#vars#get_wikilocal('custom_wiki2html_args')) > 0 ?
+      \     vimroam#vars#get_wikilocal('custom_wiki2html_args') : '-'))
   " Print if non void
   if output !~? '^\s*$'
-    call vimwiki#u#echo(string(output))
+    call vimroam#u#echo(string(output))
   endif
 endfunction
 
@@ -1741,14 +1741,14 @@ function! s:convert_file_to_lines(wikifile, current_html_file) abort
   " prepare constants for s:safe_html_line()
   let s:lt_pattern = '<'
   let s:gt_pattern = '>'
-  if vimwiki#vars#get_global('valid_html_tags') !=? ''
-    let tags = join(split(vimwiki#vars#get_global('valid_html_tags'), '\s*,\s*'), '\|')
+  if vimroam#vars#get_global('valid_html_tags') !=? ''
+    let tags = join(split(vimroam#vars#get_global('valid_html_tags'), '\s*,\s*'), '\|')
     let s:lt_pattern = '\c<\%(/\?\%('.tags.'\)\%(\s\{-1}\S\{-}\)\{-}/\?>\)\@!'
     let s:gt_pattern = '\c\%(</\?\%('.tags.'\)\%(\s\{-1}\S\{-}\)\{-}/\?\)\@<!>'
   endif
 
   " prepare regexps for lists
-  let s:bullets = vimwiki#vars#get_wikilocal('rx_bullet_char')
+  let s:bullets = vimroam#vars#get_wikilocal('rx_bullet_char')
   let s:numbers = '\C\%(#\|\d\+)\|\d\+\.\|[ivxlcdm]\+)\|[IVXLCDM]\+)\|\l\{1,2})\|\u\{1,2})\)'
 
   for line in lsource
@@ -1780,7 +1780,7 @@ function! s:convert_file_to_lines(wikifile, current_html_file) abort
 
   let result['nohtml'] = nohtml
   if nohtml
-    call vimwiki#u#echo("\r".'%nohtml placeholder found', '', 'n')
+    call vimroam#u#echo("\r".'%nohtml placeholder found', '', 'n')
     return result
   endif
 
@@ -1804,7 +1804,7 @@ function! s:convert_file_to_lines(wikifile, current_html_file) abort
   let result['template_name'] = template_name
   let result['title'] = s:process_title(placeholders, fnamemodify(a:wikifile, ':t:r'))
   let result['date'] = s:process_date(placeholders, strftime('%Y-%m-%d'))
-  let result['wiki_path'] = strpart(s:current_wiki_file, strlen(vimwiki#vars#get_wikilocal('path')))
+  let result['wiki_path'] = strpart(s:current_wiki_file, strlen(vimroam#vars#get_wikilocal('path')))
 
   return result
 endfunction
@@ -1820,14 +1820,14 @@ function! s:convert_file_to_lines_template(wikifile, current_html_file) abort
   call map(html_lines, 'substitute(v:val, "%title%", "'. converted['title'] .'", "g")')
   call map(html_lines, 'substitute(v:val, "%date%", "'. converted['date'] .'", "g")')
   call map(html_lines, 'substitute(v:val, "%root_path%", "'.
-        \ s:root_path(vimwiki#vars#get_bufferlocal('subdir')) .'", "g")')
+        \ s:root_path(vimroam#vars#get_bufferlocal('subdir')) .'", "g")')
   call map(html_lines, 'substitute(v:val, "%wiki_path%", "'. converted['wiki_path'] .'", "g")')
 
-  let css_name = expand(vimwiki#vars#get_wikilocal('css_name'))
+  let css_name = expand(vimroam#vars#get_wikilocal('css_name'))
   let css_name = substitute(css_name, '\', '/', 'g')
   call map(html_lines, 'substitute(v:val, "%css%", "'. css_name .'", "g")')
 
-  let rss_name = expand(vimwiki#vars#get_wikilocal('rss_name'))
+  let rss_name = expand(vimroam#vars#get_wikilocal('rss_name'))
   let rss_name = substitute(rss_name, '\', '/', 'g')
   call map(html_lines, 'substitute(v:val, "%rss%", "'. rss_name .'", "g")')
 
@@ -1845,12 +1845,12 @@ endfunction
 function! s:convert_file(path_html, wikifile) abort
   let done = 0
   let wikifile = fnamemodify(a:wikifile, ':p')
-  let path_html = expand(a:path_html).vimwiki#vars#get_bufferlocal('subdir')
+  let path_html = expand(a:path_html).vimroam#vars#get_bufferlocal('subdir')
   let htmlfile = fnamemodify(wikifile, ':t:r').'.html'
 
   if s:use_custom_wiki2html()
     let force = 1
-    call vimwiki#html#CustomWiki2HTML(path_html, wikifile, force)
+    call vimroam#html#CustomWiki2HTML(path_html, wikifile, force)
     let done = 1
     return path_html . htmlfile
   endif
@@ -1860,18 +1860,18 @@ function! s:convert_file(path_html, wikifile) abort
     if html_lines == []
       return ''
     endif
-    call vimwiki#path#mkdir(path_html)
+    call vimroam#path#mkdir(path_html)
     call writefile(html_lines, path_html.htmlfile)
     return path_html . htmlfile
   endif
 
-  call vimwiki#u#error('Conversion to HTML is not supported for this syntax')
+  call vimroam#u#error('Conversion to HTML is not supported for this syntax')
   return ''
 endfunction
 
 
-function! vimwiki#html#Wiki2HTML(path_html, wikifile) abort
-  let result = s:convert_file(a:path_html, vimwiki#path#wikify_path(a:wikifile))
+function! vimroam#html#Wiki2HTML(path_html, wikifile) abort
+  let result = s:convert_file(a:path_html, vimroam#path#wikify_path(a:wikifile))
   if result !=? ''
     call s:create_default_CSS(a:path_html)
   endif
@@ -1879,13 +1879,13 @@ function! vimwiki#html#Wiki2HTML(path_html, wikifile) abort
 endfunction
 
 
-function! vimwiki#html#WikiAll2HTML(path_html, force) abort
+function! vimroam#html#WikiAll2HTML(path_html, force) abort
   if !s:syntax_supported() && !s:use_custom_wiki2html()
-    call vimwiki#u#error('Conversion to HTML is not supported for this syntax')
+    call vimroam#u#error('Conversion to HTML is not supported for this syntax')
     return
   endif
 
-  call vimwiki#u#echo('Saving Vimwiki files ...')
+  call vimroam#u#echo('Saving VimRoam files ...')
   let save_eventignore = &eventignore
   let &eventignore = 'all'
   try
@@ -1896,49 +1896,49 @@ function! vimwiki#html#WikiAll2HTML(path_html, force) abort
   let &eventignore = save_eventignore
 
   let path_html = expand(a:path_html)
-  call vimwiki#path#mkdir(path_html)
+  call vimroam#path#mkdir(path_html)
 
-  if !vimwiki#vars#get_wikilocal('html_filename_parameterization')
-    call vimwiki#u#echo('Deleting non-wiki html files ...')
+  if !vimroam#vars#get_wikilocal('html_filename_parameterization')
+    call vimroam#u#echo('Deleting non-wiki html files ...')
     call s:delete_html_files(path_html)
   endif
 
   let setting_more = &more
-  call vimwiki#u#echo('Converting wiki to html files ...')
+  call vimroam#u#echo('Converting wiki to html files ...')
   setlocal nomore
 
   " temporarily adjust current_subdir global state variable
-  let current_subdir = vimwiki#vars#get_bufferlocal('subdir')
-  let current_invsubdir = vimwiki#vars#get_bufferlocal('invsubdir')
+  let current_subdir = vimroam#vars#get_bufferlocal('subdir')
+  let current_invsubdir = vimroam#vars#get_bufferlocal('invsubdir')
 
-  let wikifiles = split(glob(vimwiki#vars#get_wikilocal('path').'**/*'.
-        \ vimwiki#vars#get_wikilocal('ext')), '\n')
+  let wikifiles = split(glob(vimroam#vars#get_wikilocal('path').'**/*'.
+        \ vimroam#vars#get_wikilocal('ext')), '\n')
   for wikifile in wikifiles
     let wikifile = fnamemodify(wikifile, ':p')
 
     " temporarily adjust 'subdir' and 'invsubdir' state variables
-    let subdir = vimwiki#base#subdir(vimwiki#vars#get_wikilocal('path'), wikifile)
-    call vimwiki#vars#set_bufferlocal('subdir', subdir)
-    call vimwiki#vars#set_bufferlocal('invsubdir', vimwiki#base#invsubdir(subdir))
+    let subdir = vimroam#base#subdir(vimroam#vars#get_wikilocal('path'), wikifile)
+    call vimroam#vars#set_bufferlocal('subdir', subdir)
+    call vimroam#vars#set_bufferlocal('invsubdir', vimroam#base#invsubdir(subdir))
 
     if a:force || !s:is_html_uptodate(wikifile)
-      call vimwiki#u#echo('Processing '.wikifile)
+      call vimroam#u#echo('Processing '.wikifile)
 
       call s:convert_file(path_html, wikifile)
     else
-      call vimwiki#u#echo('Skipping '.wikifile)
+      call vimroam#u#echo('Skipping '.wikifile)
     endif
   endfor
   " reset 'subdir' state variable
-  call vimwiki#vars#set_bufferlocal('subdir', current_subdir)
-  call vimwiki#vars#set_bufferlocal('invsubdir', current_invsubdir)
+  call vimroam#vars#set_bufferlocal('subdir', current_subdir)
+  call vimroam#vars#set_bufferlocal('invsubdir', current_invsubdir)
 
   let created = s:create_default_CSS(path_html)
   if created
-    call vimwiki#u#echo('Default style.css has been created')
+    call vimroam#u#echo('Default style.css has been created')
   endif
-  call vimwiki#u#echo('HTML exported to '.path_html)
-  call vimwiki#u#echo('Done!')
+  call vimroam#u#echo('HTML exported to '.path_html)
+  call vimroam#u#echo('Done!')
 
   let &more = setting_more
 endfunction
@@ -1955,28 +1955,28 @@ endfunction
 
 
 function! s:get_wikifile_url(wikifile) abort
-  return vimwiki#vars#get_wikilocal('path_html') .
-    \ vimwiki#base#subdir(vimwiki#vars#get_wikilocal('path'), a:wikifile).
+  return vimroam#vars#get_wikilocal('path_html') .
+    \ vimroam#base#subdir(vimroam#vars#get_wikilocal('path'), a:wikifile).
     \ fnamemodify(a:wikifile, ':t:r').'.html'
 endfunction
 
 
-function! vimwiki#html#PasteUrl(wikifile) abort
+function! vimroam#html#PasteUrl(wikifile) abort
   execute 'r !echo file://'.s:get_wikifile_url(a:wikifile)
 endfunction
 
 
-function! vimwiki#html#CatUrl(wikifile) abort
+function! vimroam#html#CatUrl(wikifile) abort
   execute '!echo file://'.s:get_wikifile_url(a:wikifile)
 endfunction
 
 
 function! s:rss_header() abort
-  let title = vimwiki#vars#get_wikilocal('diary_header')
-  let rss_url = vimwiki#vars#get_wikilocal('base_url') . vimwiki#vars#get_wikilocal('rss_name')
-  let link = vimwiki#vars#get_wikilocal('base_url')
-        \ . vimwiki#vars#get_wikilocal('diary_rel_path')
-        \ . vimwiki#vars#get_wikilocal('diary_index') . '.html'
+  let title = vimroam#vars#get_wikilocal('diary_header')
+  let rss_url = vimroam#vars#get_wikilocal('base_url') . vimroam#vars#get_wikilocal('rss_name')
+  let link = vimroam#vars#get_wikilocal('base_url')
+        \ . vimroam#vars#get_wikilocal('diary_rel_path')
+        \ . vimroam#vars#get_wikilocal('diary_index') . '.html'
   let description = title
   let pubdate = strftime('%a, %d %b %Y %T %z')
   let header = [
@@ -1998,9 +1998,9 @@ function! s:rss_footer() abort
 endfunction
 
 function! s:rss_item(path, title) abort
-  let diary_rel_path = vimwiki#vars#get_wikilocal('diary_rel_path')
-  let full_path = vimwiki#vars#get_wikilocal('path')
-        \ . diary_rel_path . a:path . vimwiki#vars#get_wikilocal('ext')
+  let diary_rel_path = vimroam#vars#get_wikilocal('diary_rel_path')
+  let full_path = vimroam#vars#get_wikilocal('path')
+        \ . diary_rel_path . a:path . vimroam#vars#get_wikilocal('ext')
   let fname_base = fnamemodify(a:path, ':t:r')
   let htmlfile = fname_base . '.html'
 
@@ -2009,7 +2009,7 @@ function! s:rss_item(path, title) abort
     return []
   endif
 
-  let link = vimwiki#vars#get_wikilocal('base_url')
+  let link = vimroam#vars#get_wikilocal('base_url')
         \ . diary_rel_path
         \ . fname_base . '.html'
   let pubdate = strftime('%a, %d %b %Y %T %z', getftime(full_path))
@@ -2027,15 +2027,15 @@ function! s:rss_item(path, title) abort
 endfunction
 
 function! s:generate_rss(path) abort
-  let rss_path = a:path . vimwiki#vars#get_wikilocal('rss_name')
-  let max_items = vimwiki#vars#get_wikilocal('rss_max_items')
+  let rss_path = a:path . vimroam#vars#get_wikilocal('rss_name')
+  let max_items = vimroam#vars#get_wikilocal('rss_max_items')
 
   let rss_lines = []
   call extend(rss_lines, s:rss_header())
 
-  let captions = vimwiki#diary#diary_file_captions()
+  let captions = vimroam#diary#diary_file_captions()
   let i = 0
-  for diary in vimwiki#diary#diary_sort(keys(captions))
+  for diary in vimroam#diary#diary_sort(keys(captions))
     if i >= max_items
       break
     endif
@@ -2051,9 +2051,9 @@ function! s:generate_rss(path) abort
   call writefile(rss_lines, rss_path)
 endfunction
 
-function! vimwiki#html#diary_rss() abort
-  call vimwiki#u#echo('Saving RSS feed ...')
-  let path_html = expand(vimwiki#vars#get_wikilocal('path_html'))
-  call vimwiki#path#mkdir(path_html)
+function! vimroam#html#diary_rss() abort
+  call vimroam#u#echo('Saving RSS feed ...')
+  let path_html = expand(vimroam#vars#get_wikilocal('path_html'))
+  call vimroam#path#mkdir(path_html)
   call s:generate_rss(path_html)
 endfunction
