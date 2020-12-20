@@ -307,6 +307,24 @@ command! -buffer VimwikiGoBackLink call vimwiki#base#go_back_link()
 command! -buffer -nargs=* VimwikiSplitLink call vimwiki#base#follow_link('hsplit', <f-args>)
 command! -buffer -nargs=* VimwikiVSplitLink call vimwiki#base#follow_link('vsplit', <f-args>)
 
+" JMM -- New functions using FZF search
+" Create function for inserting a link to another note
+command! -bang VimwikiInsertLink call vimwiki#base#insert_link(<bang>0)
+" Search for note that link to current note
+command! -nargs=* -bang VimwikiRgBacklinks 
+      \ call vimwiki#base#rg_text(<bang>0, '('.expand("%:t").')',
+      \ vimwiki#vars#get_wikilocal('path'))
+" Search note tags, which is any word surrounded by colons (vimwiki style tags)
+command! -nargs=* -bang VimwikiRgTags 
+      \ call vimwiki#base#rg_text(<bang>0, ':[a-zA-Z0-9]+:', vimwiki#vars#get_wikilocal('path'))
+" Search for text in wiki files
+command! -nargs=* -bang VimwikiRgText 
+      \ call vimwiki#base#rg_text(<bang>0, '[a-zA-Z0-9]+', vimwiki#vars#get_wikilocal('path'))
+" Search for filenames in wiki
+command! -nargs=* -bang VimwikiRgFiles 
+      \ call vimwiki#base#rg_files(<bang>0, vimwiki#vars#get_wikilocal('path'), 
+      \ "*" . vimwiki#vars#get_wikilocal('ext'))
+
 command! -buffer -nargs=? VimwikiNormalizeLink call vimwiki#base#normalize_link(<f-args>)
 
 command! -buffer VimwikiTabnewLink call vimwiki#base#follow_link('tab', 0, 1)
@@ -400,6 +418,8 @@ if str2nr(vimwiki#vars#get_global('key_mappings').html)
 endif
 
 " <Plug> links definitions
+inoremap <silent><script><buffer> <Plug>VimwikiInsertLink
+    \ <ESC>:InsertWikiLink<CR>
 nnoremap <silent><script><buffer> <Plug>VimwikiFollowLink
     \ :VimwikiFollowLink<CR>
 nnoremap <silent><script><buffer> <Plug>VimwikiSplitLink
@@ -430,6 +450,15 @@ nnoremap <silent><script><buffer> <Plug>VimwikiDiaryNextDay
     \ :VimwikiDiaryNextDay<CR>
 nnoremap <silent><script><buffer> <Plug>VimwikiDiaryPrevDay
     \ :VimwikiDiaryPrevDay<CR>
+" JMM - FZF Navigation functions
+nnoremap <silent><script><buffer> <Plug>VimwikiRgBacklinks
+      \ :VimwikiRgBacklinks<CR>
+nnoremap <silent><script><buffer> <Plug>VimwikiRgTags
+      \ :VimwikiRgTags<CR>
+nnoremap <silent><script><buffer> <Plug>VimwikiRgText
+      \ :VimwikiRgText<CR>
+nnoremap <silent><script><buffer> <Plug>VimwikiRgFiles
+      \ :VimwikiRgFiles<CR>
 
 " default links key mappings
 if str2nr(vimwiki#vars#get_global('key_mappings').links)
@@ -442,13 +471,12 @@ if str2nr(vimwiki#vars#get_global('key_mappings').links)
   call vimwiki#u#map_key('n', '<D-CR>', '<Plug>VimwikiTabnewLink')
   call vimwiki#u#map_key('n', '<C-S-CR>', '<Plug>VimwikiTabnewLink', 1)
   call vimwiki#u#map_key('n', '<BS>', '<Plug>VimwikiGoBackLink')
-  call vimwiki#u#map_key('n', '<TAB>', '<Plug>VimwikiNextLink')
-  call vimwiki#u#map_key('n', '<S-TAB>', '<Plug>VimwikiPrevLink')
   call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'n', '<Plug>VimwikiGoto')
   call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'d', '<Plug>VimwikiDeleteFile')
   call vimwiki#u#map_key('n', vimwiki#vars#get_global('map_prefix').'r', '<Plug>VimwikiRenameFile')
   call vimwiki#u#map_key('n', '-', '<Plug>VimwikiDiaryNextDay')
   call vimwiki#u#map_key('n', '=', '<Plug>VimwikiDiaryPrevDay')
+  call vimwiki#u#map_key('i', '[]', '<Plug>VimwikiInsertLink')
 endif
 
 " <Plug> lists definitions
@@ -758,3 +786,54 @@ if vimwiki#vars#get_wikilocal('auto_generate_tags')
     au BufWritePre <buffer> call vimwiki#tags#generate_tags(0)
   augroup END
 endif
+
+
+" format of a new zettel filename
+if !exists('g:zettel_format')
+  let g:zettel_format = "%y%m%d-%H%M"
+endif
+
+
+function! s:wiki_yank_name()
+  let filename = expand("%")
+  let link = vimwiki#zettel#get_link(filename)
+  let clipboardtype=&clipboard
+  if clipboardtype=="unnamed"  
+    let @* = link
+  elseif clipboardtype=="unnamedplus"
+    let @+ = link
+  else
+    let @@ = link
+  endif
+  return link
+endfunction
+
+" replace file name under cursor which corresponds to a wiki file with a
+" corresponding Wiki link
+function! s:replace_file_with_link()
+  let filename = expand("<cfile>")
+  let link = vimwiki#zettel#get_link(filename)
+  execute "normal BvExa" . link
+endfunction
+
+command! -bang -nargs=* ZettelYankName call <sid>wiki_yank_name()
+
+" crate new zettel using command
+command! -bang -nargs=* ZettelNew call vimwiki#zettel#zettel_new(<q-args>)
+
+command! -buffer ZettelGenerateLinks call vimwiki#zettel#generate_links()
+command! -buffer -nargs=* -complete=custom,vimwiki#tags#complete_tags
+      \ ZettelGenerateTags call vimwiki#zettel#generate_tags(<f-args>)
+
+command! -buffer ZettelBackLinks call vimwiki#zettel#backlinks()
+command! -buffer ZettelInbox call vimwiki#zettel#inbox()
+command! -buffer ZettelCreateNew call vimwiki#zettel#new_note()
+
+if !exists('g:zettel_default_mappings')
+  let g:zettel_default_mappings=1
+endif
+nnoremap <silent> <Plug>ZettelSearchMap :ZettelSearch<cr>
+nnoremap <silent> <Plug>ZettelYankNameMap :ZettelYankName<cr> 
+nnoremap <silent> <Plug>ZettelReplaceFileWithLink :call <sid>replace_file_with_link()<cr> 
+xnoremap <silent> <Plug>ZettelNewSelectedMap :call vimwiki#zettel#zettel_new_selected()<CR>
+xnoremap <silent> <Plug>ZettelImage :call vimwiki#zettel#zettel_make_image_link()<CR>

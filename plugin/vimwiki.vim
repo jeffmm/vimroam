@@ -43,31 +43,17 @@ function! s:setup_buffer_leave() abort
   endif
 endfunction
 
-
-" Create a new temporary wiki for the current buffer
-function! s:create_temporary_wiki() abort
-  let path = expand('%:p:h')
-  let ext = '.'.expand('%:e')
-
-  let syntax_mapping = vimwiki#vars#get_global('ext2syntax')
-  if has_key(syntax_mapping, ext)
-    let syntax = syntax_mapping[ext]
-  else
-    let syntax = vimwiki#vars#get_wikilocal_default('syntax')
-  endif
-
-  let new_temp_wiki_settings = {'path': path,
-        \ 'ext': ext,
-        \ 'syntax': syntax,
-        \ }
-
-  call vimwiki#vars#add_temporary_wiki(new_temp_wiki_settings)
-
-  " Update the wiki number of the current buffer, because it may have changed when adding this
-  " temporary wiki.
-  call vimwiki#vars#set_bufferlocal('wiki_nr', vimwiki#base#find_wiki(expand('%:p')))
+" JMM - Function for creating a new zettel note from scratch
+function! s:vimwiki_new_note()
+    let idx = vimwiki#vars#get_bufferlocal('wiki_nr')
+    if idx > 0
+      call vimwiki#base#goto_index(idx)
+    else
+      call vimwiki#base#goto_index(1)
+    endif
+    let title = input("New note name: ", strftime("%Y%m%d%H%M"))
+    call vimwiki#zettel#zettel_new(title)
 endfunction
-
 
 " Autocommand called when Vim opens a new buffer with a known wiki
 " extension. Both when the buffer has never been opened in this session and
@@ -75,12 +61,7 @@ endfunction
 function! s:setup_new_wiki_buffer() abort
   let wiki_nr = vimwiki#vars#get_bufferlocal('wiki_nr')
   if wiki_nr == -1    " it's not in a known wiki directory
-    if vimwiki#vars#get_global('global_ext')
-      call s:create_temporary_wiki()
-    else
-      " the user does not want a temporary wiki, so do nothing
-      return
-    endif
+    return
   endif
 
   if vimwiki#vars#get_wikilocal('maxhi')
@@ -97,8 +78,7 @@ endfunction
 
 " Autocommand called when the cursor enters the buffer
 function! s:setup_buffer_enter() abort
-  " don't do anything if it's not managed by Vimwiki (that is, when it's not in
-  " a registered wiki and not a temporary wiki)
+  " don't do anything if it's not managed by Vimwiki
   if vimwiki#vars#get_bufferlocal('wiki_nr') == -1
     return
   endif
@@ -109,8 +89,7 @@ endfunction
 
 " Autocommand called when the buffer enters a window or when running a  diff
 function! s:setup_buffer_win_enter() abort
-  " don't do anything if it's not managed by Vimwiki (that is, when it's not in
-  " a registered wiki and not a temporary wiki)
+  " don't do anything if it's not managed by Vimwiki
   if vimwiki#vars#get_bufferlocal('wiki_nr') == -1
     return
   endif

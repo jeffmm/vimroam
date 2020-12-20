@@ -1,5 +1,0 @@
-%nohtml
-
-== day 3 ==
-
-and yet *another* diary entry.

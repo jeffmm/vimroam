@@ -15,7 +15,7 @@ endfunction
 
 " this function is useful for comands in plugin/zettel.vim
 " set number of the active wiki
-function! zettel#vimwiki#set_active_wiki(number)
+function! vimwiki#zettel#set_active_wiki(number)
   " this buffer value is used by vimwiki#vars#get_wikilocal to retrieve
   " the current wiki number
   call setbufvar("%","vimwiki_wiki_nr", a:number)
@@ -23,17 +23,17 @@ endfunction
 
 " set default wiki number. it is set to -1 when no wiki is initialized
 " we will set it to first wiki in wiki list, with number 0
-function! zettel#vimwiki#initialize_wiki_number()
+function! vimwiki#zettel#initialize_wiki_number()
   if getbufvar("%", "vimwiki_wiki_nr") == -1
-    call zettel#vimwiki#set_active_wiki(0)
+    call vimwiki#zettel#set_active_wiki(0)
   endif
 endfunction
-call zettel#vimwiki#initialize_wiki_number()
+call vimwiki#zettel#initialize_wiki_number()
 
 " get user option for the current wiki
 " it seems that it is not possible to set custom options in g:vimwiki_list
 " so we need to use our own options
-function! zettel#vimwiki#get_option(name)
+function! vimwiki#zettel#get_option(name)
   if !exists('g:zettel_options')
     return ""
   end
@@ -106,7 +106,7 @@ if exists("g:zettel_link_format")
 endif
 
 let s:tag_pattern = '^!_TAG'
-function! zettel#vimwiki#update_listing(lines, title, links_rx)
+function! vimwiki#zettel#update_listing(lines, title, links_rx)
   let generator = { 'data': a:lines }
   function generator.f() dict
         return self.data
@@ -121,7 +121,7 @@ if !exists('g:zettel_front_matter')
 endif
 
 " front matter can be disabled using disable_front_matter local wiki option
-let g:zettel_disable_front_matter = zettel#vimwiki#get_option("disable_front_matter")
+let g:zettel_disable_front_matter = vimwiki#zettel#get_option("disable_front_matter")
 if empty(g:zettel_disable_front_matter)
   let g:zettel_disable_front_matter=0
 end
@@ -140,7 +140,7 @@ endif
 if has('nvim')
 
 " make string filled with random characters
-function! zettel#vimwiki#make_random_chars()
+function! vimwiki#zettel#make_random_chars()
   call luaeval("math.randomseed( os.time() )")
   let char_no = range(g:zettel_random_chars)
   let str_list = []
@@ -153,7 +153,7 @@ endfunction
 else
 
 " make string filled with random characters
-function! zettel#vimwiki#make_random_chars()
+function! vimwiki#zettel#make_random_chars()
   let seed = srand()
   return range(g:zettel_random_chars)->map({-> (97+rand(seed) % 26)->nr2char()})->join('')
 endfunction
@@ -163,19 +163,19 @@ endif
 if !exists('g:zettel_random_chars')
   let g:zettel_random_chars=8
 endif
-let s:randomchars = zettel#vimwiki#make_random_chars()
+let s:randomchars = vimwiki#zettel#make_random_chars()
 
 " default date format used in front matter for new zettel
 if !exists('g:zettel_date_format')
   let g:zettel_date_format = "%Y-%m-%d %H:%M"
 endif
 
-" initialize new zettel date. it should be overwritten in zettel#vimwiki#create()
+" initialize new zettel date. it should be overwritten in vimwiki#zettel#create()
 let s:zettel_date = strftime(g:zettel_date_format)
 
 
 " find end of the front matter variables
-function! zettel#vimwiki#find_header_end(filename)
+function! vimwiki#zettel#find_header_end(filename)
   let lines = readfile(a:filename)
   " Markdown and Vimwiki use different formats for metadata header, select the
   " right one according to the file type
@@ -242,7 +242,7 @@ function! s:numtoletter(num)
 endfunction
 
 " title and date to a new zettel note
-function! zettel#vimwiki#template(title, date)
+function! vimwiki#zettel#template(title, date)
   if g:zettel_disable_front_matter == 0 
     call <sid>add_line(s:header_delimiter)
     call <sid>add_to_header("date", a:date)
@@ -253,7 +253,7 @@ endfunction
 
 
 " sanitize title for filename
-function! zettel#vimwiki#escape_filename(name)
+function! vimwiki#zettel#escape_filename(name)
   let name = substitute(a:name, "[%.%,%?%!%:]", "", "g") " remove unwanted characters
   let schar = vimwiki#vars#get_wikilocal('links_space_char') " ' ' by default
   let name = substitute(name, " ", schar, "g") " change spaces to link_space_char
@@ -264,28 +264,28 @@ function! zettel#vimwiki#escape_filename(name)
 endfunction
 
 " count files that match pattern in the current wiki
-function! zettel#vimwiki#count_files(pattern)
+function! vimwiki#zettel#count_files(pattern)
   let cwd = vimwiki#vars#get_wikilocal('path')
   let filelist = split(globpath(cwd, a:pattern), '\n')
   return len(filelist)
 endfunction
 
-function! zettel#vimwiki#next_counted_file()
+function! vimwiki#zettel#next_counted_file()
   " count notes in the current wiki and return 
   let ext = vimwiki#vars#get_wikilocal('ext')
-  let next_file = zettel#vimwiki#count_files("*" . ext) + 1
+  let next_file = vimwiki#zettel#count_files("*" . ext) + 1
   return next_file
 endfunction
 
-function! zettel#vimwiki#new_zettel_name(...)
+function! vimwiki#zettel#new_zettel_name(...)
   let newformat = g:zettel_format
   if a:0 > 0 && a:1 != "" 
     " title contains safe version of the original title
     " raw_title is exact title
-    let title = zettel#vimwiki#escape_filename(a:1)
+    let title = vimwiki#zettel#escape_filename(a:1)
     let raw_title = a:1 
   else
-    let title = zettel#vimwiki#escape_filename(g:zettel_default_title)
+    let title = vimwiki#zettel#escape_filename(g:zettel_default_title)
     let raw_title = g:zettel_default_title
   endif
   " expand title in the zettel_format
@@ -293,19 +293,19 @@ function! zettel#vimwiki#new_zettel_name(...)
   let newformat = substitute(newformat, "%raw_title", raw_title, "")
   if matchstr(newformat, "%file_no") != ""
     " file_no counts files in the current wiki and adds 1
-    let next_file = zettel#vimwiki#next_counted_file()
+    let next_file = vimwiki#zettel#next_counted_file()
     let newformat = substitute(newformat,"%file_no", next_file, "")
   endif
   if matchstr(newformat, "%file_alpha") != ""
     " same as file_no, but convert numbers to letters
-    let next_file = s:numtoletter(zettel#vimwiki#next_counted_file())
+    let next_file = s:numtoletter(vimwiki#zettel#next_counted_file())
     let newformat = substitute(newformat,"%file_alpha", next_file, "")
   endif
   if matchstr(newformat, "%random") != ""
     " generate random characters, their number is set by g:zettel_random_chars
-    " random characters are set using zettel#vimwiki#make_random_chars()
+    " random characters are set using vimwiki#zettel#make_random_chars()
     " this function is set at the startup and then each time
-    " zettel#vimwiki#create() is called. we don't call it here because we
+    " vimwiki#zettel#create() is called. we don't call it here because we
     " would get wrong links in zettel_new_selected(). It calls new_zettel_name
     " twice.
     let newformat = substitute(newformat, "%random", s:randomchars, "")
@@ -314,7 +314,7 @@ function! zettel#vimwiki#new_zettel_name(...)
   if !s:wiki_file_not_exists(final_format)
     " if the current file name is used, increase counter and add it as a
     " letter to the file name. this ensures that we don't reuse the filename
-    let file_count = zettel#vimwiki#count_files(final_format . "*")
+    let file_count = vimwiki#zettel#count_files(final_format . "*")
     let final_format = final_format . s:numtoletter(file_count)
   endif
   let g:zettel_current_id = final_format
@@ -322,7 +322,7 @@ function! zettel#vimwiki#new_zettel_name(...)
 endfunction
 
 " the optional argument is the wiki number
-function! zettel#vimwiki#save_wiki_page(format, ...)
+function! vimwiki#zettel#save_wiki_page(format, ...)
   let defaultidx = vimwiki#vars#get_bufferlocal('wiki_nr')
   let idx = get(a:, 1, defaultidx)
   let newfile = vimwiki#vars#get_wikilocal('path',idx ) . a:format . vimwiki#vars#get_wikilocal('ext',idx )
@@ -332,14 +332,14 @@ function! zettel#vimwiki#save_wiki_page(format, ...)
 endfunction
 
 " find title in the zettel file and return correct link to it
-function! zettel#vimwiki#get_link(filename)
-  let title =zettel#vimwiki#get_title(a:filename)
+function! vimwiki#zettel#get_link(filename)
+  let title =vimwiki#zettel#get_title(a:filename)
   let wikiname = fnamemodify(a:filename, ":t:r")
   if title == ""
     " use the Zettel filename as title if it is empty
     let title = wikiname
   endif
-  let link= zettel#vimwiki#format_link(wikiname, title)
+  let link= vimwiki#zettel#format_link(wikiname, title)
   return link
 endfunction
 
@@ -381,7 +381,7 @@ function! s:get_links(wikifile, idx)
 endfunction
 
 " return list of files that match a pattern
-function! zettel#vimwiki#wikigrep(pattern)
+function! vimwiki#zettel#wikigrep(pattern)
   let paths = []
   let idx = vimwiki#vars#get_bufferlocal('wiki_nr')
   let path = fnameescape(vimwiki#vars#get_wikilocal('path', idx))
@@ -400,29 +400,29 @@ function! zettel#vimwiki#wikigrep(pattern)
   return paths
 endfunction
 
-function! zettel#vimwiki#format_file_title(format, file, title)
+function! vimwiki#zettel#format_file_title(format, file, title)
   let link = substitute(a:format, "%title", a:title, "")
   let link = substitute(link, "%link", a:file, "")
   return link
 endfunction
 
 " use different link style for wiki and markdown syntaxes
-function! zettel#vimwiki#format_link(file, title)
-  return zettel#vimwiki#format_file_title(s:link_format, a:file, a:title)
+function! vimwiki#zettel#format_link(file, title)
+  return vimwiki#zettel#format_file_title(s:link_format, a:file, a:title)
 endfunction
 
-function! zettel#vimwiki#format_search_link(file, title)
-  return zettel#vimwiki#format_file_title(s:link_stub, a:file, a:title)
+function! vimwiki#zettel#format_search_link(file, title)
+  return vimwiki#zettel#format_file_title(s:link_stub, a:file, a:title)
 endfunction
 
 " This function is executed when the page referenced by the inserted link
 " doesn't contain  title. The cursor is placed at the position where title 
 " should start, and insert mode is started
-function! zettel#vimwiki#insert_mode_in_title()
+function! vimwiki#zettel#insert_mode_in_title()
   execute "normal! " .s:insert_mode_title_format | :startinsert
 endfunction
 
-function! zettel#vimwiki#get_title(filename)
+function! vimwiki#zettel#get_title(filename)
   let filename = a:filename
   let title = ""
   let lsource = readfile(filename)
@@ -445,14 +445,14 @@ endfunction
 
 " create new zettel note
 " there is one optional argument, the zettel title
-function! zettel#vimwiki#create(...)
+function! vimwiki#zettel#create(...)
   " name of the new note
-  let format = zettel#vimwiki#new_zettel_name(a:1)
+  let format = vimwiki#zettel#new_zettel_name(a:1)
   let date_format = g:zettel_date_format
   let date = strftime(date_format)
   echomsg("new zettel: ". format)
   " update random chars used in %random name format 
-  let s:randomchars = zettel#vimwiki#make_random_chars()
+  let s:randomchars = vimwiki#zettel#make_random_chars()
   let s:zettel_date = date " save zettel date
   " detect if the wiki file exists
   let wiki_not_exists = s:wiki_file_not_exists(format)
@@ -461,7 +461,7 @@ function! zettel#vimwiki#create(...)
   call vimwiki#base#open_link(':e ', format)
   " add basic template to the new file
   if wiki_not_exists
-    call zettel#vimwiki#template(a:1, date)
+    call vimwiki#zettel#template(a:1, date)
     return format
   endif
   return -1
@@ -482,17 +482,17 @@ function! s:front_matter_list(front_matter)
   return newlist
 endfunction
 
-function! zettel#vimwiki#zettel_new(...)
-  let filename = zettel#vimwiki#create(a:1)
+function! vimwiki#zettel#zettel_new(...)
+  let filename = vimwiki#zettel#create(a:1)
   " the wiki file already exists
   if filename ==? -1
     return 0
   endif
-  let front_matter = zettel#vimwiki#get_option("front_matter")
+  let front_matter = vimwiki#zettel#get_option("front_matter")
   if g:zettel_disable_front_matter == 0
     if !empty(front_matter)
-      let newfile = zettel#vimwiki#save_wiki_page(filename)
-      let last_header_line = zettel#vimwiki#find_header_end(newfile)
+      let newfile = vimwiki#zettel#save_wiki_page(filename)
+      let last_header_line = vimwiki#zettel#find_header_end(newfile)
       " ensure that front_matter is a list
       let front_list = s:front_matter_list(front_matter)
       " we must reverse the list, because each line is inserted before the
@@ -505,13 +505,13 @@ function! zettel#vimwiki#zettel_new(...)
 
   " insert the template text from a template file if it is configured in
   " g:zettel_options for the current wiki
-  let template = zettel#vimwiki#get_option("template")
+  let template = vimwiki#zettel#get_option("template")
   if !empty(template)
     let variables = get(a:, 2, 0)
     if empty(variables)
       " save file, in order to prevent errors in variable reading
       execute "w"
-      let variables = zettel#vimwiki#prepare_template_variables(expand("%"), a:1)
+      let variables = vimwiki#zettel#prepare_template_variables(expand("%"), a:1)
       " backlink contains link to the new note itself, so we will just disable
       " it. backlinks are available only when the new note is created using
       " ZettelNewSelectedMap (`z` letter in visual mode by default).
@@ -520,7 +520,7 @@ function! zettel#vimwiki#zettel_new(...)
     " we may reuse varaibles from the parent zettel. date would be wrong in this case,
     " so we will overwrite it with the current zettel date
     let variables.date = s:zettel_date 
-    call zettel#vimwiki#expand_template(template, variables)
+    call vimwiki#zettel#expand_template(template, variables)
   endif
   " save the new wiki file
   execute "w"
@@ -528,8 +528,8 @@ function! zettel#vimwiki#zettel_new(...)
 endfunction
 "
 " crate zettel link from a selected text
-command! ZettelImage call zettel#vimwiki#zettel_make_image_link()<CR>
-function! zettel#vimwiki#zettel_make_image_link()
+command! ZettelImage call vimwiki#zettel#zettel_make_image_link()<CR>
+function! vimwiki#zettel#zettel_make_image_link()
   let title = <sid>get_visual_selection()
   let name = "figs/" . split(title, "/")[-1]
   execute "!mv " . title . " " . expand("%:p:h") . "/" . name
@@ -537,38 +537,38 @@ function! zettel#vimwiki#zettel_make_image_link()
   let name2 = shellescape("[" . name . "](" . name . ")")
   echo name2
   " \\%V.*\\%V. should select the whole visual selection
-  execute "normal! :'<,'>s/\\%V.*\\%V./" . zettel#vimwiki#format_link(name2) . "\<cr>\<C-o>"
+  execute "normal! :'<,'>s/\\%V.*\\%V./" . vimwiki#zettel#format_link(name2) . "\<cr>\<C-o>"
 endfunction
 
 
 " crate zettel link from a selected text
-function! zettel#vimwiki#zettel_new_selected()
+function! vimwiki#zettel#zettel_new_selected()
   let title = <sid>get_visual_selection()
-  let name = zettel#vimwiki#new_zettel_name(title)
+  let name = vimwiki#zettel#new_zettel_name(title)
   " prepare_template_variables needs the file saved on disk
   execute "w"
   " make variables that will be available in the new page template
-  let variables = zettel#vimwiki#prepare_template_variables(expand("%"), title)
+  let variables = vimwiki#zettel#prepare_template_variables(expand("%"), title)
   " replace the visually selected text with a link to the new zettel
   " \\%V.*\\%V. should select the whole visual selection
-  execute "normal! :'<,'>s/\\%V.*\\%V./" . zettel#vimwiki#format_link( name, "\\\\0") ."\<cr>\<C-o>"
-  call zettel#vimwiki#zettel_new(title, variables)
+  execute "normal! :'<,'>s/\\%V.*\\%V./" . vimwiki#zettel#format_link( name, "\\\\0") ."\<cr>\<C-o>"
+  call vimwiki#zettel#zettel_new(title, variables)
 endfunction
 
 " prepare variables that will be available to expand in the new note template
-function! zettel#vimwiki#prepare_template_variables(filename, title)
+function! vimwiki#zettel#prepare_template_variables(filename, title)
   let variables = {}
   let variables.title = a:title
   let variables.date = s:zettel_date
   " add variables from front_matter, to make them available in the template
-  let front_matter = zettel#vimwiki#get_option("front_matter")
+  let front_matter = vimwiki#zettel#get_option("front_matter")
   if !empty(front_matter)
     let front_list = s:front_matter_list(front_matter)
     for entry in copy(front_list)
       let variables[entry[0]] = <sid>expand_front_matter_value(entry[1])
     endfor
   endif
-  let variables.backlink = zettel#vimwiki#get_link(a:filename)
+  let variables.backlink = vimwiki#zettel#get_link(a:filename)
   " we want to save footer of the parent note. It can contain stuff that can
   " be useful in the child note, like citations,  etc. Footer is everything
   " below last horizontal rule (----)
@@ -599,7 +599,7 @@ function! s:read_footer(filename)
 endfunction
 
 " populate new note using template
-function! zettel#vimwiki#expand_template(template, variables)
+function! vimwiki#zettel#expand_template(template, variables)
   " readfile returns list, we need to convert it to string 
   " in order to do global replace
   let template_file = expand(a:template)
@@ -627,7 +627,7 @@ endfunction
 " make new zettel from a file. the file contents will be copied to a new
 " zettel, the original file contents will be replaced with the zettel filename
 " use temporary file if you want to keep the original file
-function! zettel#vimwiki#zettel_capture(wnum,...)
+function! vimwiki#zettel#zettel_capture(wnum,...)
   let origfile = expand("%")
   execute "set ft=vimwiki"
   " This probably doesn't work with current vimwiki code
@@ -640,10 +640,10 @@ function! zettel#vimwiki#zettel_capture(wnum,...)
   else
     let idx = 0
   endif
-  let title = zettel#vimwiki#get_title(origfile)
-  let format = zettel#vimwiki#new_zettel_name(title)
+  let title = vimwiki#zettel#get_title(origfile)
+  let format = vimwiki#zettel#new_zettel_name(title)
   " let link_info = vimwiki#base#resolve_link(format)
-  let newfile = zettel#vimwiki#save_wiki_page(format, idx)
+  let newfile = vimwiki#zettel#save_wiki_page(format, idx)
   " delete contents of the captured file
   execute "normal! ggdG"
   " replace it with a address of the zettel file
@@ -654,7 +654,7 @@ function! zettel#vimwiki#zettel_capture(wnum,...)
 endfunction
 
 " based on vimwikis "get wiki links", not stripping file extension
-function! zettel#vimwiki#get_wikilinks(wiki_nr, also_absolute_links)
+function! vimwiki#zettel#get_wikilinks(wiki_nr, also_absolute_links)
   let files = vimwiki#base#find_files(a:wiki_nr, 0)
   if a:wiki_nr == vimwiki#vars#get_bufferlocal('wiki_nr')
     let cwd = vimwiki#path#wikify_path(expand('%:p:h'))
@@ -687,7 +687,7 @@ endfunction
 function! s:add_bulleted_link(lines, abs_filepath)
   let bullet = repeat(' ', vimwiki#lst#get_list_margin()) . vimwiki#lst#default_symbol().' '
   call add(a:lines, bullet.
-        \ zettel#vimwiki#get_link(a:abs_filepath))
+        \ vimwiki#zettel#get_link(a:abs_filepath))
   return a:lines
 endfunction
 
@@ -696,15 +696,15 @@ endfunction
 " insert list of links to the current page
 function! s:insert_link_array(title, lines)
   let links_rx = '\m^\s*'.vimwiki#u#escape(vimwiki#lst#default_symbol()).' '
-  call zettel#vimwiki#update_listing(a:lines, a:title, links_rx)
+  call vimwiki#zettel#update_listing(a:lines, a:title, links_rx)
 endfunction
 
 
 " based on vimwikis "generate links", adding the %title to the link
-function! zettel#vimwiki#generate_links()
+function! vimwiki#zettel#generate_links()
   let lines = []
 
-  let links = zettel#vimwiki#get_wikilinks(vimwiki#vars#get_bufferlocal('wiki_nr'), 0)
+  let links = vimwiki#zettel#get_wikilinks(vimwiki#vars#get_bufferlocal('wiki_nr'), 0)
   call reverse(sort(links))
 
   let bullet = repeat(' ', vimwiki#lst#get_list_margin()) . vimwiki#lst#default_symbol().' '
@@ -713,7 +713,7 @@ function! zettel#vimwiki#generate_links()
     "let abs_filepath = link
     "if !s:is_diary_file(abs_filepath)
       call add(lines, bullet.
-            \ zettel#vimwiki#get_link(abs_filepath))
+            \ vimwiki#zettel#get_link(abs_filepath))
     "endif
   endfor
   call s:insert_link_array('Generated Index', lines)
@@ -739,12 +739,12 @@ endfunction
 
 " based on vimwikis "backlinks"
 " insert backlinks of the current page in a section
-function! zettel#vimwiki#backlinks()
+function! vimwiki#zettel#backlinks()
   let current_filename = expand("%:t:r")
   " find [filename| or [filename] to support both wiki and md syntax
   let filenamepattern = printf(s:grep_link_pattern, current_filename)
   let locations = []
-  let backfiles = zettel#vimwiki#wikigrep(filenamepattern)
+  let backfiles = vimwiki#zettel#wikigrep(filenamepattern)
   for file in backfiles
     " only add backlink if it is not already backlink
     let is_backlink = s:is_in_backlinks(file, current_filename)
@@ -765,7 +765,7 @@ function! zettel#vimwiki#backlinks()
   endif
 endfunction
 
-function! zettel#vimwiki#inbox()
+function! vimwiki#zettel#inbox()
   call vimwiki#base#check_links()
   let linklist = getqflist()
   cclose
@@ -782,7 +782,7 @@ function! zettel#vimwiki#inbox()
       let filepath = fnamemodify(filenamematch, ":p:h")
       if filepath ==# cwd
         call add(paths, bullet.
-              \ zettel#vimwiki#get_link(filenamematch))
+              \ vimwiki#zettel#get_link(filenamematch))
       endif
     endif
   endfor
@@ -848,7 +848,7 @@ function! s:load_tags_metadata() abort
 endfunction
 
 " based on vimwiki
-function! zettel#vimwiki#generate_tags(...) abort
+function! vimwiki#zettel#generate_tags(...) abort
   let need_all_tags = (a:0 == 0)
   let specific_tags = a:000
 
@@ -877,7 +877,7 @@ function! zettel#vimwiki#generate_tags(...) abort
       for taglink in reverse(sort(tags_entries[tagname]))
         let filepath = vimwiki#path#abs_path_of_link(taglink)
         if filereadable(filepath)
-          call add(lines, bullet . zettel#vimwiki#get_link(filepath))
+          call add(lines, bullet . vimwiki#zettel#get_link(filepath))
         endif
       endfor
     endif
@@ -887,6 +887,6 @@ function! zettel#vimwiki#generate_tags(...) abort
         \ .vimwiki#u#escape(vimwiki#lst#default_symbol()).' '
         \ .vimwiki#vars#get_syntaxlocal('rxWikiLink').'$\)'
 
-  call zettel#vimwiki#update_listing(lines, 'Generated Tags', links_rx)
+  call vimwiki#zettel#update_listing(lines, 'Generated Tags', links_rx)
 endfunction
 xmap M <Plug>ZettelImage
