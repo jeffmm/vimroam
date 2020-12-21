@@ -405,7 +405,7 @@ endif
 
 " <Plug> links definitions
 inoremap <silent><script><buffer> <Plug>VimRoamInsertLink
-    \ <ESC>:InsertWikiLink<CR>
+    \ <ESC>:VimRoamInsertLink<CR>
 nnoremap <silent><script><buffer> <Plug>VimRoamFollowLink
     \ :VimRoamFollowLink<CR>
 nnoremap <silent><script><buffer> <Plug>VimRoamSplitLink
