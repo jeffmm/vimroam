@@ -456,7 +456,7 @@ function! vimroam#zettel#prepare_template_variables(filename, title)
       let variables[entry[0]] = <sid>expand_front_matter_value(entry[1])
     endfor
   endif
-  let variables.backlink = vimroam#zettel#get_link(a:filename)
+  let variables.backlink = s:get_link(a:filename)
   " we want to save footer of the parent note. It can contain stuff that can
   " be useful in the child note, like citations,  etc. Footer is everything
   " below last horizontal rule (----)
