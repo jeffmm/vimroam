@@ -15,20 +15,26 @@ function! vimroam#zettel#initialize_wiki_number()
 endfunction
 call vimroam#zettel#initialize_wiki_number()
 
+" Set default user options if they are not defined
+if !exists('g:vimroam_zettel_options')
+    let g:vimroam_zettel_options = [{"front_matter" : [["tags", ""]],
+       \ "template" :  "~/.config/nvim/zk-template.tpl"}, {}]
+endif
+
 " get user option for the current wiki
 " it seems that it is not possible to set custom options in g:vimroam_list
 " so we need to use our own options
 function! vimroam#zettel#get_option(name)
-  if !exists('g:zettel_options')
+  if !exists('g:vimroam_zettel_options')
     return ""
-  end
+  endif
   " the options for particular wikis must be in the same order as wiki
   " definitions in g:vimroam_list
   let idx = vimroam#vars#get_bufferlocal('wiki_nr')
-  let option_number = "g:zettel_options[" . idx . "]"
+  let option_number = "g:vimroam_zettel_options[" . idx . "]"
   if exists(option_number)
     if exists(option_number . "." . a:name)
-      return g:zettel_options[idx][a:name]
+      return g:vimroam_zettel_options[idx][a:name]
     endif
   endif
   return ""
@@ -64,16 +70,23 @@ if exists("g:vimroam_markdown_link_ext") && g:vimroam_markdown_link_ext == 1
 else
     let s:link_format = "[%title](%link)"
 endif
+
 let s:header_format = "%s: %s"
 let s:header_delimiter = "---"
 let s:insert_mode_title_format = "``l"
 let s:grep_link_pattern = '/\(%s\.\{-}m\{-}d\{-}\)/' " match filename in  parens. including optional .md extension
 let s:section_pattern = "# %s"
 
+function s:strip_extension(param)
+    return split(a:param, "\\.md")[0]
+endfunction
+if !exists("g:zettel_format")
+    let g:zettel_format = s:strip_extension("%title")
+endif
+
 " enable overriding of 
 if exists("g:zettel_link_format")
   let s:link_format = g:zettel_link_format
-  let s:link_stub =  g:zettel_link_format
 endif
 
 let s:tag_pattern = '^!_TAG'
@@ -84,12 +97,6 @@ function! vimroam#zettel#update_listing(lines, title, links_rx)
   endfunction
   call vimroam#base#update_listing_in_buffer(generator, a:title, a:links_rx, line('$')+1, 1, 1)
 endfunction
-
-" user configurable fields that should be inserted to a front matter of a new
-" Zettel
-if !exists('g:zettel_front_matter')
-  let g:zettel_front_matter = {}
-endif
 
 " front matter can be disabled using disable_front_matter local wiki option
 let g:zettel_disable_front_matter = vimroam#zettel#get_option("disable_front_matter")
@@ -107,38 +114,13 @@ if !exists('g:zettel_default_title')
   let g:zettel_default_title="untitled"
 endif
 
-" Fixes for Neovim
-if has('nvim')
-
-" make string filled with random characters
-function! vimroam#zettel#make_random_chars()
-  call luaeval("math.randomseed( os.time() )")
-  let char_no = range(g:zettel_random_chars)
-  let str_list = []
-  for x in char_no
-    call add(str_list, nr2char(luaeval("math.random(97,122)")))
-  endfor
-  return join(str_list, "")
-endfunction
-
-else
-
-" make string filled with random characters
-function! vimroam#zettel#make_random_chars()
-  let seed = srand()
-  return range(g:zettel_random_chars)->map({-> (97+rand(seed) % 26)->nr2char()})->join('')
-endfunction
-endif
-
-" number of random characters used in %random placehoder in new zettel name
-if !exists('g:zettel_random_chars')
-  let g:zettel_random_chars=8
-endif
-let s:randomchars = vimroam#zettel#make_random_chars()
-
 " default date format used in front matter for new zettel
 if !exists('g:zettel_date_format')
-  let g:zettel_date_format = "%Y-%m-%d %H:%M"
+  let g:zettel_date_format = "%Y%m%d"
+endif
+
+if !exists("g:zettel_template")
+    let g:zettel_template = expand("<sfile>:p:h:h:h") . "/templates/zettel-template.tpl"
 endif
 
 " initialize new zettel date. it should be overwritten in vimroam#zettel#create()
@@ -332,7 +314,7 @@ function! vimroam#zettel#format_link(file, title)
 endfunction
 
 function! vimroam#zettel#format_search_link(file, title)
-  return vimroam#zettel#format_file_title(s:link_stub, a:file, a:title)
+  return vimroam#zettel#format_file_title(s:link_format, a:file, a:title)
 endfunction
 
 " This function is executed when the page referenced by the inserted link
@@ -371,8 +353,6 @@ function! vimroam#zettel#create(...)
   let date_format = g:zettel_date_format
   let date = strftime(date_format)
   echomsg("new zettel: ". format)
-  " update random chars used in %random name format 
-  let s:randomchars = vimroam#zettel#make_random_chars()
   let s:zettel_date = date " save zettel date
   " detect if the wiki file exists
   let wiki_not_exists = s:wiki_file_not_exists(format)
@@ -423,7 +403,7 @@ function! vimroam#zettel#zettel_new(...)
   endif
 
   " insert the template text from a template file if it is configured in
-  " g:zettel_options for the current wiki
+  " g:vimroam_zettel_options for the current wiki
   let template = vimroam#zettel#get_option("template")
   if !empty(template)
     let variables = get(a:, 2, 0)
