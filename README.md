@@ -2,19 +2,10 @@
 
 - [Intro](#introduction)
 - [Installation](#installation)
-  - [Prerequisites](#prerequisites)
-  - [VIM Packages](#installation-using-vim-packages-since-vim-741528)
-  - [Pathogen](#installation-using-pathogen)
-  - [Vim-Plug](#installation-using-vim-plug)
-  - [Vundle](#installation-using-vundle)
-- [Basic Markup](#basic-markup)
-  - [Lists](#lists)
-- [Key Bindings](#key-bindings)
-- [Commands](#commands)
-- [Changing Wiki Syntax](#changing-wiki-syntax)
-- [Getting Help](#getting-help)
-- [Helping VimRoam](#helping-vimroam)
-- [Wiki](https://github.com/jeffmm/vimroam/wiki)
+- [Using VimRoam](#using-vimroam)
+  - [Documentation](#documentation)
+  - [Key Bindings](#key-bindings)
+- [Reporting issues](#reporting-issues)
 - [License](#license)
 
 ---
