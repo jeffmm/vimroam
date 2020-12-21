@@ -77,13 +77,6 @@ let s:insert_mode_title_format = "``l"
 let s:grep_link_pattern = '/\(%s\.\{-}m\{-}d\{-}\)/' " match filename in  parens. including optional .md extension
 let s:section_pattern = "# %s"
 
-function s:strip_extension(param)
-    return split(a:param, "\\.md")[0]
-endfunction
-if !exists("g:zettel_format")
-    let g:zettel_format = s:strip_extension("%title")
-endif
-
 " enable overriding of 
 if exists("g:zettel_link_format")
   let s:link_format = g:zettel_link_format
