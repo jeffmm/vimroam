@@ -192,6 +192,16 @@ function! s:get_default_global() abort
 endfunction
 
 
+if !exists('g:vimroam_filetypes')
+  let g:vimroam_filetypes = ['markdown']
+endif
+if !exists('g:vimroam_markdown_link_ext')
+  let g:vimroam_markdown_link_ext = 1
+endif
+if !exists('g:vimroam_global_ext')
+  let g:vimroam_global_ext = 0
+endif
+
 " Populate global variable <- user & default
 " Called: s:vimroam#vars#init
 function! s:populate_global_variables() abort
