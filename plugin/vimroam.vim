@@ -20,6 +20,16 @@ let s:plugin_dir = expand('<sfile>:p:h:h')
 let s:old_cpo = &cpoptions
 set cpoptions&vim
 
+if !exists('g:vimroam_filetypes')
+  let g:vimroam_filetypes = ['markdown']
+endif
+if !exists('g:vimroam_markdown_link_ext')
+  let g:vimroam_markdown_link_ext = 1
+endif
+if !exists('g:vimroam_global_ext')
+  let g:vimroam_global_ext = 0
+endif
+
 " Save autowriteall varaible state
 if exists('g:vimroam_autowriteall')
   let s:vimroam_autowriteall_saved = g:vimroam_autowriteall
@@ -249,10 +259,10 @@ function! s:create_h1(fname) abort
     return
   endif
 
-  " Clause: don't create header for the diary index page
+  " Clause: don't create header for the journal index page
   if vimroam#path#is_equal(a:fname,
-        \ vimroam#vars#get_wikilocal('path', idx).vimroam#vars#get_wikilocal('diary_rel_path', idx).
-        \ vimroam#vars#get_wikilocal('diary_index', idx).vimroam#vars#get_wikilocal('ext', idx))
+        \ vimroam#vars#get_wikilocal('path', idx).vimroam#vars#get_wikilocal('journal_rel_path', idx).
+        \ vimroam#vars#get_wikilocal('journal_index', idx).vimroam#vars#get_wikilocal('ext', idx))
     return
   endif
 
@@ -264,7 +274,7 @@ function! s:create_h1(fname) abort
     return
   endif
 
-  " Don't substitute space char for diary pages
+  " Don't substitute space char for journal pages
   if title !~# '^\d\{4}-\d\d-\d\d'
     " NOTE: it is possible this could remove desired characters if the 'links_space_char'
     " character matches characters that are intentionally used in the title.
@@ -329,7 +339,7 @@ augroup END
 command! VimRoamUISelect call vimroam#base#ui_select()
 
 " these commands take a count e.g. :VimRoamIndex 2
-" the default behavior is to open the index, diary etc.
+" the default behavior is to open the index, journal etc.
 " for the CURRENT wiki if no count is given
 command! -count=0 VimRoamIndex
       \ call vimroam#base#goto_index(<count>)
@@ -337,25 +347,25 @@ command! -count=0 VimRoamIndex
 command! -count=0 VimRoamTabIndex
       \ call vimroam#base#goto_index(<count>, 1)
 
-command! -count=0 VimRoamDiaryIndex
-      \ call vimroam#diary#goto_diary_index(<count>)
+command! -count=0 VimRoamJournalIndex
+      \ call vimroam#journal#goto_journal_index(<count>)
 
-command! -count=0 VimRoamMakeDiaryNote
-      \ call vimroam#diary#make_note(<count>)
+command! -count=0 VimRoamMakeJournalNote
+      \ call vimroam#journal#make_note(<count>)
 
-command! -count=0 VimRoamTabMakeDiaryNote
-      \ call vimroam#diary#make_note(<count>, 1)
+command! -count=0 VimRoamTabMakeJournalNote
+      \ call vimroam#journal#make_note(<count>, 1)
 
-command! -count=0 VimRoamMakeYesterdayDiaryNote
-      \ call vimroam#diary#make_note(<count>, 0,
-      \ vimroam#diary#diary_date_link(localtime(), -1))
+command! -count=0 VimRoamMakeYesterdayJournalNote
+      \ call vimroam#journal#make_note(<count>, 0,
+      \ vimroam#journal#journal_date_link(localtime(), -1))
 
-command! -count=0 VimRoamMakeTomorrowDiaryNote
-      \ call vimroam#diary#make_note(<count>, 0,
-      \ vimroam#diary#diary_date_link(localtime(), 1))
+command! -count=0 VimRoamMakeTomorrowJournalNote
+      \ call vimroam#journal#make_note(<count>, 0,
+      \ vimroam#journal#journal_date_link(localtime(), 1))
 
-command! VimRoamDiaryGenerateLinks
-      \ call vimroam#diary#generate_diary_section()
+command! VimRoamJournalGenerateLinks
+      \ call vimroam#journal#generate_journal_section()
 
 command! VimRoamShowVersion call s:get_version()
 
@@ -393,20 +403,20 @@ nnoremap <silent><script> <Plug>VimRoamTabIndex
     \ :<C-U>call vimroam#base#goto_index(v:count, 1)<CR>
 nnoremap <silent><script> <Plug>VimRoamUISelect
     \ :VimRoamUISelect<CR>
-nnoremap <silent><script> <Plug>VimRoamDiaryIndex
-    \ :<C-U>call vimroam#diary#goto_diary_index(v:count)<CR>
-nnoremap <silent><script> <Plug>VimRoamDiaryGenerateLinks
-    \ :VimRoamDiaryGenerateLinks<CR>
-nnoremap <silent><script> <Plug>VimRoamMakeDiaryNote
-    \ :<C-U>call vimroam#diary#make_note(v:count)<CR>
-nnoremap <silent><script> <Plug>VimRoamTabMakeDiaryNote
-    \ :<C-U>call vimroam#diary#make_note(v:count, 1)<CR>
-nnoremap <silent><script> <Plug>VimRoamMakeYesterdayDiaryNote
-    \ :<C-U>call vimroam#diary#make_note(v:count, 0,
-    \ vimroam#diary#diary_date_link(localtime(), -1))<CR>
-nnoremap <silent><script> <Plug>VimRoamMakeTomorrowDiaryNote
-    \ :<C-U>call vimroam#diary#make_note(v:count, 0,
-    \ vimroam#diary#diary_date_link(localtime(), 1))<CR>
+nnoremap <silent><script> <Plug>VimRoamJournalIndex
+    \ :<C-U>call vimroam#journal#goto_journal_index(v:count)<CR>
+nnoremap <silent><script> <Plug>VimRoamJournalGenerateLinks
+    \ :VimRoamJournalGenerateLinks<CR>
+nnoremap <silent><script> <Plug>VimRoamMakeJournalNote
+    \ :<C-U>call vimroam#journal#make_note(v:count)<CR>
+nnoremap <silent><script> <Plug>VimRoamTabMakeJournalNote
+    \ :<C-U>call vimroam#journal#make_note(v:count, 1)<CR>
+nnoremap <silent><script> <Plug>VimRoamMakeYesterdayJournalNote
+    \ :<C-U>call vimroam#journal#make_note(v:count, 0,
+    \ vimroam#journal#journal_date_link(localtime(), -1))<CR>
+nnoremap <silent><script> <Plug>VimRoamMakeTomorrowJournalNote
+    \ :<C-U>call vimroam#journal#make_note(v:count, 0,
+    \ vimroam#journal#journal_date_link(localtime(), 1))<CR>
 
 " Set default global key mappings
 if str2nr(vimroam#vars#get_global('key_mappings').global)
@@ -414,17 +424,17 @@ if str2nr(vimroam#vars#get_global('key_mappings').global)
   let s:map_prefix = vimroam#vars#get_global('map_prefix')
 
   call vimroam#u#map_key('n', s:map_prefix . 'w', '<Plug>VimRoamIndex', 2)
-  call vimroam#u#map_key('n', s:map_prefix . 'i', '<Plug>VimRoamDiaryIndex', 2)
+  call vimroam#u#map_key('n', s:map_prefix . 'i', '<Plug>VimRoamJournalIndex', 2)
   call vimroam#u#map_key('n', s:map_prefix . 'b', '<Plug>VimRoamRgBacklinks', 2)
   call vimroam#u#map_key('n', s:map_prefix . 's', '<Plug>VimRoamRgText', 2)
   call vimroam#u#map_key('n', s:map_prefix . 't', '<Plug>VimRoamRgTags', 2)
   call vimroam#u#map_key('n', s:map_prefix . 'f', '<Plug>VimRoamRgFiles', 2)
   call vimroam#u#map_key('n', s:map_prefix . 'n', '<Plug>VimRoamNewNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>i', '<Plug>VimRoamDiaryGenerateLinks', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>w', '<Plug>VimRoamMakeDiaryNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>t', '<Plug>VimRoamTabMakeDiaryNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>y', '<Plug>VimRoamMakeYesterdayDiaryNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>m', '<Plug>VimRoamMakeTomorrowDiaryNote', 2)
+  call vimroam#u#map_key('n', s:map_prefix . '<Leader>i', '<Plug>VimRoamJournalGenerateLinks', 2)
+  call vimroam#u#map_key('n', s:map_prefix . '<Leader>w', '<Plug>VimRoamMakeJournalNote', 2)
+  call vimroam#u#map_key('n', s:map_prefix . '<Leader>t', '<Plug>VimRoamTabMakeJournalNote', 2)
+  call vimroam#u#map_key('n', s:map_prefix . '<Leader>y', '<Plug>VimRoamMakeYesterdayJournalNote', 2)
+  call vimroam#u#map_key('n', s:map_prefix . '<Leader>m', '<Plug>VimRoamMakeTomorrowJournalNote', 2)
 
 endif
 
@@ -453,8 +463,8 @@ function! s:build_menu(topmenu) abort
     " build the menu
     execute 'menu '.a:topmenu.'.Open\ index.'.wname.
           \ ' :call vimroam#base#goto_index('.(idx+1).')<CR>'
-    execute 'menu '.a:topmenu.'.Open/Create\ diary\ note.'.wname.
-          \ ' :call vimroam#diary#make_note('.(idx+1).')<CR>'
+    execute 'menu '.a:topmenu.'.Open/Create\ journal\ note.'.wname.
+          \ ' :call vimroam#journal#make_note('.(idx+1).')<CR>'
   endfor
 endfunction
 
@@ -480,8 +490,8 @@ endif
 
 " Hook for calendar.vim
 if vimroam#vars#get_global('use_calendar')
-  let g:calendar_action = 'vimroam#diary#calendar_action'
-  let g:calendar_sign = 'vimroam#diary#calendar_sign'
+  let g:calendar_action = 'vimroam#journal#calendar_action'
+  let g:calendar_sign = 'vimroam#journal#calendar_sign'
 endif
 
 

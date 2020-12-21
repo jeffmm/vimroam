@@ -79,10 +79,10 @@ function! Complete_wikifiles(findstart, base) abort
         endif
         let prefix = matchstr(a:base, '\m^wiki\d\+:\zs.*')
         let scheme = matchstr(a:base, '\m^wiki\d\+:\ze')
-      elseif a:base =~# '^diary:'
+      elseif a:base =~# '^journal:'
         let wikinumber = -1
-        let prefix = matchstr(a:base, '^diary:\zs.*')
-        let scheme = matchstr(a:base, '^diary:\ze')
+        let prefix = matchstr(a:base, '^journal:\zs.*')
+        let scheme = matchstr(a:base, '^journal:\ze')
       else " current wiki
         let wikinumber = vimroam#vars#get_bufferlocal('wiki_nr')
         let prefix = a:base
@@ -286,7 +286,7 @@ command! -buffer VimRoam2HTMLBrowse
 command! -buffer -bang VimRoamAll2HTML
       \ call vimroam#html#WikiAll2HTML(expand(vimroam#vars#get_wikilocal('path_html')), <bang>0)
 
-command! -buffer VimRoamRss call vimroam#html#diary_rss()
+command! -buffer VimRoamRss call vimroam#html#journal_rss()
 
 command! -buffer VimRoamTOC call vimroam#base#table_of_contents(1)
 
@@ -357,9 +357,9 @@ command! -buffer -nargs=? VimRoamTableAlignW call vimroam#tbl#align_or_cmd('gww'
 command! -buffer VimRoamTableMoveColumnLeft call vimroam#tbl#move_column_left()
 command! -buffer VimRoamTableMoveColumnRight call vimroam#tbl#move_column_right()
 
-" diary commands
-command! -buffer VimRoamDiaryNextDay call vimroam#diary#goto_next_day()
-command! -buffer VimRoamDiaryPrevDay call vimroam#diary#goto_prev_day()
+" journal commands
+command! -buffer VimRoamJournalNextDay call vimroam#journal#goto_next_day()
+command! -buffer VimRoamJournalPrevDay call vimroam#journal#goto_prev_day()
 
 " tags commands
 command! -buffer -bang VimRoamRebuildTags call vimroam#tags#update_tags(1, '<bang>')
@@ -432,10 +432,10 @@ nnoremap <silent><script><buffer> <Plug>VimRoamDeleteFile
     \ :VimRoamDeleteFile<CR>
 nnoremap <silent><script><buffer> <Plug>VimRoamRenameFile
     \ :VimRoamRenameFile<CR>
-nnoremap <silent><script><buffer> <Plug>VimRoamDiaryNextDay
-    \ :VimRoamDiaryNextDay<CR>
-nnoremap <silent><script><buffer> <Plug>VimRoamDiaryPrevDay
-    \ :VimRoamDiaryPrevDay<CR>
+nnoremap <silent><script><buffer> <Plug>VimRoamJournalNextDay
+    \ :VimRoamJournalNextDay<CR>
+nnoremap <silent><script><buffer> <Plug>VimRoamJournalPrevDay
+    \ :VimRoamJournalPrevDay<CR>
 "
 " default links key mappings
 if str2nr(vimroam#vars#get_global('key_mappings').links)
@@ -450,8 +450,8 @@ if str2nr(vimroam#vars#get_global('key_mappings').links)
   call vimroam#u#map_key('n', '<BS>', '<Plug>VimRoamGoBackLink')
   call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'D', '<Plug>VimRoamDeleteFile')
   call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'R', '<Plug>VimRoamRenameFile')
-  call vimroam#u#map_key('n', '-', '<Plug>VimRoamDiaryNextDay')
-  call vimroam#u#map_key('n', '=', '<Plug>VimRoamDiaryPrevDay')
+  call vimroam#u#map_key('n', '-', '<Plug>VimRoamJournalNextDay')
+  call vimroam#u#map_key('n', '=', '<Plug>VimRoamJournalPrevDay')
   call vimroam#u#map_key('i', '[]', '<Plug>VimRoamInsertLink')
 endif
 

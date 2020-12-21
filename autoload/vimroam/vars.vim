@@ -143,7 +143,7 @@ function! s:get_default_global() abort
         \ 'conceal_onechar_markers': {'type': type(0), 'default': 1, 'min': 0, 'max': 1},
         \ 'conceal_pre': {'type': type(0), 'default': 0, 'min': 0, 'max': 1},
         \ 'create_link': {'type': type(0), 'default': 1, 'min':0, 'max': 1},
-        \ 'diary_months': {'type': type({}), 'default':
+        \ 'journal_months': {'type': type({}), 'default':
         \   {
         \     1: 'January', 2: 'February', 3: 'March',
         \     4: 'April', 5: 'May', 6: 'June',
@@ -207,7 +207,7 @@ function! s:internal_global_settings() abort
 
   " Scheme regexes must be defined even if syntax file is not loaded yet cause users should be
   " able to <leader>w<leader>w without opening any vimroam file first
-  let g:vimroam_global_vars.schemes = join(['wiki\d\+', 'diary', 'local'], '\|')
+  let g:vimroam_global_vars.schemes = join(['wiki\d\+', 'journal', 'local'], '\|')
   let g:vimroam_global_vars.web_schemes1 = join(['http', 'https', 'file', 'ftp', 'gopher',
         \ 'telnet', 'nntp', 'ldap', 'rsync', 'imap', 'pop', 'irc', 'ircs', 'cvs', 'svn', 'svn+ssh',
         \ 'git', 'ssh', 'fish', 'sftp'], '\|')
@@ -340,7 +340,7 @@ function! s:read_global_settings_from_user() abort
   call s:extend_global(g:vimroam_global_vars, default_dic)
 
   " Validate some settings individually
-  let key = 'diary_months'
+  let key = 'journal_months'
   let users_value = g:vimroam_global_vars[key]
   for month in range(1, 12)
     if !has_key(users_value, month) || type(users_value[month]) != type('') ||
@@ -457,7 +457,7 @@ function! s:get_default_wikilocal() abort
         \ . fg . bg . '\|' . fg . '\|' . bg 
         \ . '\)"\s*>__CONTENT__<\/span>'
   return {
-        \ 'auto_diary_index': {'type': type(0), 'default': 0, 'min': 0, 'max': 1},
+        \ 'auto_journal_index': {'type': type(0), 'default': 0, 'min': 0, 'max': 1},
         \ 'auto_export': {'type': type(0), 'default': 0, 'min': 0, 'max': 1},
         \ 'auto_generate_links': {'type': type(0), 'default': 0, 'min': 0, 'max': 1},
         \ 'auto_generate_tags': {'type': type(0), 'default': 0, 'min': 0, 'max': 1},
@@ -486,13 +486,13 @@ function! s:get_default_wikilocal() abort
         \ 'css_name': {'type': type(''), 'default': 'style.css', 'min_length': 1},
         \ 'custom_wiki2html': {'type': type(''), 'default': ''},
         \ 'custom_wiki2html_args': {'type': type(''), 'default': ''},
-        \ 'diary_frequency': {'type': type(''), 'default': 'daily', 'possible_values': ['daily', 'weekly', 'monthly', 'yearly']},
-        \ 'diary_start_week_day': {'type': type(''), 'default': 'monday', 'possible_values': ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']},
-        \ 'diary_header': {'type': type(''), 'default': 'Diary', 'min_length': 1},
-        \ 'diary_index': {'type': type(''), 'default': 'diary', 'min_length': 1},
-        \ 'diary_rel_path': {'type': type(''), 'default': 'diary/', 'min_length': 0},
-        \ 'diary_caption_level': {'type': type(0), 'default': 0, 'min': -1, 'max': 6},
-        \ 'diary_sort': {'type': type(''), 'default': 'desc', 'possible_values': ['asc', 'desc']},
+        \ 'journal_frequency': {'type': type(''), 'default': 'daily', 'possible_values': ['daily', 'weekly', 'monthly', 'yearly']},
+        \ 'journal_start_week_day': {'type': type(''), 'default': 'monday', 'possible_values': ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']},
+        \ 'journal_header': {'type': type(''), 'default': 'Journal', 'min_length': 1},
+        \ 'journal_index': {'type': type(''), 'default': 'journal', 'min_length': 1},
+        \ 'journal_rel_path': {'type': type(''), 'default': 'journal/', 'min_length': 0},
+        \ 'journal_caption_level': {'type': type(0), 'default': 0, 'min': -1, 'max': 6},
+        \ 'journal_sort': {'type': type(''), 'default': 'desc', 'possible_values': ['asc', 'desc']},
         \ 'exclude_files': {'type': type([]), 'default': []},
         \ 'ext': {'type': type(''), 'default': '.wiki', 'min_length': 1},
         \ 'bullet_types': {'type': type([]), 'default': []},
@@ -619,7 +619,7 @@ function! s:normalize_wikilocal_settings() abort
     endif
 
     let wiki_settings['template_path'] = s:normalize_path(wiki_settings['template_path'])
-    let wiki_settings['diary_rel_path'] = s:normalize_path(wiki_settings['diary_rel_path'])
+    let wiki_settings['journal_rel_path'] = s:normalize_path(wiki_settings['journal_rel_path'])
 
     let ext = wiki_settings['ext']
     if !empty(ext) && ext[0] !=# '.'

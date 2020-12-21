@@ -96,8 +96,8 @@ function! s:normalize_link_syntax_n() abort
   " normalize_link_syntax_v
   let lnk = vimroam#base#matchstr_at_cursor(vimroam#vars#get_global('rxWord'))
   if !empty(lnk)
-    if vimroam#base#is_diary_file(expand('%:p'))
-      let sub = vimroam#base#normalize_link_in_diary(lnk)
+    if vimroam#base#is_journal_file(expand('%:p'))
+      let sub = vimroam#base#normalize_link_in_journal(lnk)
     else
       let sub = vimroam#base#normalize_link_helper(lnk,
             \ vimroam#vars#get_global('rxWord'), '',

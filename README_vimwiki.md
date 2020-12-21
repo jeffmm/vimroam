@@ -36,7 +36,7 @@ With VimRoam, you can:
 - Organize notes and ideas
 - Manage to-do lists
 - Write documentation
-- Maintain a diary
+- Maintain a journal
 - Export everything to HTML
 
 To do a quick start, press `<Leader>ww` (default is `\ww`) to go to your index

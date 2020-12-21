@@ -371,7 +371,7 @@ function! s:get_links(wikifile, idx)
       endif
       let link_count += 1
       let target = vimroam#base#resolve_link(link_text, a:wikifile)
-      if target.filename != '' && target.scheme =~# '\mwiki\d\+\|diary\|file\|local'
+      if target.filename != '' && target.scheme =~# '\mwiki\d\+\|journal\|file\|local'
         call add(links, [target.filename, target.anchor, lnum, col])
       endif
     endwhile
@@ -659,7 +659,7 @@ function! vimroam#zettel#get_wikilinks(wiki_nr, also_absolute_links)
   if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
     let cwd = vimroam#path#wikify_path(expand('%:p:h'))
   elseif a:wiki_nr < 0
-    let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('diary_rel_path')
+    let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('journal_rel_path')
   else
     let cwd = vimroam#vars#get_wikilocal('path', a:wiki_nr)
   endif
@@ -673,7 +673,7 @@ function! vimroam#zettel#get_wikilinks(wiki_nr, also_absolute_links)
       if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
         let cwd = vimroam#vars#get_wikilocal('path')
       elseif a:wiki_nr < 0
-        let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('diary_rel_path')
+        let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('journal_rel_path')
       endif
       let wikifile = '/'.vimroam#path#relpath(cwd, wikifile)
       call add(result, wikifile)
@@ -711,7 +711,7 @@ function! vimroam#zettel#generate_links()
   for link in links
     let abs_filepath = vimroam#path#abs_path_of_link(link)
     "let abs_filepath = link
-    "if !s:is_diary_file(abs_filepath)
+    "if !s:is_journal_file(abs_filepath)
       call add(lines, bullet.
             \ vimroam#zettel#get_link(abs_filepath))
     "endif

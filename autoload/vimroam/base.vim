@@ -113,7 +113,7 @@ endfunction
 
 " Check if a link is a well formed wiki link (Helper)
 function! s:is_wiki_link(link_infos) abort
-  return a:link_infos.scheme =~# '\mwiki\d\+' || a:link_infos.scheme ==# 'diary'
+  return a:link_infos.scheme =~# '\mwiki\d\+' || a:link_infos.scheme ==# 'journal'
 endfunction
 
 
@@ -153,7 +153,7 @@ function! vimroam#base#resolve_link(link_text, ...) abort
   else
     let link_infos.scheme = scheme
 
-    if link_infos.scheme !~# '\mwiki\d\+\|diary\|local\|file'
+    if link_infos.scheme !~# '\mwiki\d\+\|journal\|local\|file'
       let link_infos.filename = link_text  " unknown scheme, may be a weblink
       return link_infos
     endif
@@ -254,12 +254,12 @@ function! vimroam#base#resolve_link(link_text, ...) abort
       endif
     endif
 
-  elseif link_infos.scheme ==# 'diary'
+  elseif link_infos.scheme ==# 'journal'
     let link_infos.index = source_wiki
 
     let link_infos.filename =
           \ vimroam#vars#get_wikilocal('path', link_infos.index) .
-          \ vimroam#vars#get_wikilocal('diary_rel_path', link_infos.index) .
+          \ vimroam#vars#get_wikilocal('journal_rel_path', link_infos.index) .
           \ link_text .
           \ vimroam#vars#get_wikilocal('ext', link_infos.index)
   elseif (link_infos.scheme ==# 'file' || link_infos.scheme ==# 'local') && is_relative
@@ -424,11 +424,11 @@ function! vimroam#base#generate_links(create, ...) abort
     call sort(links)
 
     let bullet = repeat(' ', vimroam#lst#get_list_margin()) . vimroam#lst#default_symbol().' '
-    let l:diary_file_paths = vimroam#diary#get_diary_files()
+    let l:journal_file_paths = vimroam#journal#get_journal_files()
 
     for link in links
       let link_infos = vimroam#base#resolve_link(link)
-      if !vimroam#base#is_diary_file(link_infos.filename, copy(l:diary_file_paths))
+      if !vimroam#base#is_journal_file(link_infos.filename, copy(l:journal_file_paths))
         let link_tpl = vimroam#vars#get_syntaxlocal('Link1')
 
         let link_caption = vimroam#base#read_caption(link_infos.filename)
@@ -518,7 +518,7 @@ endfunction
 
 
 " Returns: a list containing all files of the given wiki as absolute file path.
-" If the given wiki number is negative, the diary of the current wiki is used
+" If the given wiki number is negative, the journal of the current wiki is used
 " If the second argument is not zero, only directories are found
 " If third argument: pattern to search for
 function! vimroam#base#find_files(wiki_nr, directories_only, ...) abort
@@ -527,7 +527,7 @@ function! vimroam#base#find_files(wiki_nr, directories_only, ...) abort
     let root_directory = vimroam#vars#get_wikilocal('path', wiki_nr)
   else
     let root_directory = vimroam#vars#get_wikilocal('path') .
-          \ vimroam#vars#get_wikilocal('diary_rel_path')
+          \ vimroam#vars#get_wikilocal('journal_rel_path')
     let wiki_nr = vimroam#vars#get_bufferlocal('wiki_nr')
   endif
   if a:directories_only
@@ -560,7 +560,7 @@ endfunction
 
 " Returns: a list containing the links to get from the current file to all wiki
 " files in the given wiki.
-" If the given wiki number is negative, the diary of the current wiki is used.
+" If the given wiki number is negative, the journal of the current wiki is used.
 " If also_absolute_links is nonzero, also return links of the form /file
 " If pattern is not '', only filepaths matching pattern will be considered
 function! vimroam#base#get_wikilinks(wiki_nr, also_absolute_links, pattern) abort
@@ -568,7 +568,7 @@ function! vimroam#base#get_wikilinks(wiki_nr, also_absolute_links, pattern) abor
   if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
     let cwd = vimroam#path#wikify_path(expand('%:p:h'))
   elseif a:wiki_nr < 0
-    let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('diary_rel_path')
+    let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('journal_rel_path')
   else
     let cwd = vimroam#vars#get_wikilocal('path', a:wiki_nr)
   endif
@@ -583,7 +583,7 @@ function! vimroam#base#get_wikilinks(wiki_nr, also_absolute_links, pattern) abor
       if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
         let cwd = vimroam#vars#get_wikilocal('path')
       elseif a:wiki_nr < 0
-        let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('diary_rel_path')
+        let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('journal_rel_path')
       endif
       let wikifile = fnamemodify(wikifile, ':r') " strip extension
       let wikifile = '/'.vimroam#path#relpath(cwd, wikifile)
@@ -945,7 +945,7 @@ function! s:get_links(wikifile, idx) abort
       endif
       let link_count += 1
       let target = vimroam#base#resolve_link(link_text, a:wikifile)
-      if target.filename !=? '' && target.scheme =~# '\mwiki\d\+\|diary\|file\|local'
+      if target.filename !=? '' && target.scheme =~# '\mwiki\d\+\|journal\|file\|local'
         call add(links, [target.filename, target.anchor, lnum, col])
       endif
     endwhile
@@ -1420,7 +1420,7 @@ function! vimroam#base#nested_syntax(filetype, start, end, textSnipHl) abort
 endfunction
 
 
-" Create or update auto-generated listings in a wiki file, like TOC, diary
+" Create or update auto-generated listings in a wiki file, like TOC, journal
 " links, tags list etc.
 " - the listing consists of a header and a list of strings provided by a funcref
 " - a:content_regex is used to determine how long a potentially existing list is
@@ -2577,18 +2577,18 @@ function! s:clean_url(url) abort
 endfunction
 
 
-" Check if 1.filename is a diary file
-" An optional second argument allows you to pass in a list of diary files rather
+" Check if 1.filename is a journal file
+" An optional second argument allows you to pass in a list of journal files rather
 " than generating a list on each call to the function.
-function! vimroam#base#is_diary_file(filename, ...) abort
-  let l:diary_file_paths = a:0 > 0 ? a:1 : vimroam#diary#get_diary_files()
+function! vimroam#base#is_journal_file(filename, ...) abort
+  let l:journal_file_paths = a:0 > 0 ? a:1 : vimroam#journal#get_journal_files()
   let l:normalised_file_paths =
-        \ map(l:diary_file_paths, 'vimroam#path#normalize(v:val)')
+        \ map(l:journal_file_paths, 'vimroam#path#normalize(v:val)')
   " Escape single quote (Issue #886)
   let filename = substitute(a:filename, "'", "''", 'g')
   let l:matching_files =
         \ filter(l:normalised_file_paths, "v:val ==# '" . filename . "'" )
-  return len(l:matching_files) > 0 " filename is a diary file if match is found
+  return len(l:matching_files) > 0 " filename is a journal file if match is found
 endfunction
 
 
@@ -2624,15 +2624,15 @@ function! vimroam#base#normalize_imagelink_helper(str, rxUrl, rxDesc, rxStyle, t
 endfunction
 
 
-" Normalize link in a diary file
-" Refactor: in diary
-function! vimroam#base#normalize_link_in_diary(lnk) abort
+" Normalize link in a journal file
+" Refactor: in journal
+function! vimroam#base#normalize_link_in_journal(lnk) abort
   let sc = vimroam#vars#get_wikilocal('links_space_char')
   let link = a:lnk . vimroam#vars#get_wikilocal('ext')
   let link_wiki = substitute(vimroam#vars#get_wikilocal('path') . '/' . link, '\s', sc, 'g')
-  let link_diary = substitute(vimroam#vars#get_wikilocal('path') . '/'
-        \ . vimroam#vars#get_wikilocal('diary_rel_path') . '/' . link, '\s', sc, 'g')
-  let link_exists_in_diary = filereadable(link_diary)
+  let link_journal = substitute(vimroam#vars#get_wikilocal('path') . '/'
+        \ . vimroam#vars#get_wikilocal('journal_rel_path') . '/' . link, '\s', sc, 'g')
+  let link_exists_in_journal = filereadable(link_journal)
   let link_exists_in_wiki = filereadable(link_wiki)
   let link_is_date = a:lnk =~# '\d\d\d\d-\d\d-\d\d'
 
@@ -2642,7 +2642,7 @@ function! vimroam#base#normalize_link_in_diary(lnk) abort
     let rxDesc = '\d\d\d\d-\d\d-\d\d'
     let template = vimroam#vars#get_global('WikiLinkTemplate1')
   elseif link_exists_in_wiki
-    let depth = len(split(vimroam#vars#get_wikilocal('diary_rel_path'), '/'))
+    let depth = len(split(vimroam#vars#get_wikilocal('journal_rel_path'), '/'))
     let str = repeat('../', depth) . a:lnk
     let rxUrl = '.*'
     let rxDesc = '[^/]*$'
@@ -2696,8 +2696,8 @@ function! s:normalize_link_syntax_n() abort
   " normalize_link_syntax_v
   let lnk = vimroam#base#matchstr_at_cursor(vimroam#vars#get_global('rxWord'))
   if !empty(lnk)
-    if vimroam#base#is_diary_file(expand('%:p'))
-      let sub = vimroam#base#normalize_link_in_diary(lnk)
+    if vimroam#base#is_journal_file(expand('%:p'))
+      let sub = vimroam#base#normalize_link_in_journal(lnk)
     else
       let sub = s:safesubstitute(
             \ vimroam#vars#get_global('WikiLinkTemplate1'), '__LinkUrl__', tolower(lnk), '')
@@ -2756,9 +2756,9 @@ function! s:normalize_link_syntax_v() abort
     return
   endif
   " Embed link in template
-  " In case of a diary link, wiki or markdown link
-  if vimroam#base#is_diary_file(expand('%:p'))
-    let link = vimroam#base#normalize_link_in_diary(visual_selection)
+  " In case of a journal link, wiki or markdown link
+  if vimroam#base#is_journal_file(expand('%:p'))
+    let link = vimroam#base#normalize_link_in_journal(visual_selection)
   else
     let link_tpl = vimroam#vars#get_syntaxlocal('Link1')
     let link = s:safesubstitute(link_tpl, '__LinkUrl__', tolower(visual_selection), '')

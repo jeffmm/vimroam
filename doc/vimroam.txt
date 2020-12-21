@@ -40,7 +40,7 @@ CONTENTS                                                             *vimroam*
     7. Placeholders                  |vimroam-placeholders|
     8. Lists                         |vimroam-lists|
     9. Tables                        |vimroam-tables|
-    10. Diary                        |vimroam-diary|
+    10. Journal                        |vimroam-journal|
     11. Anchors                      |vimroam-anchors|
     12. Options                      |vimroam-options|
         12.1. Registered Wiki        |vimroam-register-wiki|
@@ -67,7 +67,7 @@ With VimRoam you can:
     - organize notes and ideas
     - manage todo-lists
     - write documentation
-    - maintain a diary
+    - maintain a journal
     - export your documents to HTML
 
 Getting started with VimRoam is easy. Once installed, simply type `vim` into
@@ -190,91 +190,91 @@ See also |:VimRoamUISelect|
 
                                                           *vimroam_<Leader>wi*
 [count]<Leader>wi
-        Open diary index file of the [count]'s wiki.
+        Open journal index file of the [count]'s wiki.
 
-        <Leader>wi opens diary index file of the current wiki.
-        1<Leader>wi opens diary index file of the first wiki from
+        <Leader>wi opens journal index file of the current wiki.
+        1<Leader>wi opens journal index file of the first wiki from
         |g:vimroam_list|.
-        2<Leader>wi opens diary index file of the second wiki from
+        2<Leader>wi opens journal index file of the second wiki from
         |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimRoamDiaryIndex`
+        Remap command: `<Plug>VimRoamJournalIndex`
 
-See also |:VimRoamDiaryIndex|
+See also |:VimRoamJournalIndex|
 
                                                   *vimroam_<Leader>w<Leader>w*
 [count]<Leader>w<Leader>w
-        Open diary wiki-file for today of the [count]'s wiki.
+        Open journal wiki-file for today of the [count]'s wiki.
 
-        <Leader>w<Leader>w opens diary wiki-file for today in the current wiki
-        1<Leader>w<Leader>w opens diary wiki-file for today in the first wiki
+        <Leader>w<Leader>w opens journal wiki-file for today in the current wiki
+        1<Leader>w<Leader>w opens journal wiki-file for today in the first wiki
         from |g:vimroam_list|.
-        2<Leader>w<Leader>w opens diary wiki-file for today in the second wiki
+        2<Leader>w<Leader>w opens journal wiki-file for today in the second wiki
         from |g:vimroam_list|.
-        3<Leader>w<Leader>w opens diary wiki-file for today in the third wiki
+        3<Leader>w<Leader>w opens journal wiki-file for today in the third wiki
         from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimRoamMakeDiaryNote`
+        Remap command: `<Plug>VimRoamMakeJournalNote`
 
-See also |:VimRoamMakeDiaryNote|
+See also |:VimRoamMakeJournalNote|
 
 
                                                   *vimroam_<Leader>w<Leader>t*
 [count]<Leader>w<Leader>t
-        Open diary wiki-file for today of the [count]'s wiki in a new tab.
+        Open journal wiki-file for today of the [count]'s wiki in a new tab.
 
-        <Leader>w<Leader>t tabopens diary wiki-file for today in the current
+        <Leader>w<Leader>t tabopens journal wiki-file for today in the current
         wiki
-        1<Leader>w<Leader>t tabopens diary wiki-file for today in the
+        1<Leader>w<Leader>t tabopens journal wiki-file for today in the
         first wiki from |g:vimroam_list|.
-        2<Leader>w<Leader>t tabopens diary wiki-file for today in the second
+        2<Leader>w<Leader>t tabopens journal wiki-file for today in the second
         wiki from |g:vimroam_list|.
-        3<Leader>w<Leader>t tabopens diary wiki-file for today in the third
+        3<Leader>w<Leader>t tabopens journal wiki-file for today in the third
         wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimRoamTabMakeDiaryNote`
+        Remap command: `<Plug>VimRoamTabMakeJournalNote`
 
-See also |:VimRoamTabMakeDiaryNote|
+See also |:VimRoamTabMakeJournalNote|
 
 
                                                   *vimroam_<Leader>w<Leader>y*
 [count]<Leader>w<Leader>y
-        Open diary wiki-file for yesterday of the [count]'s wiki.
+        Open journal wiki-file for yesterday of the [count]'s wiki.
 
-        <Leader>w<Leader>y opens diary wiki-file for yesterday in the current
+        <Leader>w<Leader>y opens journal wiki-file for yesterday in the current
         wiki
-        1<Leader>w<Leader>y opens diary wiki-file for yesterday in the first
+        1<Leader>w<Leader>y opens journal wiki-file for yesterday in the first
         wiki from |g:vimroam_list|.
-        2<Leader>w<Leader>y opens diary wiki-file for yesterday in the second
+        2<Leader>w<Leader>y opens journal wiki-file for yesterday in the second
         wiki from |g:vimroam_list|.
-        3<Leader>w<Leader>y opens diary wiki-file for yesterday in the third
+        3<Leader>w<Leader>y opens journal wiki-file for yesterday in the third
         wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimRoamMakeYesterdayDiaryNote`
+        Remap command: `<Plug>VimRoamMakeYesterdayJournalNote`
 
-See also |:VimRoamMakeYesterdayDiaryNote|
+See also |:VimRoamMakeYesterdayJournalNote|
 
                                                   *vimroam_<Leader>w<Leader>m*
 [count]<Leader>w<Leader>m
-        Open diary wiki-file for tomorrow of the [count]'s wiki.
+        Open journal wiki-file for tomorrow of the [count]'s wiki.
 
-        <Leader>w<Leader>m opens diary wiki-file for tomorrow in the current
+        <Leader>w<Leader>m opens journal wiki-file for tomorrow in the current
         wiki
-        1<Leader>w<Leader>m opens diary wiki-file for tomorrow in the first
+        1<Leader>w<Leader>m opens journal wiki-file for tomorrow in the first
         wiki from |g:vimroam_list|.
-        2<Leader>w<Leader>m opens diary wiki-file for tomorrow in the second
+        2<Leader>w<Leader>m opens journal wiki-file for tomorrow in the second
         wiki from |g:vimroam_list|.
-        3<Leader>w<Leader>m opens diary wiki-file for tomorrow in the third
+        3<Leader>w<Leader>m opens journal wiki-file for tomorrow in the third
         wiki from |g:vimroam_list|.
         etc.
 
-        Remap command: `<Plug>VimRoamMakeTomorrowDiaryNote`
+        Remap command: `<Plug>VimRoamMakeTomorrowJournalNote`
 
-See also |:VimRoamMakeTomorrowDiaryNote|
+See also |:VimRoamMakeTomorrowJournalNote|
 
 ------------------------------------------------------------------------------
 3.2. Local mappings                                   *vimroam-local-mappings*
@@ -335,10 +335,10 @@ MAP                MODE
                         Remap command: `<Plug>VimRoam2HTMLBrowse`
 
                                                   *vimroam_<Leader>w<Leader>i*
-<Leader>w<Leader>i n    Update diary section (delete old, insert new)
-                        Only works from the diary index.
-                        Maps to |:VimRoamDiaryGenerateLinks|
-                        Remap command: `<Plug>VimRoamDiaryGenerateLinks`
+<Leader>w<Leader>i n    Update journal section (delete old, insert new)
+                        Only works from the journal index.
+                        Maps to |:VimRoamJournalGenerateLinks|
+                        Remap command: `<Plug>VimRoamJournalGenerateLinks`
 
                                                                 *vimroam_<CR>*
 <CR>               n    Follow/create wiki link (create target wiki page if
@@ -577,14 +577,14 @@ gw1                     Remap command:`<Plug>VimRoamTableAlignW1`
                         Remap command: `<Plug>VimRoamTableMoveColumnRight`
 
                                                              *vimroam_<C-Up>*
-<C-Up>           n      Open the previous day's diary link if available.
-                        See |:VimRoamDiaryPrevDay|
-                        Remap command: `<Plug>VimRoamDiaryPrevDay`
+<C-Up>           n      Open the previous day's journal link if available.
+                        See |:VimRoamJournalPrevDay|
+                        Remap command: `<Plug>VimRoamJournalPrevDay`
 
                                                            *vimroam_<C-Down>*
-<C-Down>         n      Open the next day's diary link if available.
-                        See |:VimRoamDiaryNextDay|
-                        Remap command: `<Plug>VimRoamDiaryNextDay`
+<C-Down>         n      Open the next day's journal link if available.
+                        See |:VimRoamJournalNextDay|
+                        Remap command: `<Plug>VimRoamJournalNextDay`
 
 Mouse mappings                                                *vimroam_mouse*
 
@@ -737,28 +737,28 @@ These key mappings can be modified by replacing the default keys: >
     2. Set variable varname to value. Completion works with the current value
        of variable
 
-*:VimRoamDiaryIndex* [count]
-    Open diary index file of the current wiki. If a [count] is given the
+*:VimRoamJournalIndex* [count]
+    Open journal index file of the current wiki. If a [count] is given the
     corresponding wiki from |g:vimroam_list| is opened instead.
 
-*:VimRoamMakeDiaryNote* [count]
-    Open diary wiki-file for today of the current wiki. If a [count] is given
-    a diary wiki-file for the corresponding wiki from |g:vimroam_list| is
+*:VimRoamMakeJournalNote* [count]
+    Open journal wiki-file for today of the current wiki. If a [count] is given
+    a journal wiki-file for the corresponding wiki from |g:vimroam_list| is
     opened instead.
 
-*:VimRoamTabMakeDiaryNote* [count]
-    Open diary wiki-file for today of the current wiki in a new tab. If
-    a [count] is given a diary wiki-file for the corresponding wiki from
+*:VimRoamTabMakeJournalNote* [count]
+    Open journal wiki-file for today of the current wiki in a new tab. If
+    a [count] is given a journal wiki-file for the corresponding wiki from
     |g:vimroam_list| is opened instead.
 
-*:VimRoamMakeYesterdayDiaryNote* [count]
-    Open diary wiki-file for yesterday of the current wiki. If a [count] is
-    given a diary wiki-file for the corresponding wiki from |g:vimroam_list|
+*:VimRoamMakeYesterdayJournalNote* [count]
+    Open journal wiki-file for yesterday of the current wiki. If a [count] is
+    given a journal wiki-file for the corresponding wiki from |g:vimroam_list|
     is opened instead.
 
-*:VimRoamMakeTomorrowDiaryNote* [count]
-    Open diary wiki-file for tomorrow of the current wiki. If a [count] is
-    given a diary wiki-file for the corresponding wiki from |g:vimroam_list|
+*:VimRoamMakeTomorrowJournalNote* [count]
+    Open journal wiki-file for tomorrow of the current wiki. If a [count] is
+    given a journal wiki-file for the corresponding wiki from |g:vimroam_list|
     is opened instead.
 
 ------------------------------------------------------------------------------
@@ -845,7 +845,7 @@ VimRoam file.
     convert all pages, regardless of whether or not they are out-of-date.
 
 *:VimRoamRss*
-    Generate an RSS feed for the latest diary entries.
+    Generate an RSS feed for the latest journal entries.
 
 *:VimRoamToggleListItem*
     Toggle checkbox of a list item on/off.
@@ -924,15 +924,15 @@ VimRoam file.
     If an optional 'pattern' is given as argument, the files will be searched
     in the wiki root folder according to the 'pattern' as |globpath|
 
-*:VimRoamDiaryGenerateLinks*
-    Delete old, insert new diary section into diary index file.
+*:VimRoamJournalGenerateLinks*
+    Delete old, insert new journal section into journal index file.
 
-*:VimRoamDiaryNextDay*
-    Open next day diary link if available.
+*:VimRoamJournalNextDay*
+    Open next day journal link if available.
     Mapped to <C-Down>.
 
-*:VimRoamDiaryPrevDay*
-    Open previous day diary link if available.
+*:VimRoamJournalPrevDay*
+    Open previous day journal link if available.
     Mapped to <C-Up>.
 
 *:VimRoamTOC*
@@ -1088,14 +1088,14 @@ or: >
 
 See |vimroam-option-name| to set a per wiki name.
 
-Diary~
+Journal~
 
-The "diary:" scheme is used to link to diary entries: >
-  [[diary:2012-03-05]]
+The "journal:" scheme is used to link to journal entries: >
+  [[journal:2012-03-05]]
 
 Anchors~
 
-A wikilink, interwiki link or diary link can be followed by a '#' and the name
+A wikilink, interwiki link or journal link can be followed by a '#' and the name
 of an anchor.  When opening a link, the cursor jumps to the anchor. >
   [[Todo List#Tomorrow|Tasks for tomorrow]]
 
@@ -1945,7 +1945,7 @@ values: >
  | First Name | Last Name  | Age | City     | e-mail               |
  |------------|------------|-----|----------|----------------------|
  | Vladislav  | Pokrishkin | 31  | Moscow   | vlad_pok@smail.com   |
- | James      | Esfandiary | 27  | Istanbul | esfandiary@tmail.com |
+ | James      | Esfanjournal | 27  | Istanbul | esfanjournal@tmail.com |
 <
 
 To indent table indent the first row. Then format it with 'gqq'.
@@ -1961,19 +1961,19 @@ using the ':' character. The default is left-align.  >
 <
 
 ==============================================================================
-10. Diary                                                      *vimroam-diary*
+10. Journal                                                      *vimroam-journal*
 
-The diary helps you make daily notes. You can easily add information into
+The journal helps you make daily notes. You can easily add information into
 VimRoam that should be sorted out later. Just hit <Leader>w<Leader>w to create
 a new note for today with a name based on the current date.
 
-To generate the diary section with all available links one can use
-|:VimRoamDiaryGenerateLinks| or <Leader>w<Leader>i .
+To generate the journal section with all available links one can use
+|:VimRoamJournalGenerateLinks| or <Leader>w<Leader>i .
 
-Note: it works only for diary index file.
+Note: it works only for journal index file.
 
-Example of diary section: >
-    = Diary =
+Example of journal section: >
+    = Journal =
 
     == 2011 ==
 
@@ -1981,17 +1981,17 @@ Example of diary section: >
         * [[2011-12-09]]
         * [[2011-12-08]]
 
-The diary can be used with a frequency other than daily. See the appropriate
+The journal can be used with a frequency other than daily. See the appropriate
 per-wiki options.
 
-See |g:vimroam_diary_months| if you would like to rename months.
+See |g:vimroam_journal_months| if you would like to rename months.
 
 ------------------------------------------------------------------------------
 Calendar integration                                        *vimroam-calendar*
 
-If you have Calendar.vim installed you can use it to create diary notes.
+If you have Calendar.vim installed you can use it to create journal notes.
 Just open calendar with :Calendar and tap <Enter> on the date. A wiki file
-will be created in the default wiki's diary.
+will be created in the default wiki's journal.
 
 Get it from http://www.vim.org/scripts/script.php?script_id=52
 
@@ -2470,84 +2470,84 @@ opened, it can be slow when you have huge files. In this case, set this option
 to 0.
 
 
-*vimroam-option-diary_rel_path*
+*vimroam-option-journal_rel_path*
 ------------------------------------------------------------------------------
 Key             Default value~
-diary_rel_path  diary/
+journal_rel_path  journal/
 
 Description~
-The path to the diary wiki files, relative to |vimroam-option-path|.
+The path to the journal wiki files, relative to |vimroam-option-path|.
 
 
-*vimroam-option-diary_index*
+*vimroam-option-journal_index*
 ------------------------------------------------------------------------------
 Key             Default value~
-diary_index     diary
+journal_index     journal
 
 Description~
 Name of wiki-file that holds all links to dated wiki files.
 
 
-*vimroam-option-diary_header*
+*vimroam-option-journal_header*
 ------------------------------------------------------------------------------
 Key             Default value~
-diary_header    Diary
+journal_header    Journal
 
 Description~
-Name of the header in |vimroam-option-diary_index| where links to dated
+Name of the header in |vimroam-option-journal_index| where links to dated
 wiki-files are located.
 
 
-*vimroam-option-diary_sort*
+*vimroam-option-journal_sort*
 ------------------------------------------------------------------------------
 Key             Default value   Values~
-diary_sort      desc            desc, asc
+journal_sort      desc            desc, asc
 
 Description~
-Sort links in a diary index page.
+Sort links in a journal index page.
 
 
-*vimroam-option-diary_caption_level*
+*vimroam-option-journal_caption_level*
 ------------------------------------------------------------------------------
 Key                   Default value~
-diary_caption_level   0
+journal_caption_level   0
 
 Description~
-Controls the presence of captions in the diary index linking to headers within
-the diary pages.
+Controls the presence of captions in the journal index linking to headers within
+the journal pages.
 
 Possible values:
--1:  No headers are read from the diary page.
- 0:  The first header from the diary page is used as the caption.
+-1:  No headers are read from the journal page.
+ 0:  The first header from the journal page is used as the caption.
        There are no sub-captions.
- 1:  Captions are created for headers of level 1 in the diary page.
- 2:  Captions are created for headers up to level 2 in the diary page.
+ 1:  Captions are created for headers of level 1 in the journal page.
+ 2:  Captions are created for headers up to level 2 in the journal page.
  etc.
 
-When the value is >= 1, the primary caption of each diary page is set to the
+When the value is >= 1, the primary caption of each journal page is set to the
 first header read from that page if it is the unique lowest-level header.
 
 
-*vimroam-option-diary_frequency*
+*vimroam-option-journal_frequency*
 ------------------------------------------------------------------------------
 Key               Default value~
-diary_frequency   daily
+journal_frequency   daily
 
 Description~
-Controls the diary frequency used to create the date for which a diary entry
+Controls the journal frequency used to create the date for which a journal entry
 is created.
 
 Possible values:
-  daily:  Create a diary entry dated for each day.
- weekly:  Create a diary entry dated for the beginning of each week.
-monthly:  Create a diary entry dated for the beginning of each month.
- yearly:  Create a diary entry dated for the beginning of each year.
+  daily:  Create a journal entry dated for each day.
+ weekly:  Create a journal entry dated for the beginning of each week.
+monthly:  Create a journal entry dated for the beginning of each month.
+ yearly:  Create a journal entry dated for the beginning of each year.
 
 
-*vimroam-option-diary_start_week_day*
+*vimroam-option-journal_start_week_day*
 ------------------------------------------------------------------------------
 Key                   Default value~
-diary_start_week_day  monday
+journal_start_week_day  monday
 
 Description~
 Set the day to begin each week.
@@ -2704,15 +2704,15 @@ current wiki page is saved: >
   let g:vimroam_list = [{'path': '~/my_site/', 'auto_tags': 1}]
 
 
-*vimroam-option-auto_diary_index*
+*vimroam-option-auto_journal_index*
 ------------------------------------------------------------------------------
 Key               Default value     Values~
-auto_diary_index  0                 0, 1
+auto_journal_index  0                 0, 1
 
 Description~
-Set this option to 1 to automatically update the diary index when opened.
-See |:VimRoamDiaryGenerateLinks|:  >
-  let g:vimroam_list = [{'path': '~/my_site/', 'auto_diary_index': 1}]
+Set this option to 1 to automatically update the journal index when opened.
+See |:VimRoamJournalGenerateLinks|:  >
+  let g:vimroam_list = [{'path': '~/my_site/', 'auto_journal_index': 1}]
 
 
 *vimroam-option-auto_generate_links*
@@ -2794,7 +2794,7 @@ Description~
 Setup RSS file name: >
   let g:vimroam_list = [{'path': '~/my_pages/', 'rss_name': 'feed.rss'}]
 <
-VimRoam will generate an RSS feed for the diary in this file.
+VimRoam will generate an RSS feed for the journal in this file.
 
 *vimroam-option-rss_max_items*
 ------------------------------------------------------------------------------
@@ -2802,7 +2802,7 @@ Key             Default value~
 rss_max_items   10
 
 Description~
-This setting limits the number of diary entries exported into the RSS feed.
+This setting limits the number of journal entries exported into the RSS feed.
 
 *vimroam-option-base_url*
 ------------------------------------------------------------------------------
@@ -2812,7 +2812,7 @@ base_url        ''
 Description~
 This setting specifies the URL where the generated VimRoam HTML pages can
 be reached. It is used for the link to the RSS feed and for links to the
-diary entries inside the feed.
+journal entries inside the feed.
 
 ------------------------------------------------------------------------------
 *g:vimroam_toc_header*
@@ -3058,7 +3058,7 @@ to use some workarounds to make folds work faster.
 ------------------------------------------------------------------------------
 *g:vimroam_use_calendar*
 
-Create new or open existing diary wiki-file for the date selected in Calendar.
+Create new or open existing journal wiki-file for the date selected in Calendar.
 See |vimroam-calendar|.
 
 Value           Description~
@@ -3102,7 +3102,7 @@ link or a weblink, is first passed to |VimRoamLinkHandler| to see if it can be
 handled. The return value 1 indicates success.
 
 If the link is not handled successfully, the behavior of VimRoam depends on
-the scheme.  "wiki:", "diary:" or schemeless links are opened in Vim.  "file:"
+the scheme.  "wiki:", "journal:" or schemeless links are opened in Vim.  "file:"
 and "local:" links are opened with a system default handler.
 
 You can redefine the VimRoamLinkHandler function in your .vimrc to do
@@ -3457,13 +3457,13 @@ Default: 15
 
 
 ------------------------------------------------------------------------------
-*g:vimroam_diary_months*
+*g:vimroam_journal_months*
 
-It is a |Dictionary| with the numbers of months and corresponding names. Diary
+It is a |Dictionary| with the numbers of months and corresponding names. Journal
 uses it.
 
-Redefine it in your .vimrc to get localized months in your diary:
-let g:vimroam_diary_months = {
+Redefine it in your .vimrc to get localized months in your journal:
+let g:vimroam_journal_months = {
       \ 1: 'Январь', 2: 'Февраль', 3: 'Март',
       \ 4: 'Апрель', 5: 'Май', 6: 'Июнь',
       \ 7: 'Июль', 8: 'Август', 9: 'Сентябрь',
@@ -3471,7 +3471,7 @@ let g:vimroam_diary_months = {
       \ }
 
 Default:
-let g:vimroam_diary_months = {
+let g:vimroam_journal_months = {
       \ 1: 'January', 2: 'February', 3: 'March',
       \ 4: 'April', 5: 'May', 6: 'June',
       \ 7: 'July', 8: 'August', 9: 'September',
@@ -3554,7 +3554,7 @@ The default is 1.
 *g:vimroam_auto_header*
 
 Set this option to 1 to automatically generate a level 1 header when creating
-a new wiki page. This option is disabled for the wiki index and the diary
+a new wiki page. This option is disabled for the wiki index and the journal
 index. Spaces replaced with |vimroam-option-links_space_char| are reverted
 back to spaces in the generated header, which will match the filename
 except for the characters that were reverted to spaces.
@@ -3905,7 +3905,7 @@ New:~
     * PR #906: Add |VimRoamRemoveDone| to remove all todo items that are done
     * PR #907: Cycle bullets
     * PR #901: adds multiparagraph blockquotes using email style syntax
-    * PR #934: RSS feed generation for diary with :VimRoamRss.
+    * PR #934: RSS feed generation for journal with :VimRoamRss.
 
 Changed:~
     * PR #1047: Allow to replace default mapping of VimRoamToggleListItem
@@ -3947,7 +3947,7 @@ Fixed:~
 
 New:~
     * PR #787: |:VimRoamRenameFile| works for all directories: even
-      wiki_root/diary/2019-12-11.md if current file is wiki_root/dir1/file.md.
+      wiki_root/journal/2019-12-11.md if current file is wiki_root/dir1/file.md.
     * Issue #764: fenced code blocks are properly supported for markdown
       syntax i.e. more than 3 backticks, adds tilde support.
     * PR #785: |:VimRoamGoto| completion works with part of filename and
@@ -3959,7 +3959,7 @@ New:~
     * PR #711: Allow forcing VimRoamAll2HTML with !
     * PR #702: Make remapping documentation more accessible to newer vim users
     * PR #673: Add :VimRoamGoto key mapping.
-    * PR #689: Allow |vimroam-option-diary_rel_path| to be an empty string.
+    * PR #689: Allow |vimroam-option-journal_rel_path| to be an empty string.
     * PR #683: Improve layout and format of key binding documentation in
       README and include note about key bindings that may not work.
     * PR #681: Prevent sticky type checking errors for old vim versions.
@@ -4007,14 +4007,14 @@ New:~
       .md in generated links.
     * PR #528: Add option |g:vimroam_create_link| to prevent link creation
       with <CR>.
-    * PR #498: Option |vimroam-option-diary_caption_level| which adds captions
-      to the diary index based on headers.
+    * PR #498: Option |vimroam-option-journal_caption_level| which adds captions
+      to the journal index based on headers.
     * PR #377: Add horizontal alignment to tables.
     * PR #202: Don't override or display errors for existing keymappings.
     * PR #47: Optimize table formatting for large tables.
     * PR #857: Make default template responsive
-    * PR #879: Generate links when diary & wiki dir are the same
-    * PR #884: Configure diary frequency (daily, weekly, monthly, yearly)
+    * PR #879: Generate links when journal & wiki dir are the same
+    * PR #884: Configure journal frequency (daily, weekly, monthly, yearly)
 
 Changed:~
     * Issue #796: Rename |:VimRoamGenerateTags| to |:VimRoamGenerateTagLinks|
@@ -4033,7 +4033,7 @@ Removed:~
       point.
 
 Fixed:~
-    * Issue #90: |:VimRoamRenameFile| doesn't update links in diary.
+    * Issue #90: |:VimRoamRenameFile| doesn't update links in journal.
     * Issue #790: Allow tags before a header with markdown syntax.
     * Issue #779: VimRoam tags file meets ctags standard.
     * Issue #781: Compatablity fixes for older versions of Vim.
@@ -4045,7 +4045,7 @@ Fixed:~
     * PR #744: Fix typo in vimroam_list_manipulation
     * Issue #715: s:clean_url is compatible with vim pre 7.4.1546 (sticky type
       checking)
-    * Issue #729: Normalize links uses relative paths in diary pages for
+    * Issue #729: Normalize links uses relative paths in journal pages for
       Markdown syntax. This previously only worked for the default syntax.
     * Disable spell check in code and math inline/blocks.
     * Properly handle markdown image links `![]()`
@@ -4061,12 +4061,12 @@ Fixed:~
     * Issue #654: Fix |:VimRoamShowVersion| command.
     * PR #634: Removed extra newlines that were inserted before/after
       generated links.
-    * Issue #543: Allow commands related to opening index files or diary pages
+    * Issue #543: Allow commands related to opening index files or journal pages
       to take a count, modify keymapping behavior, and fix discrepancies in
       the documentation.
     * Issue #539: The option |g:vimroam_url_maxsave| now only affects raw
       URLs (wiki links are excluded).
-    * Issue #438: Fix creation of visually selected links on diary pages.
+    * Issue #438: Fix creation of visually selected links on journal pages.
     * Issue #404: Don't conceal strikethrough character in tables.
     * Issue #318: Markdown syntax bold, italic, and italic/bold are now
       rendered correctly.
@@ -4099,7 +4099,7 @@ New:~
     * Add 'aH' and 'iH' text objects, see |vimroam-text-objects|.
     * Add the keys |vimroam_[[|, |vimroam_]]|, |vimroam_[=|, |vimroam_]=| and
       |vimroam_]u| for navigating between headers.
-    * Add the command |:VimRoamMakeTomorrowDiaryNote|.
+    * Add the command |:VimRoamMakeTomorrowJournalNote|.
     * |g:vimroam_folding| has a new option 'custom'.
     * Add the ':quick' option for faster folding, see |g:vimroam_folding|.
     * Add the %date placeholder, see |vimroam-date|.
@@ -4120,17 +4120,17 @@ Fixed:~
     * Issue #236: Highlight math blocks as TeX math, not TeX.
     * Issue #264: Don't overwrite mappings to i_<CR> from other plugins.
     * Fix an error where <BS> sometimes didn't work under Windows.
-    * Issue #302: |:VimRoamDiaryGenerateLinks| had issues with markdown.
+    * Issue #302: |:VimRoamJournalGenerateLinks| had issues with markdown.
     * Issue #445: Better handling of |'autowriteall'| and |'hidden'|.
     * Improve 'ah' and 'ih' text objects, see |vimroam-text-objects|.
     * Allow opening of links using Powershell.
     * Allow any visual mode to be used with |vimroam_+|.
     * Markdown syntax for |vimroam-toc| is used, when appropriate.
     * Wikis can now be in subfolders of other wikis.
-    * Issue #482: |:VimRoamMakeDiaryNote| now uses the diary of the current wiki.
-    * Opening the diary and wikis from the menu works correctly now.
-    * Issue #497: Make |:VimRoamMakeDiaryNote| work outside a wiki buffer.
-    * Use markdown syntax in the diary when appropriate.
+    * Issue #482: |:VimRoamMakeJournalNote| now uses the journal of the current wiki.
+    * Opening the journal and wikis from the menu works correctly now.
+    * Issue #497: Make |:VimRoamMakeJournalNote| work outside a wiki buffer.
+    * Use markdown syntax in the journal when appropriate.
     * Improve handling of errors on opening files.
     * Update links when renaming a page with |:VimRoamRenameLink|.
     * Fix losing the highlighting in various situations.
@@ -4141,7 +4141,7 @@ Fixed:~
 2.3 (2016-03-31)~
 
 New:~
-    * Add |:VimRoamMakeYesterdayDiaryNote| command
+    * Add |:VimRoamMakeYesterdayJournalNote| command
     * Issue #128: add option |vimroam-option-automatic_nested_syntaxes|
     * Issue #192: Sort links in the list generated by |:VimRoamGenerateTags|
 
@@ -4227,7 +4227,7 @@ Fixed:~
     * Issue #52: Recognize markdown links when renaming wiki file
     * Issue #54: Disable 'shellslash' on Windows to avoid problems
     * Issue #81: Don't get stuck when converting a read-only file
-    * Issue #66: Better normalizing of links in diary
+    * Issue #66: Better normalizing of links in journal
     * Fix the menu in GVim, which was sometimes not shown correctly
     * |VimRoamGenerateLinks| now also generates links for subdirectories
     * Issue #93: Don't process placeholders inside preformatted text
@@ -4280,7 +4280,7 @@ Summary ~
     * More link schemes
     * Transclusions
     * Normalize link command. See |vimroam_+|.
-    * Improved diary organization and generation. See |vimroam-diary|.
+    * Improved journal organization and generation. See |vimroam-journal|.
     * List manipulation. See |vimroam-list-manipulation|.
     * Markdown support.
     * Mathjax support. See |vimroam-syntax-math|.
@@ -4302,7 +4302,7 @@ http://code.google.com/p/vimroam/issues/list
     * Issue 70: Table spanning cell support.
     * Issue 72: Do not convert again for unchanged file. |:VimRoamAll2HTML|
       converts only changed wiki files.
-    * Issue 117: |:VimRoamDiaryIndex| command that opens diary index wiki page.
+    * Issue 117: |:VimRoamJournalIndex| command that opens journal index wiki page.
     * Issue 120: Links in headers are not highlighted in vimroam but are
       highlighted in HTML.
     * Issue 138: Added possibility to remap table-column move bindings. See

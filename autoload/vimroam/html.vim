@@ -478,11 +478,11 @@ function! s:tag_wikiincl(value) abort
 
     let link_infos = vimroam#base#resolve_link(url_0)
 
-    if link_infos.scheme =~# '\mlocal\|wiki\d\+\|diary'
+    if link_infos.scheme =~# '\mlocal\|wiki\d\+\|journal'
       let url = vimroam#path#relpath(fnamemodify(s:current_html_file, ':h'), link_infos.filename)
       " strip the .html extension when we have wiki links, so that the user can
       " simply write {{image.png}} to include an image from the wiki directory
-      if link_infos.scheme =~# '\mwiki\d\+\|diary'
+      if link_infos.scheme =~# '\mwiki\d\+\|journal'
         let url = fnamemodify(url, ':r')
       endif
     else
@@ -520,7 +520,7 @@ function! s:tag_wikilink(value) abort
     elseif link_infos.scheme ==# 'local'
       let html_link = vimroam#path#relpath(fnamemodify(s:current_html_file, ':h'),
             \ link_infos.filename)
-    elseif link_infos.scheme =~# '\mwiki\d\+\|diary'
+    elseif link_infos.scheme =~# '\mwiki\d\+\|journal'
       " wiki links are always relative to the current file
       let html_link = vimroam#path#relpath(
             \ fnamemodify(s:current_wiki_file, ':h'),
@@ -1972,11 +1972,11 @@ endfunction
 
 
 function! s:rss_header() abort
-  let title = vimroam#vars#get_wikilocal('diary_header')
+  let title = vimroam#vars#get_wikilocal('journal_header')
   let rss_url = vimroam#vars#get_wikilocal('base_url') . vimroam#vars#get_wikilocal('rss_name')
   let link = vimroam#vars#get_wikilocal('base_url')
-        \ . vimroam#vars#get_wikilocal('diary_rel_path')
-        \ . vimroam#vars#get_wikilocal('diary_index') . '.html'
+        \ . vimroam#vars#get_wikilocal('journal_rel_path')
+        \ . vimroam#vars#get_wikilocal('journal_index') . '.html'
   let description = title
   let pubdate = strftime('%a, %d %b %Y %T %z')
   let header = [
@@ -1998,9 +1998,9 @@ function! s:rss_footer() abort
 endfunction
 
 function! s:rss_item(path, title) abort
-  let diary_rel_path = vimroam#vars#get_wikilocal('diary_rel_path')
+  let journal_rel_path = vimroam#vars#get_wikilocal('journal_rel_path')
   let full_path = vimroam#vars#get_wikilocal('path')
-        \ . diary_rel_path . a:path . vimroam#vars#get_wikilocal('ext')
+        \ . journal_rel_path . a:path . vimroam#vars#get_wikilocal('ext')
   let fname_base = fnamemodify(a:path, ':t:r')
   let htmlfile = fname_base . '.html'
 
@@ -2010,7 +2010,7 @@ function! s:rss_item(path, title) abort
   endif
 
   let link = vimroam#vars#get_wikilocal('base_url')
-        \ . diary_rel_path
+        \ . journal_rel_path
         \ . fname_base . '.html'
   let pubdate = strftime('%a, %d %b %Y %T %z', getftime(full_path))
 
@@ -2033,17 +2033,17 @@ function! s:generate_rss(path) abort
   let rss_lines = []
   call extend(rss_lines, s:rss_header())
 
-  let captions = vimroam#diary#diary_file_captions()
+  let captions = vimroam#journal#journal_file_captions()
   let i = 0
-  for diary in vimroam#diary#diary_sort(keys(captions))
+  for journal in vimroam#journal#journal_sort(keys(captions))
     if i >= max_items
       break
     endif
-    let title = captions[diary]['top']
+    let title = captions[journal]['top']
     if title ==? ''
-      let title = diary
+      let title = journal
     endif
-    call extend(rss_lines, s:rss_item(diary, title))
+    call extend(rss_lines, s:rss_item(journal, title))
     let i += 1
   endfor
 
@@ -2051,7 +2051,7 @@ function! s:generate_rss(path) abort
   call writefile(rss_lines, rss_path)
 endfunction
 
-function! vimroam#html#diary_rss() abort
+function! vimroam#html#journal_rss() abort
   call vimroam#u#echo('Saving RSS feed ...')
   let path_html = expand(vimroam#vars#get_wikilocal('path_html'))
   call vimroam#path#mkdir(path_html)
