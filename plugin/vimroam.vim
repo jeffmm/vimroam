@@ -20,16 +20,6 @@ let s:plugin_dir = expand('<sfile>:p:h:h')
 let s:old_cpo = &cpoptions
 set cpoptions&vim
 
-if !exists('g:vimroam_filetypes')
-  let g:vimroam_filetypes = ['markdown']
-endif
-if !exists('g:vimroam_markdown_link_ext')
-  let g:vimroam_markdown_link_ext = 1
-endif
-if !exists('g:vimroam_global_ext')
-  let g:vimroam_global_ext = 0
-endif
-
 " Save autowriteall varaible state
 if exists('g:vimroam_autowriteall')
   let s:vimroam_autowriteall_saved = g:vimroam_autowriteall
