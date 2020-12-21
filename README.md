@@ -76,7 +76,7 @@ tags:
 
 Notice that the link back to the note that referenced this one -- a backlink -- is automatically generated. In fact, all references of the current page can be viewed and their files previewed using the command `:VimRoamRgBacklinks` (mapped to `<leader>wb` by default).
 
-![VimRoamRgBacklinks example](images/VimRoamRgBacklinks.png)
+![VimRoamRgBacklinks example](images/VimRoamRgBacklinks.jpg)
 
 Pressing `Backspace` returns to the previous wiki page, in this case, the backlink `index.md`. A link can also be constructed from more than one word by visually selecting the words to be linked and press `Enter`. To try it, visually select `Reading list` from the index wiki and press `Enter`.
 
@@ -84,21 +84,21 @@ Often, the best use of VimRoam is for unstructured thinking and recording ideas 
 
 You can organize the note by connecting it to another note later, either by entering a backlink or by linking to another note. You can find a list of all notes that are not currently traversable from the index wiki using the command `:VimRoamInbox` (mapped by default to `<leader>wi`). The inbox menu also lists defunct links.
 
-![VimRoamInbox example](images/VimRoamInbox.png)
+![VimRoamInbox example](images/VimRoamInbox.jpg)
 
 A link to an existing note can be created quickly by typing `[]` in quick succession while in insert mode. This will display a list of existing notes, filtered by a fuzzy search, pressing enter on the note generates the link in full, and returns to insert mode.
 
-![VimRoamInsertLink example](images/VimRoamInsertLink.png)
+![VimRoamInsertLink example](images/VimRoamInsertLink.jpg)
 
 You can also link to the current note from a different note by using the command `:VimRoamYankName` (mapped to `<leader>wy` by default) to yank a markdown link to the register, and then paste the link with `p`.
 
 Links can be also be navigated via fuzzy search by searching all text with `:VimRoamRgText` (`<leader>ws`), by filename with `:VimRoamRgFiles` (mapped to `<leader>wf`), or by tags with `:VimRoamRgTags` (defined by any text surrounded by colons, e.g. `:meta:`, search mapped to `<leader>wt`).
 
-![VimRoamRgText example](images/VimRoamRgText.png)
+![VimRoamRgText example](images/VimRoamRgText.jpg)
 
 You can also quickly add links to images that are saved to disk to create reference figures or screenshots that you can refer back to later. The easiest way (tested on Mac OSX using [iTerm2](https://iterm2.com/)) is to place your cursor where you want the image to appear in the note, then simply drag and drop the image into the terminal running Vim, which automatically inserts the image absolute path: `/path/to/my_image.jpg` (alternatively, you could have typed out the path yourself with the aid of omnicomplete). Pressing `Enter` on the image path automatically copies the image to an `images` directory in your wiki, resizes and compresses the image using sane defaults (configurable, requires an installation of `ImageMagick`), and reformats the path to a relative markdown link: `![my_image.jpg](images/my_image.jpg)`. Pressing `Enter` on the generated link opens the image in your default image preview app. You can also see the image generated alongside the rest of the content in your wiki by running `:MarkdownPreview` in the wiki buffer.
 
-![VimRoamMakeImageLink example](images/VimRoamMakeImageLink.png)
+![VimRoamMakeImageLink example](images/VimRoamMakeImageLink.jpg)
 
 ### Documentation
 
