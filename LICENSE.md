@@ -2,6 +2,7 @@ MIT License
 
 Copyright (c) 2008-2010 Maxim Kim
               2013-2017 Daniel Schemala
+              2020-2021 Jeffrey Moore
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

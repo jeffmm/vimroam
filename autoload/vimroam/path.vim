@@ -192,7 +192,7 @@ function! vimroam#path#mkdir(path, ...) abort
       let path = iconv(path, &encoding, vimroam#vars#get_global('w32_dir_enc'))
     endif
 
-    if a:0 && a:1 && input('VimRoam: Make new directory: '.path."\n [y]es/[N]o? ") !~? '^y'
+    if a:0 && a:1 && input('VimRoam: Make new directory: '.path.": [y]es/[N]o? ") !~? '^y'
       return 0
     endif
 
