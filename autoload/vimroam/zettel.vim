@@ -1,18 +1,3 @@
-" source: https://stackoverflow.com/a/6271254/2467963
-" get text of the visual selection
-function! s:get_visual_selection()
-  " Why is this not a built-in Vim script function?!
-  let [line_start, column_start] = getpos("'<")[1:2]
-  let [line_end, column_end] = getpos("'>")[1:2]
-  let lines = getline(line_start, line_end)
-  if len(lines) == 0
-    return ''
-  endif
-  let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
-  let lines[0] = lines[0][column_start - 1:]
-  return join(lines, "\n")
-endfunction
-
 " this function is useful for comands in plugin/zettel.vim
 " set number of the active wiki
 function! vimroam#zettel#set_active_wiki(number)
@@ -73,31 +58,17 @@ let s:test_header_end = function(vimroam#vars#get_wikilocal('syntax') ==? 'markd
 
 
 " variables that depend on the wiki syntax
-if vimroam#vars#get_wikilocal('syntax') ==? 'markdown'
-  " add file extension when g:vimroam_markdown_link_ext is set
-  if exists("g:vimroam_markdown_link_ext") && g:vimroam_markdown_link_ext == 1
+" add file extension when g:vimroam_markdown_link_ext is set
+if exists("g:vimroam_markdown_link_ext") && g:vimroam_markdown_link_ext == 1
     let s:link_format = "[%title](%link.md)"
-    " TODO: s:link_stub used to be different than s:link_format, but it is no longer
-    " the case. maybe we can get rid of it?
-    let s:link_stub =  "[%title](%link.md)"
-  else
-    let s:link_format = "[%title](%link)"
-    let s:link_stub =  "[%title](%link)"
-  endif
-  let s:header_format = "%s: %s"
-  let s:header_delimiter = "---"
-  let s:insert_mode_title_format = "``l"
-  let s:grep_link_pattern = '/\(%s\.\{-}m\{-}d\{-}\)/' " match filename in  parens. including optional .md extension
-  let s:section_pattern = "# %s"
 else
-  let s:link_format = "[[%link|%title]]"
-  let s:link_stub = "[[%link|%title]]"
-  let s:header_format = "%%%s %s"
-  let s:header_delimiter = ""
-  let s:insert_mode_title_format = "h"
-  let s:grep_link_pattern = '/\[%s[|#\]]/'
-  let s:section_pattern = "= %s ="
-end
+    let s:link_format = "[%title](%link)"
+endif
+let s:header_format = "%s: %s"
+let s:header_delimiter = "---"
+let s:insert_mode_title_format = "``l"
+let s:grep_link_pattern = '/\(%s\.\{-}m\{-}d\{-}\)/' " match filename in  parens. including optional .md extension
+let s:section_pattern = "# %s"
 
 " enable overriding of 
 if exists("g:zettel_link_format")
@@ -301,15 +272,6 @@ function! vimroam#zettel#new_zettel_name(...)
     let next_file = s:numtoletter(vimroam#zettel#next_counted_file())
     let newformat = substitute(newformat,"%file_alpha", next_file, "")
   endif
-  if matchstr(newformat, "%random") != ""
-    " generate random characters, their number is set by g:zettel_random_chars
-    " random characters are set using vimroam#zettel#make_random_chars()
-    " this function is set at the startup and then each time
-    " vimroam#zettel#create() is called. we don't call it here because we
-    " would get wrong links in zettel_new_selected(). It calls new_zettel_name
-    " twice.
-    let newformat = substitute(newformat, "%random", s:randomchars, "")
-  endif
   let final_format =  strftime(newformat)
   if !s:wiki_file_not_exists(final_format)
     " if the current file name is used, increase counter and add it as a
@@ -332,7 +294,7 @@ function! vimroam#zettel#save_wiki_page(format, ...)
 endfunction
 
 " find title in the zettel file and return correct link to it
-function! vimroam#zettel#get_link(filename)
+function! s:get_link(filename)
   let title =vimroam#zettel#get_title(a:filename)
   let wikiname = fnamemodify(a:filename, ":t:r")
   if title == ""
@@ -343,62 +305,20 @@ function! vimroam#zettel#get_link(filename)
   return link
 endfunction
 
-" copy of function from VimRoam
-" Params: full path to a wiki file and its wiki number
-" Returns: a list of all links inside the wiki file
-" Every list item has the form
-" [target file, anchor, line number of the link in source file, column number]
-function! s:get_links(wikifile, idx)
-  if !filereadable(a:wikifile)
-    return []
+function! vimroam#zettel#wiki_yank_name()
+  let filename = expand("%")
+  let link = s:get_link(filename)
+  let clipboardtype=&clipboard
+  if clipboardtype=="unnamed"  
+    let @* = link
+  elseif clipboardtype=="unnamedplus"
+    let @+ = link
+  else
+    let @@ = link
   endif
-
-  let syntax = vimroam#vars#get_wikilocal('syntax', a:idx)
-  let rx_link = vimroam#vars#get_syntaxlocal('wikilink', syntax)
-  let links = []
-  let lnum = 0
-
-  for line in readfile(a:wikifile)
-    let lnum += 1
-
-    let link_count = 1
-    while 1
-      let col = match(line, rx_link, 0, link_count)+1
-      let link_text = matchstr(line, rx_link, 0, link_count)
-      echomsg("link text " . line . " - " . link_text)
-      if link_text == ''
-        break
-      endif
-      let link_count += 1
-      let target = vimroam#base#resolve_link(link_text, a:wikifile)
-      if target.filename != '' && target.scheme =~# '\mwiki\d\+\|journal\|file\|local'
-        call add(links, [target.filename, target.anchor, lnum, col])
-      endif
-    endwhile
-  endfor
-
-  return links
+  return link
 endfunction
 
-" return list of files that match a pattern
-function! vimroam#zettel#wikigrep(pattern)
-  let paths = []
-  let idx = vimroam#vars#get_bufferlocal('wiki_nr')
-  let path = fnameescape(vimroam#vars#get_wikilocal('path', idx))
-  let ext = vimroam#vars#get_wikilocal('ext', idx)
-  try
-    let command = 'vimgrep ' . a:pattern . 'j ' . path . "*" . ext
-    noautocmd  execute  command
-  catch /^Vim\%((\a\+)\)\=:E480/   " No Match
-    "Ignore it, and move on to the next file
-  endtry
-  for d in getqflist()
-    let filename = fnamemodify(bufname(d.bufnr), ":p")
-    call add(paths, filename)
-  endfor
-  call uniq(paths)
-  return paths
-endfunction
 
 function! vimroam#zettel#format_file_title(format, file, title)
   let link = substitute(a:format, "%title", a:title, "")
@@ -467,8 +387,7 @@ function! vimroam#zettel#create(...)
   return -1
 endfunction
 
-" front_matter can be either list or dict. if it is a dict, then convert it to
-" list
+" front_matter can be list or dict. if it is a dict, then convert it to list
 function! s:front_matter_list(front_matter)
   if type(a:front_matter) ==? v:t_list
     return a:front_matter
@@ -512,9 +431,7 @@ function! vimroam#zettel#zettel_new(...)
       " save file, in order to prevent errors in variable reading
       execute "w"
       let variables = vimroam#zettel#prepare_template_variables(expand("%"), a:1)
-      " backlink contains link to the new note itself, so we will just disable
-      " it. backlinks are available only when the new note is created using
-      " ZettelNewSelectedMap (`z` letter in visual mode by default).
+      " backlink contains link to new note itself, so we will just disable it
       let variables.backlink = ""
     endif
     " we may reuse varaibles from the parent zettel. date would be wrong in this case,
@@ -524,35 +441,6 @@ function! vimroam#zettel#zettel_new(...)
   endif
   " save the new wiki file
   execute "w"
-
-endfunction
-"
-" crate zettel link from a selected text
-command! ZettelImage call vimroam#zettel#zettel_make_image_link()<CR>
-function! vimroam#zettel#zettel_make_image_link()
-  let title = <sid>get_visual_selection()
-  let name = "figs/" . split(title, "/")[-1]
-  execute "!mv " . title . " " . expand("%:p:h") . "/" . name
-  " replace the visually selected text with a link to the new zettel
-  let name2 = shellescape("[" . name . "](" . name . ")")
-  echo name2
-  " \\%V.*\\%V. should select the whole visual selection
-  execute "normal! :'<,'>s/\\%V.*\\%V./" . vimroam#zettel#format_link(name2) . "\<cr>\<C-o>"
-endfunction
-
-
-" crate zettel link from a selected text
-function! vimroam#zettel#zettel_new_selected()
-  let title = <sid>get_visual_selection()
-  let name = vimroam#zettel#new_zettel_name(title)
-  " prepare_template_variables needs the file saved on disk
-  execute "w"
-  " make variables that will be available in the new page template
-  let variables = vimroam#zettel#prepare_template_variables(expand("%"), title)
-  " replace the visually selected text with a link to the new zettel
-  " \\%V.*\\%V. should select the whole visual selection
-  execute "normal! :'<,'>s/\\%V.*\\%V./" . vimroam#zettel#format_link( name, "\\\\0") ."\<cr>\<C-o>"
-  call vimroam#zettel#zettel_new(title, variables)
 endfunction
 
 " prepare variables that will be available to expand in the new note template
@@ -623,270 +511,3 @@ function! vimroam#zettel#expand_template(template, variables)
     call append(line('$') - correction, xline)
   endfor
 endfunction
-
-" make new zettel from a file. the file contents will be copied to a new
-" zettel, the original file contents will be replaced with the zettel filename
-" use temporary file if you want to keep the original file
-function! vimroam#zettel#zettel_capture(wnum,...)
-  let origfile = expand("%")
-  execute "set ft=vimroam"
-  " This probably doesn't work with current vimroam code
-  if a:wnum > vimroam#vars#number_of_wikis()
-    echomsg 'VimRoam Error: Wiki '.a:wnum.' is not registered in g:vimroam_list!'
-    return
-  endif
-  if a:wnum > 0
-    let idx = a:wnum
-  else
-    let idx = 0
-  endif
-  let title = vimroam#zettel#get_title(origfile)
-  let format = vimroam#zettel#new_zettel_name(title)
-  " let link_info = vimroam#base#resolve_link(format)
-  let newfile = vimroam#zettel#save_wiki_page(format, idx)
-  " delete contents of the captured file
-  execute "normal! ggdG"
-  " replace it with a address of the zettel file
-  execute "normal! i" . newfile 
-  execute "w"
-  " open the new zettel
-  execute "e " . newfile
-endfunction
-
-" based on vimroams "get wiki links", not stripping file extension
-function! vimroam#zettel#get_wikilinks(wiki_nr, also_absolute_links)
-  let files = vimroam#base#find_files(a:wiki_nr, 0)
-  if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
-    let cwd = vimroam#path#wikify_path(expand('%:p:h'))
-  elseif a:wiki_nr < 0
-    let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('journal_rel_path')
-  else
-    let cwd = vimroam#vars#get_wikilocal('path', a:wiki_nr)
-  endif
-  let result = []
-  for wikifile in files
-    let wikifile = vimroam#path#relpath(cwd, wikifile)
-    call add(result, wikifile)
-  endfor
-  if a:also_absolute_links
-    for wikifile in files
-      if a:wiki_nr == vimroam#vars#get_bufferlocal('wiki_nr')
-        let cwd = vimroam#vars#get_wikilocal('path')
-      elseif a:wiki_nr < 0
-        let cwd = vimroam#vars#get_wikilocal('path') . vimroam#vars#get_wikilocal('journal_rel_path')
-      endif
-      let wikifile = '/'.vimroam#path#relpath(cwd, wikifile)
-      call add(result, wikifile)
-    endfor
-  endif
-  return result
-endfunction
-
-" add link with title of the file referenced in the second argument to the
-" array in the first argument
-function! s:add_bulleted_link(lines, abs_filepath)
-  let bullet = repeat(' ', vimroam#lst#get_list_margin()) . vimroam#lst#default_symbol().' '
-  call add(a:lines, bullet.
-        \ vimroam#zettel#get_link(a:abs_filepath))
-  return a:lines
-endfunction
-
-  
-
-" insert list of links to the current page
-function! s:insert_link_array(title, lines)
-  let links_rx = '\m^\s*'.vimroam#u#escape(vimroam#lst#default_symbol()).' '
-  call vimroam#zettel#update_listing(a:lines, a:title, links_rx)
-endfunction
-
-
-" based on vimroams "generate links", adding the %title to the link
-function! vimroam#zettel#generate_links()
-  let lines = []
-
-  let links = vimroam#zettel#get_wikilinks(vimroam#vars#get_bufferlocal('wiki_nr'), 0)
-  call reverse(sort(links))
-
-  let bullet = repeat(' ', vimroam#lst#get_list_margin()) . vimroam#lst#default_symbol().' '
-  for link in links
-    let abs_filepath = vimroam#path#abs_path_of_link(link)
-    "let abs_filepath = link
-    "if !s:is_journal_file(abs_filepath)
-      call add(lines, bullet.
-            \ vimroam#zettel#get_link(abs_filepath))
-    "endif
-  endfor
-  call s:insert_link_array('Generated Index', lines)
-endfunction
-
-
-" test if link in the Backlinks section
-function! s:is_in_backlinks(file, filenamepattern)
-  let f = readfile(a:file)
-  let content = join(f, "\n")
-  " search for backlinks section
-  let backlinks_pattern = printf(s:section_pattern, g:zettel_backlinks_title)
-  let backlinks_pos = matchstrpos(content, backlinks_pattern)
-  " if we cannot find backlinks in the page return false
-  if backlinks_pos[1] == -1 
-    return -1
-  endif
-  let file_pos = matchstrpos(content, a:filenamepattern)
-  " link is in backlinks when it is placed after the Backlinks section title
-  return backlinks_pos[1] < file_pos[1]
-endfunction
-
-
-" based on vimroams "backlinks"
-" insert backlinks of the current page in a section
-function! vimroam#zettel#backlinks()
-  let current_filename = expand("%:t:r")
-  " find [filename| or [filename] to support both wiki and md syntax
-  let filenamepattern = printf(s:grep_link_pattern, current_filename)
-  let locations = []
-  let backfiles = vimroam#zettel#wikigrep(filenamepattern)
-  for file in backfiles
-    " only add backlink if it is not already backlink
-    let is_backlink = s:is_in_backlinks(file, current_filename)
-    if is_backlink < 1
-      " Make sure we don't add ourselves
-      if !(file ==# expand("%:p"))
-        call s:add_bulleted_link(locations, file)
-      endif
-    endif
-  endfor
-
-  if empty(locations)
-    echomsg 'Vimzettel: No other file links to this file'
-  else
-    call uniq(locations)
-    " Insert back links section
-    call s:insert_link_array(g:zettel_backlinks_title, locations)
-  endif
-endfunction
-
-function! vimroam#zettel#inbox()
-  call vimroam#base#check_links()
-  let linklist = getqflist()
-  cclose
-  let paths = []
-  " normalize the current wiki path
-  let cwd = fnamemodify(vimroam#vars#get_wikilocal('path'), ":p:h")
-  let bullet = repeat(' ', vimroam#lst#get_list_margin()) . vimroam#lst#default_symbol().' '
-  for d in linklist
-    " detect files that are not reachable from the wiki index
-    let filenamematch = matchstr(d.text,'\zs.*\ze is not reachable')
-    if filenamematch != "" && filereadable(filenamematch)
-      " use only files from the current wiki, we get files from all registered
-      " wikis here
-      let filepath = fnamemodify(filenamematch, ":p:h")
-      if filepath ==# cwd
-        call add(paths, bullet.
-              \ vimroam#zettel#get_link(filenamematch))
-      endif
-    endif
-  endfor
-  if empty(paths)
-  else
-    " remove duplicates and insert inbox section
-    call uniq(paths)
-    call s:insert_link_array('Unlinked Notes', paths)
-  endif
-
-endfunction
-
-" based on vimroam
-"   Loads tags metadata from file, returns a dictionary
-function! s:load_tags_metadata() abort
-  let metadata_path = vimroam#tags#metadata_file_path()
-  if !filereadable(metadata_path)
-    return {}
-  endif
-  let metadata = {}
-  for line in readfile(metadata_path)
-    if line =~ s:tag_pattern
-      continue
-    endif
-    let parts = matchlist(line, '^\(.\{-}\);"\(.*\)$')
-    if parts[0] == '' || parts[1] == '' || parts[2] == ''
-      throw 'VimRoamTags1: Metadata file corrupted'
-    endif
-    let std_fields = split(parts[1], '\t')
-    if len(std_fields) != 3
-      throw 'VimRoamTags2: Metadata file corrupted'
-    endif
-    let vw_part = parts[2]
-    if vw_part[0] != "\t"
-      throw 'VimRoamTags3: Metadata file corrupted'
-    endif
-    let vw_fields = split(vw_part[1:], "\t")
-    if len(vw_fields) != 1 || vw_fields[0] !~ '^vimroam:'
-      throw 'VimRoamTags4: Metadata file corrupted'
-    endif
-    let vw_data = substitute(vw_fields[0], '^vimroam:', '', '')
-    let vw_data = substitute(vw_data, '\\n', "\n", 'g')
-    let vw_data = substitute(vw_data, '\\r', "\r", 'g')
-    let vw_data = substitute(vw_data, '\\t', "\t", 'g')
-    let vw_data = substitute(vw_data, '\\\\', "\\", 'g')
-    let vw_fields = split(vw_data, "\t")
-    if len(vw_fields) != 2
-      throw 'VimRoamTags5: Metadata file corrupted'
-    endif
-    let pagename = vw_fields[0]
-    let entry = {}
-    let entry.tagname  = std_fields[0]
-    let entry.filename  = std_fields[1]
-    let entry.lineno   = std_fields[2]
-    let entry.link     = vw_fields[1]
-    if has_key(metadata, pagename)
-      call add(metadata[pagename], entry)
-    else
-      let metadata[pagename] = [entry]
-    endif
-  endfor
-  return metadata
-endfunction
-
-" based on vimroam
-function! vimroam#zettel#generate_tags(...) abort
-  let need_all_tags = (a:0 == 0)
-  let specific_tags = a:000
-
-  let metadata = s:load_tags_metadata()
-
-  " make a dictionary { tag_name: [tag_links, ...] }
-  let tags_entries = {}
-  for entries in values(metadata)
-    for entry in entries
-      if has_key(tags_entries, entry.tagname)
-        call add(tags_entries[entry.tagname], entry.filename)
-      else
-        let tags_entries[entry.tagname] = [entry.filename]
-      endif
-    endfor
-  endfor
-
-  let lines = []
-  let bullet = repeat(' ', vimroam#lst#get_list_margin()).vimroam#lst#default_symbol().' '
-  for tagname in sort(keys(tags_entries))
-    if need_all_tags || index(specific_tags, tagname) != -1
-      call extend(lines, [
-            \ '',
-            \ substitute(vimroam#vars#get_syntaxlocal('rxH2_Template'), '__Header__', tagname, ''),
-            \ '' ])
-      for taglink in reverse(sort(tags_entries[tagname]))
-        let filepath = vimroam#path#abs_path_of_link(taglink)
-        if filereadable(filepath)
-          call add(lines, bullet . vimroam#zettel#get_link(filepath))
-        endif
-      endfor
-    endif
-  endfor
-
-  let links_rx = '\m\%(^\s*$\)\|\%('.vimroam#vars#get_syntaxlocal('rxH2').'\)\|\%(^\s*'
-        \ .vimroam#u#escape(vimroam#lst#default_symbol()).' '
-        \ .vimroam#vars#get_syntaxlocal('rxWikiLink').'$\)'
-
-  call vimroam#zettel#update_listing(lines, 'Generated Tags', links_rx)
-endfunction
-xmap M <Plug>ZettelImage

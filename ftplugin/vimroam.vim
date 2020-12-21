@@ -294,14 +294,8 @@ command! -buffer VimRoamNextTask call vimroam#base#find_next_task()
 command! -buffer VimRoamNextLink call vimroam#base#find_next_link()
 command! -buffer VimRoamPrevLink call vimroam#base#find_prev_link()
 command! -buffer VimRoamDeleteFile call vimroam#base#delete_link()
-command! -buffer VimRoamDeleteLink
-      \ call vimroam#base#deprecate("VimRoamDeleteLink", "VimRoamDeleteFile") |
-      \ call vimroam#base#delete_link()
 command! -buffer -nargs=? -complete=customlist,vimroam#base#complete_file
       \ VimRoamRenameFile call vimroam#base#rename_link(<f-args>)
-command! -buffer VimRoamRenameLink
-      \ call vimroam#base#deprecate("VimRoamRenameLink", "VimRoamRenameFile") |
-      \ call vimroam#base#rename_link()
 command! -buffer VimRoamFollowLink call vimroam#base#follow_link('nosplit', 0, 1)
 command! -buffer VimRoamGoBackLink call vimroam#base#go_back_link()
 command! -buffer -nargs=* VimRoamSplitLink call vimroam#base#follow_link('hsplit', <f-args>)
@@ -367,16 +361,13 @@ command! -buffer -nargs=* -complete=custom,vimroam#tags#complete_tags
       \ VimRoamSearchTags VimRoamSearch /:<args>:/
 command! -buffer -nargs=* -complete=custom,vimroam#tags#complete_tags
       \ VimRoamGenerateTagLinks call vimroam#tags#generate_tags(1, <f-args>)
-command! -buffer -nargs=* -complete=custom,vimroam#tags#complete_tags
-      \ VimRoamGenerateTags
-      \ call vimroam#base#deprecate("VimRoamGenerateTags", "VimRoamGenerateTagLinks") |
-      \ call vimroam#tags#generate_tags(1, <f-args>)
 
 command! -buffer VimRoamPasteUrl call vimroam#html#PasteUrl(expand('%:p'))
 command! -buffer VimRoamCatUrl call vimroam#html#CatUrl(expand('%:p'))
 
 command! -buffer -nargs=* -complete=custom,vimroam#base#complete_colorize
       \ VimRoamColorize call vimroam#base#colorize(<f-args>)
+command! -bang -nargs=* VimRoamYankName call #vimroam#zettel#wiki_yank_name()
 
 " ------------------------------------------------
 " Keybindings
@@ -436,7 +427,8 @@ nnoremap <silent><script><buffer> <Plug>VimRoamJournalNextDay
     \ :VimRoamJournalNextDay<CR>
 nnoremap <silent><script><buffer> <Plug>VimRoamJournalPrevDay
     \ :VimRoamJournalPrevDay<CR>
-"
+nnoremap <silent><script><buffer> <Plug>VimRoamYankName :VimRoamYankName<CR>
+
 " default links key mappings
 if str2nr(vimroam#vars#get_global('key_mappings').links)
   call vimroam#u#map_key('n', '<CR>', '<Plug>VimRoamFollowLink')
@@ -448,6 +440,7 @@ if str2nr(vimroam#vars#get_global('key_mappings').links)
   call vimroam#u#map_key('n', '<D-CR>', '<Plug>VimRoamTabnewLink')
   call vimroam#u#map_key('n', '<C-S-CR>', '<Plug>VimRoamTabnewLink', 1)
   call vimroam#u#map_key('n', '<BS>', '<Plug>VimRoamGoBackLink')
+  call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'y', '<Plug>VimRoamYankName')
   call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'D', '<Plug>VimRoamDeleteFile')
   call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'R', '<Plug>VimRoamRenameFile')
   call vimroam#u#map_key('n', '-', '<Plug>VimRoamJournalNextDay')
@@ -770,46 +763,4 @@ if !exists('g:zettel_format')
 endif
 
 
-function! s:wiki_yank_name()
-  let filename = expand("%")
-  let link = vimroam#zettel#get_link(filename)
-  let clipboardtype=&clipboard
-  if clipboardtype=="unnamed"  
-    let @* = link
-  elseif clipboardtype=="unnamedplus"
-    let @+ = link
-  else
-    let @@ = link
-  endif
-  return link
-endfunction
 
-" replace file name under cursor which corresponds to a wiki file with a
-" corresponding Wiki link
-function! s:replace_file_with_link()
-  let filename = expand("<cfile>")
-  let link = vimroam#zettel#get_link(filename)
-  execute "normal BvExa" . link
-endfunction
-
-command! -bang -nargs=* ZettelYankName call <sid>wiki_yank_name()
-
-" crate new zettel using command
-command! -bang -nargs=* ZettelNew call vimroam#zettel#zettel_new(<q-args>)
-
-command! -buffer ZettelGenerateLinks call vimroam#zettel#generate_links()
-command! -buffer -nargs=* -complete=custom,vimroam#tags#complete_tags
-      \ ZettelGenerateTags call vimroam#zettel#generate_tags(<f-args>)
-
-command! -buffer ZettelBackLinks call vimroam#zettel#backlinks()
-command! -buffer ZettelInbox call vimroam#zettel#inbox()
-command! -buffer ZettelCreateNew call vimroam#zettel#new_note()
-
-if !exists('g:zettel_default_mappings')
-  let g:zettel_default_mappings=1
-endif
-nnoremap <silent> <Plug>ZettelSearchMap :ZettelSearch<cr>
-nnoremap <silent> <Plug>ZettelYankNameMap :ZettelYankName<cr> 
-nnoremap <silent> <Plug>ZettelReplaceFileWithLink :call <sid>replace_file_with_link()<cr> 
-xnoremap <silent> <Plug>ZettelNewSelectedMap :call vimroam#zettel#zettel_new_selected()<CR>
-xnoremap <silent> <Plug>ZettelImage :call vimroam#zettel#zettel_make_image_link()<CR>
