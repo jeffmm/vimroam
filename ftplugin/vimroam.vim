@@ -367,7 +367,7 @@ command! -buffer VimRoamCatUrl call vimroam#html#CatUrl(expand('%:p'))
 
 command! -buffer -nargs=* -complete=custom,vimroam#base#complete_colorize
       \ VimRoamColorize call vimroam#base#colorize(<f-args>)
-command! -bang -nargs=* VimRoamYankName call #vimroam#zettel#wiki_yank_name()
+command! -bang -nargs=* VimRoamYankName call vimroam#zettel#wiki_yank_name()
 
 " ------------------------------------------------
 " Keybindings
