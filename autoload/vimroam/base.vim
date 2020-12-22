@@ -2720,7 +2720,7 @@ function! s:convert_to_image_link(url)
     if extension !=? "png" && extension[:2] !=? "tif" && extension !=? "bmp" && extension !=? "jpg" && extension !=? "jpeg"
         return
     endif
-    let directory = expand("%:p:h") . "/figs/"
+    let directory = expand("%:p:h") . "/images/"
     if empty(glob(directory))
         silent! execute "!mkdir " . directory
     endif
@@ -2741,7 +2741,7 @@ function! s:convert_to_image_link(url)
                     \ jpeg:fancy-upsampling=off -interlace none 
                     \ -colorspace sRGB ' . output
     endif
-    execute ":'<,'>s#" . fnameescape(text) . "#![" . name . "](figs/" . name . ".jpg)#"
+    execute ":'<,'>s#" . fnameescape(text) . "#![" . name . "](images/" . name . ".jpg)#"
 endfunction
 
 
