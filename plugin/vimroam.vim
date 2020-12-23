@@ -414,76 +414,14 @@ if str2nr(vimroam#vars#get_global('key_mappings').global)
   let s:map_prefix = vimroam#vars#get_global('map_prefix')
 
   call vimroam#u#map_key('n', s:map_prefix . 'w', '<Plug>VimRoamIndex', 2)
-  call vimroam#u#map_key('n', s:map_prefix . 'i', '<Plug>VimRoamJournalIndex', 2)
-  call vimroam#u#map_key('n', s:map_prefix . 'b', '<Plug>VimRoamRgBacklinks', 2)
+  call vimroam#u#map_key('n', s:map_prefix . 'J', '<Plug>VimRoamJournalIndex', 2)
+  call vimroam#u#map_key('n', s:map_prefix . 'j', '<Plug>VimRoamMakeJournalNote', 2)
   call vimroam#u#map_key('n', s:map_prefix . 's', '<Plug>VimRoamRgText', 2)
   call vimroam#u#map_key('n', s:map_prefix . 't', '<Plug>VimRoamRgTags', 2)
   call vimroam#u#map_key('n', s:map_prefix . 'f', '<Plug>VimRoamRgFiles', 2)
   call vimroam#u#map_key('n', s:map_prefix . 'n', '<Plug>VimRoamNewNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>i', '<Plug>VimRoamJournalGenerateLinks', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>w', '<Plug>VimRoamMakeJournalNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>t', '<Plug>VimRoamTabMakeJournalNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>y', '<Plug>VimRoamMakeYesterdayJournalNote', 2)
-  call vimroam#u#map_key('n', s:map_prefix . '<Leader>m', '<Plug>VimRoamMakeTomorrowJournalNote', 2)
 
 endif
-
-
-" Build global wiki menu (GUI)
-function! s:build_menu(topmenu) abort
-  let wnamelist = []
-  for idx in range(vimroam#vars#number_of_wikis())
-    let wname = vimroam#vars#get_wikilocal('name', idx)
-    if wname ==? ''
-      " fall back to the path if wiki isn't named
-      let wname = fnamemodify(vimroam#vars#get_wikilocal('path', idx), ':h:t')
-    endif
-
-    if index(wnamelist, wname) != -1
-      " append wiki index number to duplicate entries
-      let wname = wname . ' ' . string(idx + 1)
-    endif
-
-    " add entry to the list of names for duplicate checks
-    call add(wnamelist, wname)
-
-    " escape spaces and periods
-    let wname = escape(wname, '\ \.')
-
-    " build the menu
-    execute 'menu '.a:topmenu.'.Open\ index.'.wname.
-          \ ' :call vimroam#base#goto_index('.(idx+1).')<CR>'
-    execute 'menu '.a:topmenu.'.Open/Create\ journal\ note.'.wname.
-          \ ' :call vimroam#journal#make_note('.(idx+1).')<CR>'
-  endfor
-endfunction
-
-
-" Build global table menu (GUI)
-function! s:build_table_menu(topmenu) abort
-  exe 'menu '.a:topmenu.'.-Sep- :'
-  exe 'menu '.a:topmenu.'.Table.Create\ (enter\ cols\ rows) :VimRoamTable '
-  exe 'nmenu '.a:topmenu.'.Table.Format<tab>gqq gqq'
-  exe 'nmenu '.a:topmenu.'.Table.Move\ column\ left<tab><A-Left> :VimRoamTableMoveColumnLeft<CR>'
-  exe 'nmenu '.a:topmenu.
-        \ '.Table.Move\ column\ right<tab><A-Right> :VimRoamTableMoveColumnRight<CR>'
-  exe 'nmenu disable '.a:topmenu.'.Table'
-endfunction
-
-
-" Build Menus now
-if !empty(vimroam#vars#get_global('menu'))
-  call s:build_menu(vimroam#vars#get_global('menu'))
-  call s:build_table_menu(vimroam#vars#get_global('menu'))
-endif
-
-
-" Hook for calendar.vim
-if vimroam#vars#get_global('use_calendar')
-  let g:calendar_action = 'vimroam#journal#calendar_action'
-  let g:calendar_sign = 'vimroam#journal#calendar_sign'
-endif
-
 
 " Restore peace in the galaxy
 let &cpoptions = s:old_cpo

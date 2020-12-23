@@ -389,10 +389,10 @@ nnoremap <script><buffer> <Plug>VimRoam2HTML :VimRoam2HTML<CR>
 nnoremap <script><buffer> <Plug>VimRoam2HTMLBrowse :VimRoam2HTMLBrowse<CR>
 
 " default HTML key mappings
-if str2nr(vimroam#vars#get_global('key_mappings').html)
-  call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'h', '<Plug>VimRoam2HTML')
-  call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'hh', '<Plug>VimRoam2HTMLBrowse')
-endif
+" if str2nr(vimroam#vars#get_global('key_mappings').html)
+  " call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'h', '<Plug>VimRoam2HTML')
+  " call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'hh', '<Plug>VimRoam2HTMLBrowse')
+" endif
 
 " <Plug> links definitions
 inoremap <silent><script><buffer> <Plug>VimRoamInsertLink
@@ -443,6 +443,7 @@ if str2nr(vimroam#vars#get_global('key_mappings').links)
   call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'y', '<Plug>VimRoamYankName')
   call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'D', '<Plug>VimRoamDeleteFile')
   call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'R', '<Plug>VimRoamRenameFile')
+  call vimroam#u#map_key('n', vimroam#vars#get_global('map_prefix').'b', '<Plug>VimRoamRgBacklinks', 2)
   call vimroam#u#map_key('n', '-', '<Plug>VimRoamJournalNextDay')
   call vimroam#u#map_key('n', '=', '<Plug>VimRoamJournalPrevDay')
   call vimroam#u#map_key('i', '[]', '<Plug>VimRoamInsertLink')
