@@ -18,7 +18,7 @@ call vimroam#zettel#initialize_wiki_number()
 " Set default user options if they are not defined
 if !exists('g:vimroam_zettel_options')
     let g:vimroam_zettel_options = [{"front_matter" : [["tags", ""]],
-       \ "template" :  "~/.config/nvim/zk-template.tpl"}, {}]
+       \ "template" :  expand("<sfile>:p:h:h:h") . "/templates/zettel-template.tpl"}, {}]
 endif
 
 " get user option for the current wiki
@@ -345,7 +345,6 @@ function! vimroam#zettel#create(...)
   let format = vimroam#zettel#new_zettel_name(a:1)
   let date_format = g:zettel_date_format
   let date = strftime(date_format)
-  echomsg("new zettel: ". format)
   let s:zettel_date = date " save zettel date
   " detect if the wiki file exists
   let wiki_not_exists = s:wiki_file_not_exists(format)

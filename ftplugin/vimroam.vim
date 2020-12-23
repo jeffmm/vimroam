@@ -757,12 +757,3 @@ if vimroam#vars#get_wikilocal('auto_generate_tags')
   augroup END
 endif
 
-
-" format of a new zettel filename
-function s:strip_extension(param)
-    return split(a:param, "\\.md")[0]
-endfunction
-if !exists("g:zettel_format")
-    let g:zettel_format = s:strip_extension("%title")
-endif
-

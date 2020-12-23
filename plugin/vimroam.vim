@@ -423,5 +423,13 @@ if str2nr(vimroam#vars#get_global('key_mappings').global)
 
 endif
 
+" format of a new zettel filename
+function s:strip_extension(param)
+    return split(a:param, "\\.md")[0]
+endfunction
+if !exists("g:zettel_format")
+    let g:zettel_format = s:strip_extension("%title")
+endif
+
 " Restore peace in the galaxy
 let &cpoptions = s:old_cpo
