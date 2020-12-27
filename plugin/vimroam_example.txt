@@ -24,7 +24,7 @@ noremenu <script> Plugin.Example\ VimRoamExample      <SID>Example
 noremap <SID>Example  :call <SID>Example(expand("<cword>"), 1)<CR>
 
 " Script function only to be used locally
-function s:Example(from, correct)
+function! s:Example(from, correct)
   let to = input("type the correction for " . a:from . ": ")
   exe ":iabbrev " . a:from . " " . to
   if a:correct | exe "normal viws\<C-R>\" \b\e" | endif

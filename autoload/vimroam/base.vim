@@ -3065,7 +3065,7 @@ endfunction
 
 " -------------------------------------------------------------------------
 " Load syntax-specific Wiki functionality
-for s:syn in s:vimroam_get_known_syntaxes()
-  execute 'runtime! autoload/vimroam/'.s:syn.'_base.vim'
-endfor
+" for s:syn in s:vimroam_get_known_syntaxes()
+execute 'source ' . expand("<sfile>:p:h") . 'markdown_base.vim'
+" endfor
 " -------------------------------------------------------------------------
