@@ -1,3 +1,5 @@
+This project was built on top of a fork of [VimWiki](https://github.com/vimwiki/vimwiki) and my goal was to make it a lighter-weight markdown-only wiki with the addition of Roam Research-like features. After spending many hours trying to trim away the fat of VimWiki, I finally gave up and decided to refactor this project as an add-on module to VimWiki, which can be found here: [vim-roam](https://github.com/jeffmm/vim-roam).
+
 # Vim-Roam: A Vim-Powered and Roam-Inspired Markdown Wiki
 
 - [Intro](#introduction)
